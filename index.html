@@ -99,6 +99,7 @@
 
   /* ---------- eyebrow / labels ---------- */
   .eyebrow{
+    margin:0;
     font-family:'Jost', sans-serif;
     text-transform:uppercase;
     letter-spacing:0.22em;
@@ -202,12 +203,12 @@
     align-items:center;
   }
   .hero-copy .eyebrow{margin-bottom:18px; display:block;}
-  .hero h1{
+  .hero .hero-title{
     font-size:clamp(40px, 5.4vw, 68px);
     line-height:1.05;
     font-weight:500;
   }
-  .hero h1 em{
+  .hero .hero-title em{
     font-style:italic;
     color:var(--sage-deep);
     font-weight:400;
@@ -624,8 +625,8 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero-copy reveal">
-      <span class="eyebrow">Prothésiste ongulaire · Huy, Belgique</span>
-      <h1>Des ongles pensés<br>comme <em>un bouquet</em>,<br>détail après détail.</h1>
+      <h1 class="eyebrow">Prothésiste ongulaire · Huy, Belgique</h1>
+      <h2 class="hero-title">Des ongles pensés<br>comme <em>un bouquet</em>,<br>détail après détail.</h2>
       <p class="lede">Gainage, capsules, nail art sur-mesure : chaque rendez-vous chez Thab's Lab est un moment pris pour soi, entre précision technique et petites touches florales.</p>
       <div class="hero-actions">
         <a href="#reserver" class="btn btn-primary">Prendre rendez-vous</a>
@@ -788,12 +789,12 @@
 
         <details class="faq-item">
           <summary><span class="q-text">Que dois-je savoir avant mon rendez-vous ?</span><span class="toggle"></span></summary>
-          <div class="faq-answer">Toutes les informations utiles vous seront communiquées après votre réservation : vous recevrez un e-mail de confirmation, suivi des dernières informations pratiques avant votre venue. Si vous avez la moindre question entre-temps, n'hésitez pas à me contacter.</div>
+          <div class="faq-answer">Toutes les informations utiles vous seront communiquées après votre réservation : vous recevrez un e-mail de confirmation, suivi des dernières informations pratiques avant votre venue. Si vous avez la moindre question entre-temps, n'hésitez pas à <a href="https://instagram.com/thabs_lab" target="_blank" rel="noopener" style="color:var(--sage-deep); text-decoration:underline;">me contacter</a>.</div>
         </details>
 
         <details class="faq-item">
           <summary><span class="q-text">Je ne sais pas quelle prestation choisir.</span><span class="toggle"></span></summary>
-          <div class="faq-answer">Pas de souci ! Les prestations sont détaillées sur la page Tarifs, et les durées s'affichent directement au moment de la réservation sur Iara. Si vous hésitez malgré tout, vous pouvez me contacter avant de réserver, pour qu'on choisisse ensemble la prestation la plus adaptée.</div>
+          <div class="faq-answer">Pas de souci ! Les prestations sont détaillées sur la page Tarifs, et les durées s'affichent directement au moment de la réservation sur Iara. Si vous hésitez malgré tout, vous pouvez <a href="https://instagram.com/thabs_lab" target="_blank" rel="noopener" style="color:var(--sage-deep); text-decoration:underline;">me contacter</a> avant de réserver, pour qu'on choisisse ensemble la prestation la plus adaptée.</div>
         </details>
 
         <details class="faq-item">
@@ -886,7 +887,7 @@
       </div>
       <div class="foot-col">
         <h4>Adresse</h4>
-        <p>Huy, Belgique</p>
+        <p>Studio privé à Huy, Belgique</p>
         <p>Sur rendez-vous uniquement</p>
       </div>
       <div class="foot-col">
@@ -900,7 +901,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 Thab's Lab</span>
-      <span>Site conçu avec soin</span>
+      <span><a href="mentions-legales.html" style="color:inherit;">Mentions légales</a></span>
     </div>
   </div>
 </footer>
