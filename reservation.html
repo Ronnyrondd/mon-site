@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Réserver — Thab's Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--cream:#FAF7F0;--ink:#2B241F;--soft:#5B5148;--sage:#748058;--sage2:#56622F;--pale:#DEE4CB;--rose:#C15B77;--card:#FFFEFC;--line:rgba(43,36,31,.14);--shadow:0 18px 45px -28px rgba(43,36,31,.4)}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Jost,sans-serif}.wrap{width:min(920px,calc(100% - 32px));margin:auto}.top{padding:26px 0 14px}.back{color:var(--soft);text-decoration:none;font-size:14px}.hero{text-align:center;padding:22px 0 26px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:var(--sage2);font-weight:600}.hero h1{font-family:Fraunces,serif;font-weight:500;font-size:clamp(36px,7vw,58px);margin:8px 0}.hero p{color:var(--soft);margin:auto;max-width:560px}.steps{display:flex;justify-content:center;gap:7px;margin:20px 0 30px}.dot{height:6px;width:34px;border-radius:9px;background:#ddd6ca}.dot.on{background:var(--sage)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,36px);box-shadow:var(--shadow);margin-bottom:35px}.panel h2{font-family:Fraunces,serif;font-size:29px;font-weight:500;margin:0 0 6px}.sub{color:var(--soft);font-size:14px;margin:0 0 22px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.choice{appearance:none;text-align:left;background:white;border:1px solid var(--line);border-radius:16px;padding:17px;cursor:pointer;color:inherit;font:inherit;transition:.15s}.choice:hover,.choice.selected{border-color:var(--sage);background:#f4f5ed;transform:translateY(-1px)}.choice strong{display:block;font-size:16px}.meta{display:flex;gap:10px;color:var(--soft);font-size:13px;margin-top:6px}.price{color:var(--sage2);font-weight:600}
+.optionRow{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--line);padding:14px 0}.optionRow:last-child{border:0}.optionRow label{cursor:pointer;flex:1}.optionRow small{display:block;color:var(--soft)}input[type=radio],input[type=checkbox]{accent-color:var(--sage);width:18px;height:18px}.qty{display:flex;align-items:center;gap:10px}.qty button{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer}.qty span{min-width:16px;text-align:center}
+.datebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}input[type=date]{font:inherit;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:white;color:var(--ink)}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:20px}.slot{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;cursor:pointer;font:inherit}.slot:hover,.slot.selected{background:var(--sage);border-color:var(--sage);color:white}.empty{color:var(--soft);padding:18px 0}
+.summary{position:sticky;bottom:14px;background:var(--ink);color:white;border-radius:18px;padding:15px 18px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 12px 35px rgba(0,0,0,.18)}.summary small{display:block;opacity:.72}.summary strong{font-family:Fraunces,serif;font-size:20px}.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.notice{background:var(--pale);border-radius:14px;padding:13px 15px;font-size:13px;color:var(--sage2);margin-top:18px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="back" href="./">← Retour au site</a></div>
+  <section class="hero">
+    <div class="eyebrow">Réservation en ligne</div>
+    <h1>Ton prochain rendez-vous</h1>
+    <p>Choisis ta prestation et tes envies. Je te montre ensuite uniquement les créneaux qui peuvent réellement accueillir ta pose.</p>
+    <div class="steps"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  </section>
+
+  <section class="panel">
+    <h2>1. Ta prestation</h2><p class="sub">Sélectionne ce que tu souhaites réserver.</p>
+    <div id="services" class="grid"><div class="empty">Chargement des prestations…</div></div>
+  </section>
+
+  <section id="optionsPanel" class="panel hidden">
+    <h2>2. Tes options</h2><p class="sub">Ajoute du nail art ou une réparation si la prestation le permet.</p>
+    <div id="options"></div>
+  </section>
+
+  <section id="datePanel" class="panel hidden">
+    <h2>3. Choisis ton créneau</h2><p class="sub">Les horaires proposés tiennent compte de la durée totale de ton rendez-vous.</p>
+    <div class="datebar"><label for="date">Date</label><input id="date" type="date"></div>
+    <div id="slots" class="slots"></div>
+    <div class="notice">Pour cette première version de test, aucun rendez-vous n'est encore envoyé lorsque tu sélectionnes un créneau.</div>
+  </section>
+
+  <div id="summary" class="summary hidden">
+    <div><small id="summaryName">—</small><strong id="summaryTotal">—</strong><small id="summarySlot">Choisis une date et une heure</small></div>
+    <button id="continueBtn" class="btn" disabled>Continuer</button>
+  </div>
+</div>
+<script>
+const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";
+const SUPABASE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const state={service:null,options:[],serviceQty:1,slot:null};
+const euro=c=>(c/100).toLocaleString("fr-BE",{style:"currency",currency:"EUR"});
+const mins=m=>m<60?`${m} min`:`${Math.floor(m/60)}h${m%60?String(m%60).padStart(2,"0"):""}`;
+const localDate=d=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`};
+function rpcOptions(){
+ const arr=state.options.map(o=>({id:o.id,quantity:o.quantity||1}));
+ if(state.service?.category==="réparation") arr.unshift({service_quantity:state.serviceQty});
+ return arr;
+}
+function total(){
+ if(!state.service)return {price:0,duration:0};
+ let p=state.service.price_cents*state.serviceQty,d=state.service.duration_minutes*state.serviceQty;
+ state.options.forEach(o=>{p+=o.price_cents*(o.quantity||1);d+=o.duration_minutes*(o.quantity||1)});
+ return {price:p,duration:d};
+}
+function renderSummary(){
+ if(!state.service)return;
+ const t=total();document.querySelector("#summary").classList.remove("hidden");
+ document.querySelector("#summaryName").textContent=state.service.name;
+ document.querySelector("#summaryTotal").textContent=`${euro(t.price)} · ${mins(t.duration)}`;
+ document.querySelector("#summarySlot").textContent=state.slot?new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at)):"Choisis une date et une heure";
+ document.querySelector("#continueBtn").disabled=!state.slot;
+}
+async function loadServices(){
+ const {data,error}=await db.rpc("get_public_services");
+ const el=document.querySelector("#services");
+ if(error){el.innerHTML='<div class="empty">Impossible de charger les prestations.</div>';console.error(error);return}
+ el.innerHTML="";
+ data.forEach(s=>{const b=document.createElement("button");b.className="choice";b.innerHTML=`<strong>${s.name}</strong><div class="meta"><span class="price">${euro(s.price_cents)}</span><span>·</span><span>${mins(s.duration_minutes)}</span></div>`;b.onclick=()=>selectService(s,b);el.appendChild(b)});
+}
+async function selectService(s,b){
+ document.querySelectorAll("#services .choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");
+ state.service=s;state.options=[];state.serviceQty=1;state.slot=null;
+ const {data,error}=await db.rpc("get_public_service_options",{p_service_id:s.id});
+ renderOptions(error?[]:data);document.querySelector("#optionsPanel").classList.remove("hidden");document.querySelector("#datePanel").classList.remove("hidden");renderSummary();await loadSlots();
+}
+function renderOptions(opts){
+ const el=document.querySelector("#options");el.innerHTML="";
+ if(state.service.category==="réparation"){
+   el.innerHTML=`<div class="optionRow"><label><strong>Nombre d'ongles à réparer</strong><small>5 € et 15 min par ongle</small></label><div class="qty"><button type="button" id="qminus">−</button><span id="qval">1</span><button type="button" id="qplus">+</button></div></div>`;
+   document.querySelector("#qminus").onclick=()=>changeServiceQty(-1);document.querySelector("#qplus").onclick=()=>changeServiceQty(1);
+ }
+ const nail=opts.filter(o=>o.category!=="réparation"), repairs=opts.filter(o=>o.category==="réparation");
+ if(nail.length){
+   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Une seule formule au choix</small></label>";el.appendChild(title);
+   [{id:null,name:"Sans nail art",price_cents:0,duration_minutes:0},...nail].forEach((o,i)=>{
+     const r=document.createElement("div");r.className="optionRow";r.innerHTML=`<label for="na${i}"><strong>${o.name}</strong><small>${o.id?`+ ${euro(o.price_cents)} · + ${mins(o.duration_minutes)}`:""}</small></label><input id="na${i}" type="radio" name="nailart" ${i===0?"checked":""}>`;
+     r.querySelector("input").onchange=()=>{state.options=state.options.filter(x=>x.category==="réparation");if(o.id)state.options.push({...o,quantity:1});changed()};el.appendChild(r);
+   });
+ }
+ repairs.forEach((o,i)=>{
+   const r=document.createElement("div");r.className="optionRow";r.innerHTML=`<label><strong>${o.name}</strong><small>+ ${euro(o.price_cents)} · + ${mins(o.duration_minutes)} par ongle</small></label><div class="qty"><button type="button">−</button><span>0</span><button type="button">+</button></div>`;
+   let q=0;const [minus,plus]=r.querySelectorAll("button"),val=r.querySelector("span");
+   const set=n=>{q=Math.max(0,Math.min(5,n));val.textContent=q;state.options=state.options.filter(x=>x.id!==o.id);if(q)state.options.push({...o,quantity:q});changed()};
+   minus.onclick=()=>set(q-1);plus.onclick=()=>set(q+1);el.appendChild(r);
+ });
+ if(!el.children.length)el.innerHTML='<div class="empty">Aucune option supplémentaire pour cette prestation.</div>';
+}
+function changeServiceQty(n){state.serviceQty=Math.max(1,Math.min(5,state.serviceQty+n));document.querySelector("#qval").textContent=state.serviceQty;changed()}
+function changed(){state.slot=null;renderSummary();loadSlots()}
+async function loadSlots(){
+ if(!state.service)return;const date=document.querySelector("#date").value;if(!date)return;
+ const el=document.querySelector("#slots");el.innerHTML='<div class="empty">Recherche des créneaux…</div>';
+ const {data,error}=await db.rpc("get_public_available_slots",{p_service_id:state.service.id,p_date:date,p_options:rpcOptions()});
+ if(error){console.error(error);el.innerHTML='<div class="empty">Impossible de charger les créneaux.</div>';return}
+ if(!data?.length){el.innerHTML='<div class="empty">Aucun créneau disponible ce jour-là.</div>';return}
+ el.innerHTML="";data.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.slot=slot;renderSummary()};el.appendChild(b)});
+}
+const di=document.querySelector("#date"),today=new Date();di.min=localDate(today);const max=new Date(today);max.setDate(max.getDate()+31);di.max=localDate(max);di.value=localDate(today);di.onchange=()=>{state.slot=null;renderSummary();loadSlots()};
+document.querySelector("#continueBtn").onclick=()=>alert("Parfait : le créneau est bien sélectionné. La fiche coordonnées + confirmation sécurisée arrive à l'étape suivante.");
+loadServices();
+</script>
+</body></html>
