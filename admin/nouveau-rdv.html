@@ -664,7 +664,8 @@
       console.error(
         clientsResult.error,
         servicesResult.error,
-        optionsResult.error
+        optionsResult.error, 
+        compatibilityResult.error
       );
 
       showMessage(
@@ -1030,7 +1031,7 @@
           option.price_cents * option.quantity;
 
         totals.duration +=
-          option.duration_minutes * option.quantity;;
+          option.duration_minutes * option.quantity;
 
         return totals;
 
