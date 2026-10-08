@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Agenda | Thab's Lab</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream:#f7f3ec; --white:#fffdf9; --ink:#292824; --muted:#77746d;
+      --sage:#aeb8a2; --sage-light:#e7eadf; --sage-dark:#76806d;
+      --rose-light:#eee1dc; --line:rgba(41,40,36,.10);
+      --shadow:0 18px 45px rgba(41,40,36,.06);
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--cream); color:var(--ink); font-family:"DM Sans",sans-serif; }
+    button { font:inherit; cursor:pointer; }
+    .app { min-height:100vh; display:grid; grid-template-columns:245px minmax(0,1fr); }
+    .sidebar { min-height:100vh; position:sticky; top:0; height:100vh; padding:34px 24px 26px; background:var(--ink); color:var(--white); display:flex; flex-direction:column; }
+    .brand { padding:0 12px 38px; font-size:14px; font-weight:600; letter-spacing:.17em; text-transform:uppercase; }
+    .nav { display:flex; flex-direction:column; gap:6px; }
+    .nav-item { width:100%; padding:13px 14px; border:0; border-radius:12px; background:transparent; color:rgba(255,255,255,.62); text-align:left; text-decoration:none; display:block; transition:.2s ease; font:inherit; }
+    .nav-item:hover,.nav-item.active { background:rgba(255,255,255,.09); color:white; }
+    .sidebar-bottom { margin-top:auto; padding-top:25px; }
+    .admin-label { padding:0 12px 17px; color:rgba(255,255,255,.45); font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+    .logout { width:100%; padding:12px 14px; border:1px solid rgba(255,255,255,.14); border-radius:12px; background:transparent; color:rgba(255,255,255,.72); text-align:left; }
+    .content { min-width:0; padding:44px clamp(25px,4vw,65px) 70px; }
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:30px; margin-bottom:28px; }
+    .eyebrow { margin-bottom:9px; color:var(--sage-dark); font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
+    h1 { margin:0; font-family:"Playfair Display",serif; font-size:clamp(36px,4vw,52px); font-weight:500; line-height:1.05; }
+    .date { margin-top:10px; color:var(--muted); font-size:14px; }
+    .primary-button { flex-shrink:0; padding:14px 21px; border:0; border-radius:100px; background:var(--ink); color:white; font-size:13px; font-weight:600; text-decoration:none; display:inline-block; }
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:20px; }
+    .period-nav,.view-switch { display:flex; align-items:center; gap:8px; }
+    .tool-button { border:1px solid var(--line); background:rgba(255,255,255,.65); color:var(--ink); border-radius:100px; padding:10px 14px; }
+    .arrow { width:40px; height:40px; padding:0; font-size:18px; }
+    .period-title { min-width:220px; text-align:center; font-family:"Playfair Display",serif; font-size:22px; }
+    .view-switch { padding:4px; border:1px solid var(--line); border-radius:100px; background:rgba(255,255,255,.55); }
+    .view-button { border:0; background:transparent; color:var(--muted); padding:8px 14px; border-radius:100px; }
+    .view-button.active { background:var(--ink); color:white; }
+    .calendar-card { border:1px solid var(--line); border-radius:20px; background:var(--white); box-shadow:var(--shadow); overflow:hidden; }
+    .week-grid { display:grid; grid-template-columns:repeat(7,minmax(125px,1fr)); min-width:900px; }
+    .day-column { min-height:580px; border-right:1px solid var(--line); }
+    .day-column:last-child { border-right:0; }
+    .day-head { padding:16px 14px; border-bottom:1px solid var(--line); text-align:center; position:sticky; top:0; background:var(--white); z-index:2; }
+    .day-name { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; }
+    .day-number { margin-top:5px; font-family:"Playfair Display",serif; font-size:26px; }
+    .day-column.today .day-number { display:inline-flex; width:38px; height:38px; align-items:center; justify-content:center; border-radius:50%; background:var(--ink); color:white; }
+    .day-body { padding:12px; display:grid; gap:9px; align-content:start; }
+    .appointment { padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--sage-light); cursor:pointer; }
+    .appointment.pending { background:var(--rose-light); }
+    .appointment.completed { background:#f0efe9; opacity:.75; }
+    .appointment-time { font-size:12px; font-weight:600; }
+    .appointment-client { margin-top:5px; font-size:12px; font-weight:600; }
+    .appointment-service { margin-top:2px; color:var(--muted); font-size:10px; line-height:1.35; }
+    .appointment-price { margin-top:7px; font-size:10px; font-weight:600; }
+    .empty-day { padding:14px 4px; color:#aaa69e; font-size:10px; text-align:center; }
+    .month-grid { display:grid; grid-template-columns:repeat(7,minmax(120px,1fr)); min-width:850px; }
+    .month-weekday { padding:13px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; font-weight:600; text-align:center; text-transform:uppercase; }
+    .month-cell { min-height:125px; padding:10px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); cursor:pointer; }
+    .month-cell.other-month { background:rgba(247,243,236,.55); color:#aaa69e; }
+    .month-cell.today { box-shadow:inset 0 0 0 2px var(--sage); }
+    .month-number { font-family:"Playfair Display",serif; font-size:18px; margin-bottom:8px; }
+    .month-event { margin:4px 0; padding:5px 7px; border-radius:7px; background:var(--sage-light); font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .month-more { margin-top:5px; color:var(--muted); font-size:9px; }
+    .calendar-scroll { overflow-x:auto; }
+    .loading-screen { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:var(--cream); color:var(--muted); font-size:13px; }
+    .error { padding:35px; color:#9b5757; text-align:center; }
+    .modal-backdrop { position:fixed; inset:0; z-index:50; background:rgba(41,40,36,.32); display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal-backdrop.open { display:flex; }
+    .modal { width:min(460px,100%); border-radius:20px; background:var(--white); padding:26px; box-shadow:0 25px 80px rgba(0,0,0,.18); }
+    .modal-top { display:flex; justify-content:space-between; gap:20px; }
+    .modal h2 { margin:0; font-family:"Playfair Display",serif; font-weight:500; }
+    .close { border:0; background:transparent; font-size:22px; }
+    .detail { display:flex; justify-content:space-between; gap:20px; padding:12px 0; border-bottom:1px solid var(--line); font-size:12px; }
+    .detail span { color:var(--muted); }
+    .detail strong { text-align:right; }
+    @media(max-width:760px) {
+      .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
+      .nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}
+      .content{padding:30px 20px 60px}.topbar{flex-direction:column}.period-title{min-width:150px}.toolbar{align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Thab's Lab</div>
+      <nav class="nav">
+        <a class="nav-item" href="./dashboard.html">Vue d'ensemble</a>
+        <a class="nav-item active" href="./agenda.html">Agenda</a>
+        <button class="nav-item">Clientes</button>
+        <button class="nav-item">Prestations</button>
+        <button class="nav-item">Horaires</button>
+        <button class="nav-item">Finances</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="admin-label">Espace administrateur</div>
+        <button id="logout" class="logout">Se déconnecter</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Agenda</div>
+          <h1>Mon planning</h1>
+          <div class="date">Tes rendez-vous en un coup d'œil.</div>
+        </div>
+        <a class="primary-button" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a>
+      </header>
+
+      <div class="toolbar">
+        <div class="period-nav">
+          <button id="previous" class="tool-button arrow" type="button">‹</button>
+          <button id="today" class="tool-button" type="button">Aujourd'hui</button>
+          <button id="next" class="tool-button arrow" type="button">›</button>
+          <div id="period-title" class="period-title"></div>
+        </div>
+        <div class="view-switch">
+          <button id="week-view" class="view-button active" type="button">Semaine</button>
+          <button id="month-view" class="view-button" type="button">Mois</button>
+        </div>
+      </div>
+
+      <section class="calendar-card">
+        <div class="calendar-scroll">
+          <div id="calendar"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-top">
+        <h2>Détail du rendez-vous</h2>
+        <button id="close-modal" class="close" type="button">×</button>
+      </div>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://zlmwytycgopowalfrjwf.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const TZ = "Europe/Brussels";
+    const euro = new Intl.NumberFormat("fr-BE",{style:"currency",currency:"EUR"});
+    const dayName = new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,weekday:"short"});
+    const fullDate = new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const monthTitle = new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,month:"long",year:"numeric"});
+    const timeFormat = new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,hour:"2-digit",minute:"2-digit"});
+
+    let currentDate = new Date();
+    let currentView = localStorage.getItem("adminAgendaView") || "week";
+    let appointments = [];
+
+    function escapeHtml(value) {
+      return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+    function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+    function localKey(date){
+      const p = new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);
+      const v={}; p.forEach(x=>{if(x.type!=="literal")v[x.type]=x.value});
+      return `${v.year}-${v.month}-${v.day}`;
+    }
+    function dateFromKey(key){ return new Date(`${key}T12:00:00`); }
+    function addDays(date,n){ const d=new Date(date); d.setDate(d.getDate()+n); return d; }
+    function startOfWeek(date){
+      const d = dateFromKey(localKey(date));
+      const day = d.getDay();
+      d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+      return d;
+    }
+    function startOfMonth(date){ const d=dateFromKey(localKey(date)); return new Date(d.getFullYear(),d.getMonth(),1,12); }
+    function endOfMonth(date){ const d=startOfMonth(date); return new Date(d.getFullYear(),d.getMonth()+1,0,12); }
+
+    async function protectPage(){
+      const {data:{session}} = await supabaseClient.auth.getSession();
+      if(!session){ window.location.replace("./"); return false; }
+      const {data:isAdmin,error} = await supabaseClient.rpc("is_admin");
+      if(error || isAdmin !== true){ await supabaseClient.auth.signOut(); window.location.replace("./"); return false; }
+      document.getElementById("loading-screen").style.display="none";
+      return true;
+    }
+
+    function rangeForView(){
+      if(currentView==="week"){
+        const start=startOfWeek(currentDate), end=addDays(start,7);
+        return {start,end};
+      }
+      const monthStart=startOfMonth(currentDate);
+      const gridStart=startOfWeek(monthStart);
+      return {start:gridStart,end:addDays(gridStart,42)};
+    }
+
+    async function loadAppointments(){
+      const {start,end}=rangeForView();
+      const {data,error}=await supabaseClient.from("appointments").select(`
+        id, starts_at, ends_at, expected_price_cents, status,
+        service_name_snapshot, service_quantity, private_notes,
+        clients(first_name,last_name,phone,email)
+      `).gte("starts_at",start.toISOString()).lt("starts_at",end.toISOString())
+        .in("status",["pending","confirmed","completed"])
+        .order("starts_at",{ascending:true});
+
+      if(error){
+        console.error(error);
+        document.getElementById("calendar").innerHTML='<div class="error">Impossible de charger l’agenda.</div>';
+        return;
+      }
+      appointments=data || [];
+      render();
+    }
+
+    function grouped(){
+      const map={};
+      appointments.forEach(a=>{
+        const key=localKey(new Date(a.starts_at));
+        (map[key] ||= []).push(a);
+      });
+      return map;
+    }
+
+    function appointmentCard(a){
+      const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
+      return `<div class="appointment ${escapeHtml(a.status)}" data-id="${a.id}">
+        <div class="appointment-time">${timeFormat.format(new Date(a.starts_at))}</div>
+        <div class="appointment-client">${escapeHtml(client)}</div>
+        <div class="appointment-service">${escapeHtml(a.service_name_snapshot)}</div>
+        <div class="appointment-price">${euro.format((a.expected_price_cents||0)/100)}</div>
+      </div>`;
+    }
+
+    function renderWeek(){
+      const start=startOfWeek(currentDate), map=grouped(), todayKey=localKey(new Date());
+      const days=Array.from({length:7},(_,i)=>addDays(start,i));
+      document.getElementById("period-title").textContent =
+        `${days[0].getDate()} ${days[0].toLocaleDateString("fr-BE",{month:"short"})} – ${days[6].getDate()} ${days[6].toLocaleDateString("fr-BE",{month:"short",year:"numeric"})}`;
+
+      document.getElementById("calendar").innerHTML=`<div class="week-grid">${days.map(d=>{
+        const key=localKey(d), list=map[key]||[];
+        return `<div class="day-column ${key===todayKey?"today":""}">
+          <div class="day-head">
+            <div class="day-name">${escapeHtml(dayName.format(d))}</div>
+            <div class="day-number">${d.getDate()}</div>
+          </div>
+          <div class="day-body">
+            ${list.length ? list.map(appointmentCard).join("") : '<div class="empty-day">Aucun rendez-vous</div>'}
+          </div>
+        </div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderMonth(){
+      const monthStart=startOfMonth(currentDate), gridStart=startOfWeek(monthStart), map=grouped(), todayKey=localKey(new Date());
+      const days=Array.from({length:42},(_,i)=>addDays(gridStart,i));
+      const currentMonth=monthStart.getMonth();
+      document.getElementById("period-title").textContent=capitalize(monthTitle.format(monthStart));
+      const weekdays=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+      document.getElementById("calendar").innerHTML=`<div class="month-grid">
+        ${weekdays.map(d=>`<div class="month-weekday">${d}</div>`).join("")}
+        ${days.map(d=>{
+          const key=localKey(d), list=map[key]||[], other=d.getMonth()!==currentMonth;
+          return `<div class="month-cell ${other?"other-month":""} ${key===todayKey?"today":""}" data-day="${key}">
+            <div class="month-number">${d.getDate()}</div>
+            ${list.slice(0,3).map(a=>{
+              const client=a.clients ? a.clients.first_name : "Cliente";
+              return `<div class="month-event" data-id="${a.id}">${timeFormat.format(new Date(a.starts_at))} · ${escapeHtml(client)}</div>`;
+            }).join("")}
+            ${list.length>3?`<div class="month-more">+ ${list.length-3} autre${list.length-3>1?"s":""}</div>`:""}
+          </div>`;
+        }).join("")}
+      </div>`;
+    }
+
+    function render(){
+      document.getElementById("week-view").classList.toggle("active",currentView==="week");
+      document.getElementById("month-view").classList.toggle("active",currentView==="month");
+      currentView==="week" ? renderWeek() : renderMonth();
+      bindCalendarClicks();
+    }
+
+    function bindCalendarClicks(){
+      document.querySelectorAll("[data-id]").forEach(el=>{
+        el.addEventListener("click",e=>{
+          e.stopPropagation();
+          const a=appointments.find(x=>x.id===el.dataset.id);
+          if(a) openAppointment(a);
+        });
+      });
+      if(currentView==="month"){
+        document.querySelectorAll(".month-cell[data-day]").forEach(cell=>{
+          cell.addEventListener("click",()=>{
+            currentDate=dateFromKey(cell.dataset.day);
+            currentView="week";
+            localStorage.setItem("adminAgendaView","week");
+            loadAppointments();
+          });
+        });
+      }
+    }
+
+    function openAppointment(a){
+      const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
+      const quantity=(a.service_quantity||1)>1 ? ` × ${a.service_quantity}` : "";
+      document.getElementById("modal-content").innerHTML=`
+        <div class="detail"><span>Cliente</span><strong>${escapeHtml(client)}</strong></div>
+        <div class="detail"><span>Date</span><strong>${capitalize(fullDate.format(new Date(a.starts_at)))}</strong></div>
+        <div class="detail"><span>Heure</span><strong>${timeFormat.format(new Date(a.starts_at))} – ${timeFormat.format(new Date(a.ends_at))}</strong></div>
+        <div class="detail"><span>Prestation</span><strong>${escapeHtml(a.service_name_snapshot)}${quantity}</strong></div>
+        <div class="detail"><span>Montant prévu</span><strong>${euro.format((a.expected_price_cents||0)/100)}</strong></div>
+        <div class="detail"><span>Statut</span><strong>${escapeHtml(a.status)}</strong></div>
+        ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
+      `;
+      document.getElementById("modal-backdrop").classList.add("open");
+    }
+
+    document.getElementById("close-modal").addEventListener("click",()=>document.getElementById("modal-backdrop").classList.remove("open"));
+    document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")e.currentTarget.classList.remove("open")});
+    document.getElementById("week-view").addEventListener("click",()=>{currentView="week";localStorage.setItem("adminAgendaView","week");loadAppointments()});
+    document.getElementById("month-view").addEventListener("click",()=>{currentView="month";localStorage.setItem("adminAgendaView","month");loadAppointments()});
+    document.getElementById("today").addEventListener("click",()=>{currentDate=new Date();loadAppointments()});
+    document.getElementById("previous").addEventListener("click",()=>{currentDate=currentView==="week"?addDays(currentDate,-7):new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1,12);loadAppointments()});
+    document.getElementById("next").addEventListener("click",()=>{currentDate=currentView==="week"?addDays(currentDate,7):new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1,12);loadAppointments()});
+    document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
+
+    async function init(){
+      if(!await protectPage()) return;
+      await loadAppointments();
+    }
+    init();
+  </script>
+</body>
+</html>
