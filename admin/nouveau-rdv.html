@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Nouveau rendez-vous | Thab's Lab</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --cream: #f7f3ec;
+      --white: #fffdf9;
+      --ink: #292824;
+      --muted: #77746d;
+      --sage: #e7eadf;
+      --sage-dark: #76806d;
+      --rose: #eee1dc;
+      --line: rgba(41,40,36,.11);
+      --error: #9b5757;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      color: var(--muted);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 40px));
+      margin: auto;
+      padding: 45px 0 80px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 35px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .back:hover {
+      color: var(--ink);
+    }
+
+    .heading {
+      margin-bottom: 40px;
+    }
+
+    .eyebrow {
+      color: var(--sage-dark);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 8px 0 0;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(38px, 5vw, 56px);
+      font-weight: 500;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(300px, .7fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--white);
+    }
+
+    .section + .section {
+      margin-top: 38px;
+      padding-top: 35px;
+      border-top: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 22px;
+      font-family: "Playfair Display", serif;
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .choice {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 22px;
+    }
+
+    .choice button {
+      padding: 10px 15px;
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .choice button.active {
+      background: var(--ink);
+      color: white;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--sage-dark);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: grid;
+      grid-template-columns: 22px minmax(0,1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .option input {
+      width: auto;
+    }
+
+    .option-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .option-info {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .summary {
+      position: sticky;
+      top: 25px;
+    }
+
+    .summary h2 {
+      margin-bottom: 28px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin: 13px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary-line strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .total {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+
+    .total span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .total strong {
+      font-family: "Playfair Display", serif;
+      font-size: 32px;
+      font-weight: 500;
+    }
+
+    .submit {
+      width: 100%;
+      margin-top: 27px;
+      padding: 15px;
+      border: 0;
+      border-radius: 100px;
+      background: var(--ink);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .submit:disabled {
+      opacity: .5;
+      cursor: wait;
+    }
+
+    #message {
+      margin-top: 15px;
+      color: var(--error);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        position: static;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="loading" class="loading">
+  Vérification de ton espace…
+</div>
+
+<main class="page">
+
+  <a href="./dashboard.html" class="back">
+    ← Retour au tableau de bord
+  </a>
+
+  <header class="heading">
+    <div class="eyebrow">Agenda</div>
+    <h1>Nouveau rendez-vous</h1>
+  </header>
+
+
+  <form id="appointment-form">
+
+    <div class="layout">
+
+      <div class="card">
+
+        <!-- CLIENTE -->
+
+        <section class="section">
+
+          <h2>Cliente</h2>
+
+          <div class="choice">
+            <button
+              id="existing-client-button"
+              class="active"
+              type="button"
+            >
+              Cliente existante
+            </button>
+
+            <button
+              id="new-client-button"
+              type="button"
+            >
+              + Nouvelle cliente
+            </button>
+          </div>
+
+
+          <div id="existing-client">
+
+            <label for="client-select">
+              Choisir une cliente
+            </label>
+
+            <select id="client-select">
+              <option value="">
+                Sélectionner…
+              </option>
+            </select>
+
+          </div>
+
+
+          <div id="new-client" class="grid hidden">
+
+            <div class="field">
+              <label for="first-name">Prénom *</label>
+              <input id="first-name" type="text">
+            </div>
+
+            <div class="field">
+              <label for="last-name">Nom *</label>
+              <input id="last-name" type="text">
+            </div>
+
+            <div class="field">
+              <label for="email">E-mail *</label>
+              <input id="email" type="email">
+            </div>
+
+            <div class="field">
+              <label for="phone">Téléphone *</label>
+              <input id="phone" type="tel">
+            </div>
+
+            <div class="field">
+              <label for="instagram">Instagram</label>
+              <input
+                id="instagram"
+                type="text"
+                placeholder="@..."
+              >
+            </div>
+
+            <div class="field">
+              <label for="birth-date">Date de naissance</label>
+              <input id="birth-date" type="date">
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- PRESTATION -->
+
+        <section class="section">
+
+          <h2>Prestation</h2>
+
+          <div class="field">
+            <label for="service">Prestation *</label>
+
+            <select id="service" required>
+              <option value="">
+                Sélectionner…
+              </option>
+            </select>
+          </div>
+
+          <div
+            id="service-description"
+            class="hint"
+          ></div>
+
+        </section>
+
+
+        <!-- OPTIONS -->
+
+        <section class="section">
+
+          <h2>Options</h2>
+
+          <div id="options" class="options">
+            <div class="hint">
+              Choisis d'abord une prestation.
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- DATE -->
+
+        <section class="section">
+
+          <h2>Date & heure</h2>
+
+          <div class="grid">
+
+            <div class="field">
+              <label for="date">Date *</label>
+              <input id="date" type="date" required>
+            </div>
+
+            <div class="field">
+              <label for="time">Heure *</label>
+              <input
+                id="time"
+                type="time"
+                step="300"
+                required
+              >
+            </div>
+
+          </div>
+
+          <div class="hint">
+            En tant qu'admin, tu peux créer manuellement un rendez-vous
+            hors des horaires habituels. Le système vérifiera néanmoins
+            les chevauchements.
+          </div>
+
+        </section>
+
+
+        <!-- NOTES -->
+
+        <section class="section">
+
+          <h2>Notes</h2>
+
+          <label for="notes">
+            Note privée
+          </label>
+
+          <textarea
+            id="notes"
+            placeholder="Informations utiles pour ce rendez-vous…"
+          ></textarea>
+
+        </section>
+
+      </div>
+
+
+      <!-- RÉSUMÉ -->
+
+      <aside class="card summary">
+
+        <h2>Résumé</h2>
+
+        <div class="summary-line">
+          <span>Prestation</span>
+          <strong id="summary-service">—</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Début</span>
+          <strong id="summary-start">—</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Fin prévue</span>
+          <strong id="summary-end">—</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Durée</span>
+          <strong id="summary-duration">—</strong>
+        </div>
+
+        <div class="total">
+          <span>Total prévu</span>
+          <strong id="summary-price">0,00 €</strong>
+        </div>
+
+        <button
+          id="submit-button"
+          class="submit"
+          type="submit"
+        >
+          Créer le rendez-vous
+        </button>
+
+        <div id="message"></div>
+
+      </aside>
+
+    </div>
+
+  </form>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+  /* =========================================================
+     CONFIGURATION
+     Mêmes valeurs que tes deux autres pages admin
+     ========================================================= */
+
+  const SUPABASE_URL = "https://zlmwytycgopowalfrjwf.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+  /* =========================================================
+     ÉTAT
+     ========================================================= */
+
+  let services = [];
+  let options = [];
+
+  let newClientMode = false;
+
+  const euro = new Intl.NumberFormat("fr-BE", {
+    style: "currency",
+    currency: "EUR"
+  });
+
+
+  /* =========================================================
+     SÉCURITÉ
+     ========================================================= */
+
+  async function protectPage() {
+
+    const {
+      data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+      window.location.replace("./");
+      return false;
+    }
+
+    const { data: isAdmin, error } =
+      await supabaseClient.rpc("is_admin");
+
+    if (error || isAdmin !== true) {
+      await supabaseClient.auth.signOut();
+      window.location.replace("./");
+      return false;
+    }
+
+    document.getElementById("loading").style.display = "none";
+
+    return true;
+  }
+
+
+  /* =========================================================
+     CHARGEMENT
+     ========================================================= */
+
+  async function loadData() {
+
+    const [
+      clientsResult,
+      servicesResult,
+      optionsResult
+    ] = await Promise.all([
+
+      supabaseClient
+        .from("clients")
+        .select("id, first_name, last_name")
+        .order("last_name"),
+
+      supabaseClient
+        .from("services")
+        .select("*")
+        .eq("is_active", true)
+        .eq("is_bookable_online", true)
+        .order("display_order"),
+
+      supabaseClient
+        .from("service_options")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order")
+
+    ]);
+
+
+    if (
+      clientsResult.error ||
+      servicesResult.error ||
+      optionsResult.error
+    ) {
+
+      console.error(
+        clientsResult.error,
+        servicesResult.error,
+        optionsResult.error
+      );
+
+      showMessage(
+        "Impossible de charger les données."
+      );
+
+      return;
+    }
+
+
+    services = servicesResult.data;
+    options = optionsResult.data;
+
+
+    const clientSelect =
+      document.getElementById("client-select");
+
+    clientsResult.data.forEach(client => {
+
+      const option = document.createElement("option");
+
+      option.value = client.id;
+
+      option.textContent =
+        `${client.first_name} ${client.last_name}`;
+
+      clientSelect.appendChild(option);
+    });
+
+
+    const serviceSelect =
+      document.getElementById("service");
+
+    services.forEach(service => {
+
+      const option = document.createElement("option");
+
+      option.value = service.id;
+
+      option.textContent =
+        `${service.name} — ${euro.format(service.price_cents / 100)}`;
+
+      serviceSelect.appendChild(option);
+    });
+  }
+
+
+  /* =========================================================
+     CLIENTE EXISTANTE / NOUVELLE
+     ========================================================= */
+
+  document
+    .getElementById("existing-client-button")
+    .addEventListener("click", () => {
+
+      newClientMode = false;
+
+      document
+        .getElementById("existing-client")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("new-client")
+        .classList.add("hidden");
+
+      document
+        .getElementById("existing-client-button")
+        .classList.add("active");
+
+      document
+        .getElementById("new-client-button")
+        .classList.remove("active");
+    });
+
+
+  document
+    .getElementById("new-client-button")
+    .addEventListener("click", () => {
+
+      newClientMode = true;
+
+      document
+        .getElementById("existing-client")
+        .classList.add("hidden");
+
+      document
+        .getElementById("new-client")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("new-client-button")
+        .classList.add("active");
+
+      document
+        .getElementById("existing-client-button")
+        .classList.remove("active");
+    });
+
+
+  /* =========================================================
+     PRESTATION + OPTIONS
+     ========================================================= */
+
+  document
+    .getElementById("service")
+    .addEventListener("change", () => {
+
+      renderOptions();
+      updateSummary();
+    });
+
+
+  function renderOptions() {
+
+    const service = getSelectedService();
+
+    const container =
+      document.getElementById("options");
+
+    container.innerHTML = "";
+
+    if (!service) {
+      container.innerHTML =
+        `<div class="hint">Choisis d'abord une prestation.</div>`;
+      return;
+    }
+
+
+    /*
+      Règles V1 :
+
+      Nail art :
+      uniquement pose / entretien.
+
+      Ongle cassé à +3 € :
+      uniquement pose / retouche.
+    */
+
+    const available = options.filter(option => {
+
+      if (option.category === "nail_art") {
+        return (
+          service.category === "pose" ||
+          service.category === "entretien"
+        ) &&
+        !service.name.toLowerCase().includes("dépose");
+      }
+
+      if (option.category === "réparation") {
+        return (
+          service.category === "pose" ||
+          service.name.toLowerCase().includes("retouche")
+        );
+      }
+
+      return false;
+    });
+
+
+    if (!available.length) {
+
+      container.innerHTML =
+        `<div class="hint">Aucune option pour cette prestation.</div>`;
+
+      return;
+    }
+
+
+    available.forEach(option => {
+
+      const element = document.createElement("label");
+
+      element.className = "option";
+
+      element.innerHTML = `
+        <input
+          type="checkbox"
+          class="service-option"
+          value="${option.id}"
+        >
+
+        <span>
+          <span class="option-name">
+            ${escapeHtml(option.name)}
+          </span>
+
+          <br>
+
+          <span class="option-info">
+            +${euro.format(option.price_cents / 100)}
+            · +${formatDuration(option.duration_minutes)}
+          </span>
+        </span>
+
+        <span>+</span>
+      `;
+
+      container.appendChild(element);
+    });
+
+
+    document
+      .querySelectorAll(".service-option")
+      .forEach(input => {
+
+        input.addEventListener(
+          "change",
+          updateSummary
+        );
+      });
+  }
+
+
+  /* =========================================================
+     CALCULS
+     ========================================================= */
+
+  function getSelectedService() {
+
+    const id =
+      document.getElementById("service").value;
+
+    return services.find(service => service.id === id);
+  }
+
+
+  function getSelectedOptions() {
+
+    const ids = [
+      ...document.querySelectorAll(
+        ".service-option:checked"
+      )
+    ].map(input => input.value);
+
+    return options.filter(option =>
+      ids.includes(option.id)
+    );
+  }
+
+
+  function getTotals() {
+
+    const service = getSelectedService();
+
+    if (!service) {
+      return {
+        price: 0,
+        duration: 0
+      };
+    }
+
+    const selectedOptions =
+      getSelectedOptions();
+
+    return selectedOptions.reduce(
+      (totals, option) => {
+
+        totals.price += option.price_cents;
+        totals.duration += option.duration_minutes;
+
+        return totals;
+
+      },
+      {
+        price: service.price_cents,
+        duration: service.duration_minutes
+      }
+    );
+  }
+
+
+  function formatDuration(minutes) {
+
+    if (!minutes) return "0 min";
+
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+
+    if (!hours) return `${rest} min`;
+    if (!rest) return `${hours}h`;
+
+    return `${hours}h${String(rest).padStart(2, "0")}`;
+  }
+
+
+  function updateSummary() {
+
+    const service = getSelectedService();
+    const totals = getTotals();
+
+    document.getElementById("summary-service").textContent =
+      service ? service.name : "—";
+
+    document.getElementById("summary-duration").textContent =
+      service ? formatDuration(totals.duration) : "—";
+
+    document.getElementById("summary-price").textContent =
+      euro.format(totals.price / 100);
+
+
+    const date =
+      document.getElementById("date").value;
+
+    const time =
+      document.getElementById("time").value;
+
+
+    if (!date || !time || !service) {
+
+      document.getElementById("summary-start").textContent = "—";
+      document.getElementById("summary-end").textContent = "—";
+
+      return;
+    }
+
+
+    const start =
+      new Date(`${date}T${time}:00`);
+
+    const end =
+      new Date(
+        start.getTime() +
+        totals.duration * 60 * 1000
+      );
+
+
+    document.getElementById("summary-start").textContent =
+      time;
+
+    document.getElementById("summary-end").textContent =
+      end.toLocaleTimeString(
+        "fr-BE",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+  }
+
+
+  document
+    .getElementById("date")
+    .addEventListener("change", updateSummary);
+
+  document
+    .getElementById("time")
+    .addEventListener("change", updateSummary);
+
+
+  /* =========================================================
+     CRÉATION DU RDV
+     ========================================================= */
+
+  document
+    .getElementById("appointment-form")
+    .addEventListener("submit", async event => {
+
+      event.preventDefault();
+
+      clearMessage();
+
+
+      const service = getSelectedService();
+
+      if (!service) {
+        showMessage("Choisis une prestation.");
+        return;
+      }
+
+
+      const date =
+        document.getElementById("date").value;
+
+      const time =
+        document.getElementById("time").value;
+
+
+      if (!date || !time) {
+        showMessage("Choisis une date et une heure.");
+        return;
+      }
+
+
+      let clientId;
+
+
+      /*
+        CLIENTE
+      */
+
+      if (newClientMode) {
+
+        const firstName =
+          document.getElementById("first-name").value.trim();
+
+        const lastName =
+          document.getElementById("last-name").value.trim();
+
+        const email =
+          document.getElementById("email").value.trim();
+
+        const phone =
+          document.getElementById("phone").value.trim();
+
+
+        if (!firstName || !lastName || !email || !phone) {
+
+          showMessage(
+            "Complète les informations obligatoires de la cliente."
+          );
+
+          return;
+        }
+
+
+        const { data: client, error } =
+          await supabaseClient
+            .from("clients")
+            .insert({
+              first_name: firstName,
+              last_name: lastName,
+              email,
+              phone,
+
+              instagram:
+                document
+                  .getElementById("instagram")
+                  .value
+                  .trim() || null,
+
+              birth_date:
+                document
+                  .getElementById("birth-date")
+                  .value || null
+            })
+            .select("id")
+            .single();
+
+
+        if (error) {
+
+          console.error(error);
+
+          showMessage(
+            "Impossible de créer la cliente."
+          );
+
+          return;
+        }
+
+
+        clientId = client.id;
+
+      } else {
+
+        clientId =
+          document.getElementById("client-select").value;
+
+
+        if (!clientId) {
+
+          showMessage("Choisis une cliente.");
+
+          return;
+        }
+      }
+
+
+      /*
+        HEURES + TOTAL
+      */
+
+      const selectedOptions =
+        getSelectedOptions();
+
+      const totals =
+        getTotals();
+
+      const start =
+        new Date(`${date}T${time}:00`);
+
+      const end =
+        new Date(
+          start.getTime() +
+          totals.duration * 60 * 1000
+        );
+
+
+      /*
+        VÉRIFICATION CHEVAUCHEMENT
+
+        Un conflit existe si :
+        RDV existant commence avant notre fin
+        ET
+        RDV existant finit après notre début.
+      */
+
+      const { data: conflicts, error: conflictError } =
+        await supabaseClient
+          .from("appointments")
+          .select("id")
+          .lt("starts_at", end.toISOString())
+          .gt("ends_at", start.toISOString())
+          .in("status", ["pending", "confirmed"]);
+
+
+      if (conflictError) {
+
+        console.error(conflictError);
+
+        showMessage(
+          "Impossible de vérifier l'agenda."
+        );
+
+        return;
+      }
+
+
+      if (conflicts.length > 0) {
+
+        showMessage(
+          "Ce créneau chevauche déjà un autre rendez-vous."
+        );
+
+        return;
+      }
+
+
+      /*
+        CRÉATION DU RDV
+      */
+
+      const notes =
+        document.getElementById("notes").value.trim();
+
+
+      const { data: appointment, error: appointmentError } =
+        await supabaseClient
+          .from("appointments")
+          .insert({
+
+            client_id: clientId,
+            service_id: service.id,
+
+            service_name_snapshot:
+              service.name,
+
+            service_price_cents_snapshot:
+              service.price_cents,
+
+            service_duration_minutes_snapshot:
+              service.duration_minutes,
+
+            starts_at:
+              start.toISOString(),
+
+            ends_at:
+              end.toISOString(),
+
+            expected_price_cents:
+              totals.price,
+
+            status:
+              "confirmed",
+
+            source:
+              "admin",
+
+            private_notes:
+              notes || null
+
+          })
+          .select("id")
+          .single();
+
+
+      if (appointmentError) {
+
+        console.error(appointmentError);
+
+        showMessage(
+          "Impossible de créer le rendez-vous."
+        );
+
+        return;
+      }
+
+
+      /*
+        SNAPSHOTS DES OPTIONS
+      */
+
+      if (selectedOptions.length) {
+
+        const rows =
+          selectedOptions.map(option => ({
+
+            appointment_id:
+              appointment.id,
+
+            service_option_id:
+              option.id,
+
+            option_name_snapshot:
+              option.name,
+
+            price_cents_snapshot:
+              option.price_cents,
+
+            duration_minutes_snapshot:
+              option.duration_minutes,
+
+            quantity:
+              1
+          }));
+
+
+        const { error: optionsError } =
+          await supabaseClient
+            .from("appointment_options")
+            .insert(rows);
+
+
+        if (optionsError) {
+
+          console.error(optionsError);
+
+          showMessage(
+            "Le rendez-vous a été créé, mais une option n'a pas pu être enregistrée."
+          );
+
+          return;
+        }
+      }
+
+
+      window.location.href =
+        "./dashboard.html";
+
+    });
+
+
+  /* =========================================================
+     OUTILS
+     ========================================================= */
+
+  function showMessage(text) {
+    document.getElementById("message").textContent = text;
+  }
+
+  function clearMessage() {
+    document.getElementById("message").textContent = "";
+  }
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+
+  /* =========================================================
+     DÉMARRAGE
+     ========================================================= */
+
+  async function init() {
+
+    const allowed =
+      await protectPage();
+
+    if (!allowed) return;
+
+    await loadData();
+
+    updateSummary();
+  }
+
+  init();
+
+</script>
+
+</body>
+</html>
