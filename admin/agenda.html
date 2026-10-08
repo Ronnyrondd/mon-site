@@ -60,6 +60,128 @@
     .appointment-service { margin-top:2px; color:var(--muted); font-size:10px; line-height:1.35; }
     .appointment-price { margin-top:7px; font-size:10px; font-weight:600; }
     .empty-day { padding:14px 4px; color:#aaa69e; font-size:10px; text-align:center; }
+
+    /* VUE SEMAINE — PLANNING HORAIRE */
+    .timeline-week { min-width:1050px; }
+    .timeline-head {
+      display:grid;
+      grid-template-columns:64px repeat(7,minmax(135px,1fr));
+      border-bottom:1px solid var(--line);
+      background:var(--white);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    .timeline-head-spacer { border-right:1px solid var(--line); }
+    .timeline-day-head {
+      padding:14px 10px;
+      text-align:center;
+      border-right:1px solid var(--line);
+    }
+    .timeline-day-head:last-child { border-right:0; }
+    .timeline-day-head .day-name {
+      color:var(--muted);
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .timeline-day-head .day-number {
+      margin-top:4px;
+      font-family:"Playfair Display",serif;
+      font-size:24px;
+    }
+    .timeline-day-head.today .day-number {
+      margin:4px auto 0;
+      display:flex;
+      width:36px;
+      height:36px;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:var(--ink);
+      color:white;
+    }
+    .timeline-body {
+      display:grid;
+      grid-template-columns:64px repeat(7,minmax(135px,1fr));
+      position:relative;
+    }
+    .time-axis {
+      position:relative;
+      border-right:1px solid var(--line);
+      background:rgba(247,243,236,.38);
+    }
+    .time-label {
+      position:absolute;
+      right:10px;
+      transform:translateY(-7px);
+      color:var(--muted);
+      font-size:9px;
+    }
+    .timeline-day {
+      position:relative;
+      border-right:1px solid var(--line);
+      background-image:linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+      background-size:100% 60px;
+    }
+    .timeline-day:last-child { border-right:0; }
+    .timeline-day.today { background-color:rgba(231,234,223,.24); }
+    .timeline-appointment {
+      position:absolute;
+      left:6px;
+      right:6px;
+      z-index:3;
+      overflow:hidden;
+      padding:7px 8px;
+      border:1px solid rgba(41,40,36,.08);
+      border-radius:10px;
+      background:var(--sage-light);
+      box-shadow:0 5px 12px rgba(41,40,36,.05);
+      cursor:pointer;
+    }
+    .timeline-appointment.pending { background:var(--rose-light); }
+    .timeline-appointment.completed { background:#f0efe9; opacity:.76; }
+    .timeline-appointment .appointment-time { font-size:10px; }
+    .timeline-appointment .appointment-client {
+      margin-top:2px;
+      font-size:10px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .timeline-appointment .appointment-service {
+      margin-top:1px;
+      font-size:9px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .timeline-appointment.compact .appointment-service,
+    .timeline-appointment.compact .appointment-price { display:none; }
+    .timeline-appointment.tiny .appointment-client,
+    .timeline-appointment.tiny .appointment-service,
+    .timeline-appointment.tiny .appointment-price { display:none; }
+    .current-time-line {
+      position:absolute;
+      left:0;
+      right:0;
+      z-index:5;
+      height:1px;
+      background:#8b5d5d;
+      pointer-events:none;
+    }
+    .current-time-line::before {
+      content:"";
+      position:absolute;
+      left:-4px;
+      top:-3px;
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#8b5d5d;
+    }
+
     .month-grid { display:grid; grid-template-columns:repeat(7,minmax(120px,1fr)); min-width:850px; }
     .month-weekday { padding:13px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; font-weight:600; text-align:center; text-transform:uppercase; }
     .month-cell { min-height:125px; padding:10px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); cursor:pointer; }
@@ -244,21 +366,95 @@
     function renderWeek(){
       const start=startOfWeek(currentDate), map=grouped(), todayKey=localKey(new Date());
       const days=Array.from({length:7},(_,i)=>addDays(start,i));
+
       document.getElementById("period-title").textContent =
         `${days[0].getDate()} ${days[0].toLocaleDateString("fr-BE",{month:"short"})} – ${days[6].getDate()} ${days[6].toLocaleDateString("fr-BE",{month:"short",year:"numeric"})}`;
 
-      document.getElementById("calendar").innerHTML=`<div class="week-grid">${days.map(d=>{
-        const key=localKey(d), list=map[key]||[];
-        return `<div class="day-column ${key===todayKey?"today":""}">
-          <div class="day-head">
-            <div class="day-name">${escapeHtml(dayName.format(d))}</div>
-            <div class="day-number">${d.getDate()}</div>
+      /*
+        La grille couvre 07:00 → 22:00.
+        1 heure = 60 px : la hauteur d'un RDV est donc directement
+        proportionnelle à sa vraie durée.
+      */
+      const startHour=7;
+      const endHour=22;
+      const pixelsPerMinute=1;
+      const totalHeight=(endHour-startHour)*60*pixelsPerMinute;
+
+      function minutesInBrussels(date){
+        const parts=new Intl.DateTimeFormat("en-GB",{
+          timeZone:TZ,hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+        }).formatToParts(date);
+        const values={};
+        parts.forEach(p=>{if(p.type!=="literal") values[p.type]=p.value;});
+        return Number(values.hour)*60+Number(values.minute);
+      }
+
+      const hourLabels=Array.from({length:endHour-startHour+1},(_,i)=>startHour+i)
+        .map(hour=>`<div class="time-label" style="top:${(hour-startHour)*60}px">${String(hour).padStart(2,"0")}:00</div>`)
+        .join("");
+
+      const heads=days.map(d=>{
+        const key=localKey(d);
+        return `<div class="timeline-day-head ${key===todayKey?"today":""}">
+          <div class="day-name">${escapeHtml(dayName.format(d))}</div>
+          <div class="day-number">${d.getDate()}</div>
+        </div>`;
+      }).join("");
+
+      const columns=days.map(d=>{
+        const key=localKey(d);
+        const list=map[key]||[];
+
+        const cards=list.map(a=>{
+          const startDate=new Date(a.starts_at);
+          const endDate=new Date(a.ends_at);
+          const startMinutes=minutesInBrussels(startDate);
+          const durationMinutes=Math.max(15,Math.round((endDate-startDate)/60000));
+          const visibleStart=Math.max(startMinutes,startHour*60);
+          const visibleEnd=Math.min(startMinutes+durationMinutes,endHour*60);
+
+          if(visibleEnd<=startHour*60 || visibleStart>=endHour*60) return "";
+
+          const top=(visibleStart-startHour*60)*pixelsPerMinute;
+          const height=Math.max(18,(visibleEnd-visibleStart)*pixelsPerMinute);
+          const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
+          const sizeClass=height<35?"tiny":height<65?"compact":"";
+
+          return `<div class="timeline-appointment ${escapeHtml(a.status)} ${sizeClass}"
+                       data-id="${a.id}"
+                       style="top:${top}px;height:${height}px"
+                       title="${escapeHtml(client)} — ${escapeHtml(a.service_name_snapshot)}">
+            <div class="appointment-time">${timeFormat.format(startDate)} – ${timeFormat.format(endDate)}</div>
+            <div class="appointment-client">${escapeHtml(client)}</div>
+            <div class="appointment-service">${escapeHtml(a.service_name_snapshot)}</div>
+            <div class="appointment-price">${euro.format((a.expected_price_cents||0)/100)}</div>
+          </div>`;
+        }).join("");
+
+        let nowLine="";
+        if(key===todayKey){
+          const nowMinutes=minutesInBrussels(new Date());
+          if(nowMinutes>=startHour*60 && nowMinutes<=endHour*60){
+            nowLine=`<div class="current-time-line" style="top:${(nowMinutes-startHour*60)*pixelsPerMinute}px"></div>`;
+          }
+        }
+
+        return `<div class="timeline-day ${key===todayKey?"today":""}" style="height:${totalHeight}px">
+          ${cards}${nowLine}
+        </div>`;
+      }).join("");
+
+      document.getElementById("calendar").innerHTML=`
+        <div class="timeline-week">
+          <div class="timeline-head">
+            <div class="timeline-head-spacer"></div>
+            ${heads}
           </div>
-          <div class="day-body">
-            ${list.length ? list.map(appointmentCard).join("") : '<div class="empty-day">Aucun rendez-vous</div>'}
+          <div class="timeline-body">
+            <div class="time-axis" style="height:${totalHeight}px">${hourLabels}</div>
+            ${columns}
           </div>
         </div>`;
-      }).join("")}</div>`;
     }
 
     function renderMonth(){
