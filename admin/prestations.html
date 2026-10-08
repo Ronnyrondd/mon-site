@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Prestations | Thab's Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f7f3ec;--white:#fffdf9;--ink:#292824;--muted:#77746d;--sage:#aeb8a2;--sage-light:#e7eadf;--sage-dark:#76806d;--rose-light:#eee1dc;--line:rgba(41,40,36,.10);--shadow:0 18px 45px rgba(41,40,36,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}.sidebar{min-height:100vh;position:sticky;top:0;height:100vh;padding:34px 24px 26px;background:var(--ink);color:var(--white);display:flex;flex-direction:column}.brand{padding:0 12px 38px;font-size:14px;font-weight:600;letter-spacing:.17em;text-transform:uppercase}.nav{display:flex;flex-direction:column;gap:6px}.nav-item{width:100%;padding:13px 14px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.62);text-align:left;text-decoration:none;display:block;transition:.2s}.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.09);color:white}.sidebar-bottom{margin-top:auto;padding-top:25px}.admin-label{padding:0 12px 17px;color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase}.logout{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:transparent;color:rgba(255,255,255,.72);text-align:left}
+.content{min-width:0;padding:44px clamp(25px,4vw,65px) 70px}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;margin-bottom:32px}.eyebrow{margin-bottom:9px;color:var(--sage-dark);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(36px,4vw,52px);font-weight:500;line-height:1.05}.subtitle{margin-top:10px;color:var(--muted);font-size:14px;max-width:650px;line-height:1.6}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}.summary-card{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.62)}.summary-label{color:var(--muted);font-size:11px}.summary-value{margin-top:8px;font-family:"Playfair Display",serif;font-size:27px}
+.section{margin-top:25px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:12px}.section-title{margin:0;font-family:"Playfair Display",serif;font-size:25px;font-weight:500}.section-help{color:var(--muted);font-size:11px}
+.panel{border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:var(--shadow);overflow:hidden}.row{display:grid;grid-template-columns:minmax(180px,1.5fr) 105px 115px 130px 105px 40px;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.name{font-weight:600}.category{margin-top:4px;color:var(--muted);font-size:10px;text-transform:capitalize}.value{font-size:12px}.label{display:none;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}.pill{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:100px;background:var(--sage-light);font-size:10px;font-weight:600}.pill.off{background:var(--rose-light);color:var(--muted)}
+.edit{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:white}.empty{padding:32px 22px;color:var(--muted);font-size:13px}.loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
+.modal-backdrop{position:fixed;inset:0;z-index:200;background:rgba(41,40,36,.35);display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.open{display:flex}.modal{width:min(540px,100%);max-height:90vh;overflow:auto;background:var(--white);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.18);padding:26px}.modal-head{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:22px}.modal h2{margin:0;font-family:"Playfair Display",serif;font-size:27px;font-weight:500}.close{border:0;background:transparent;font-size:22px;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field.full{grid-column:1/-1}.field label{display:block;margin-bottom:6px;color:var(--muted);font-size:10px;font-weight:600}.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:white;outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sage)}.check{display:flex;gap:9px;align-items:center;font-size:12px}.actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:22px}.save{padding:11px 17px;border:0;border-radius:100px;background:var(--ink);color:white;font-size:11px;font-weight:600}.cancel{padding:11px 14px;border:0;background:transparent;color:var(--muted);font-size:11px}.message{margin-right:auto;color:var(--muted);font-size:10px}
+@media(max-width:950px){.row{grid-template-columns:minmax(180px,1fr) repeat(2,100px) 40px}.online,.active-col{display:none}}
+@media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.summary{grid-template-columns:1fr}.row{grid-template-columns:1fr 1fr 40px}.row .name-cell{grid-column:1/-2}.row .price,.row .duration{display:block}.label{display:block;margin-bottom:3px}.section-head{align-items:start;flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
+<div class="app">
+<aside class="sidebar">
+<div class="brand">Thab's Lab</div>
+<nav class="nav">
+<a class="nav-item" href="./dashboard.html">Vue d'ensemble</a>
+<a class="nav-item" href="./agenda.html">Agenda</a>
+<a class="nav-item" href="./clientes.html">Clientes</a>
+<a class="nav-item active" href="./prestations.html">Prestations</a>
+<button class="nav-item">Horaires</button><button class="nav-item">Finances</button>
+</nav>
+<div class="sidebar-bottom"><div class="admin-label">Espace administrateur</div><button id="logout" class="logout">Se déconnecter</button></div>
+</aside>
+<main class="content">
+<header class="topbar"><div><div class="eyebrow">Prestations</div><h1>Mes prestations</h1><div class="subtitle">Modifie ici les tarifs, durées et disponibilités. Les rendez-vous déjà enregistrés gardent leurs anciens prix et durées grâce aux snapshots.</div></div></header>
+<section class="summary">
+<div class="summary-card"><div class="summary-label">Prestations actives</div><div id="active-services" class="summary-value">—</div></div>
+<div class="summary-card"><div class="summary-label">Réservables en ligne</div><div id="online-services" class="summary-value">—</div></div>
+<div class="summary-card"><div class="summary-label">Options actives</div><div id="active-options" class="summary-value">—</div></div>
+</section>
+<section class="section"><div class="section-head"><div><h2 class="section-title">Prestations principales</h2><div class="section-help">Prix et durée de base avant options.</div></div></div><div id="services" class="panel"><div class="empty">Chargement…</div></div></section>
+<section class="section"><div class="section-head"><div><h2 class="section-title">Options & suppléments</h2><div class="section-help">Nail art et réparations ajoutés à une prestation compatible.</div></div></div><div id="options" class="panel"><div class="empty">Chargement…</div></div></section>
+</main></div>
+
+<div id="modal-backdrop" class="modal-backdrop">
+<div class="modal">
+<div class="modal-head"><div><div class="eyebrow" id="modal-type">Modification</div><h2 id="modal-title">Prestation</h2></div><button id="close-modal" class="close" type="button">×</button></div>
+<form id="edit-form">
+<div class="form-grid">
+<div class="field full"><label>Nom</label><input id="f-name" required></div>
+<div class="field"><label>Prix (€)</label><input id="f-price" type="number" min="0" step="0.01" required></div>
+<div class="field"><label>Durée (minutes)</label><input id="f-duration" type="number" min="1" step="1" required></div>
+<div id="description-field" class="field full"><label>Description</label><textarea id="f-description"></textarea></div>
+<div id="online-field" class="field full"><label class="check"><input id="f-online" type="checkbox"> Réservable en ligne</label></div>
+<div class="field full"><label class="check"><input id="f-active" type="checkbox"> Active</label></div>
+</div>
+<div class="actions"><span id="form-message" class="message"></span><button class="cancel" id="cancel-modal" type="button">Annuler</button><button class="save" id="save-button" type="submit">Enregistrer</button></div>
+</form>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const euro=new Intl.NumberFormat("fr-BE",{style:"currency",currency:"EUR"});
+let services=[],options=[],editing=null;
+function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function durationText(m){const h=Math.floor(m/60),min=m%60;if(!h)return `${min} min`;if(!min)return `${h} h`;return `${h} h ${String(min).padStart(2,"0")}`}
+async function protectPage(){const {data:{session}}=await supabaseClient.auth.getSession();if(!session){location.replace("./");return false}const {data:isAdmin,error}=await supabaseClient.rpc("is_admin");if(error||isAdmin!==true){await supabaseClient.auth.signOut();location.replace("./");return false}document.getElementById("loading-screen").style.display="none";return true}
+async function loadData(){
+ const [s,o]=await Promise.all([
+  supabaseClient.from("services").select("id,name,category,price_cents,duration_minutes,description,is_bookable_online,is_active,display_order").order("display_order"),
+  supabaseClient.from("service_options").select("id,name,category,price_cents,duration_minutes,is_active,display_order").order("display_order")
+ ]);
+ if(s.error||o.error){console.error(s.error||o.error);document.getElementById("services").innerHTML='<div class="empty">Impossible de charger les prestations.</div>';return}
+ services=s.data||[];options=o.data||[];render();
+}
+function render(){
+ document.getElementById("active-services").textContent=services.filter(x=>x.is_active).length;
+ document.getElementById("online-services").textContent=services.filter(x=>x.is_active&&x.is_bookable_online).length;
+ document.getElementById("active-options").textContent=options.filter(x=>x.is_active).length;
+ document.getElementById("services").innerHTML=services.length?services.map(s=>rowHtml(s,"service")).join(""):'<div class="empty">Aucune prestation.</div>';
+ document.getElementById("options").innerHTML=options.length?options.map(o=>rowHtml(o,"option")).join(""):'<div class="empty">Aucune option.</div>';
+ document.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEdit(b.dataset.kind,b.dataset.edit)));
+}
+function rowHtml(x,kind){
+ const online=kind==="service"?`<div class="online"><span class="label">En ligne</span><span class="pill ${x.is_bookable_online?"":"off"}">${x.is_bookable_online?"Oui":"Non"}</span></div>`:`<div class="online"></div>`;
+ return `<div class="row">
+ <div class="name-cell"><div class="name">${esc(x.name)}</div><div class="category">${esc(x.category||"")}</div></div>
+ <div class="value price"><span class="label">Prix</span>${euro.format((x.price_cents||0)/100)}</div>
+ <div class="value duration"><span class="label">Durée</span>${durationText(x.duration_minutes||0)}</div>
+ ${online}
+ <div class="active-col"><span class="label">Active</span><span class="pill ${x.is_active?"":"off"}">${x.is_active?"Oui":"Non"}</span></div>
+ <button class="edit" type="button" data-kind="${kind}" data-edit="${x.id}" title="Modifier">✎</button>
+ </div>`;
+}
+function openEdit(kind,id){
+ const item=(kind==="service"?services:options).find(x=>x.id===id);if(!item)return;
+ editing={kind,id};
+ document.getElementById("modal-type").textContent=kind==="service"?"Prestation":"Option / supplément";
+ document.getElementById("modal-title").textContent=item.name;
+ document.getElementById("f-name").value=item.name||"";
+ document.getElementById("f-price").value=((item.price_cents||0)/100).toFixed(2);
+ document.getElementById("f-duration").value=item.duration_minutes||1;
+ document.getElementById("f-active").checked=!!item.is_active;
+ document.getElementById("description-field").style.display=kind==="service"?"block":"none";
+ document.getElementById("online-field").style.display=kind==="service"?"block":"none";
+ document.getElementById("f-description").value=item.description||"";
+ document.getElementById("f-online").checked=!!item.is_bookable_online;
+ document.getElementById("form-message").textContent="";
+ document.getElementById("modal-backdrop").classList.add("open");
+}
+function closeModal(){document.getElementById("modal-backdrop").classList.remove("open");editing=null}
+document.getElementById("edit-form").addEventListener("submit",async e=>{
+ e.preventDefault();if(!editing)return;
+ const name=document.getElementById("f-name").value.trim();
+ const price=Math.round(Number(document.getElementById("f-price").value)*100);
+ const duration=Number(document.getElementById("f-duration").value);
+ if(!name||!Number.isFinite(price)||price<0||!Number.isInteger(duration)||duration<1){document.getElementById("form-message").textContent="Vérifie les valeurs.";return}
+ const payload={name,price_cents:price,duration_minutes:duration,is_active:document.getElementById("f-active").checked};
+ if(editing.kind==="service"){payload.description=document.getElementById("f-description").value.trim()||null;payload.is_bookable_online=document.getElementById("f-online").checked}
+ const button=document.getElementById("save-button");button.disabled=true;document.getElementById("form-message").textContent="Enregistrement…";
+ const table=editing.kind==="service"?"services":"service_options";
+ const {error}=await supabaseClient.from(table).update(payload).eq("id",editing.id);
+ button.disabled=false;
+ if(error){console.error(error);document.getElementById("form-message").textContent="Erreur lors de l’enregistrement.";return}
+ closeModal();await loadData();
+});
+document.getElementById("close-modal").addEventListener("click",closeModal);
+document.getElementById("cancel-modal").addEventListener("click",closeModal);
+document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")closeModal()});
+document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});
+async function init(){if(!await protectPage())return;await loadData()}init();
+</script>
+</body></html>
