@@ -575,6 +575,7 @@
 
   let services = [];
   let options = [];
+  let compatibilities = [];
 
   let newClientMode = false;
 
@@ -623,7 +624,8 @@
     const [
       clientsResult,
       servicesResult,
-      optionsResult
+      optionsResult,
+      compatibilityResult
     ] = await Promise.all([
 
       supabaseClient
@@ -642,7 +644,12 @@
         .from("service_options")
         .select("*")
         .eq("is_active", true)
-        .order("display_order")
+        .order("display_order"),
+      
+      supabaseClient
+      .from("service_option_compatibility")
+      .select("service_id, service_option_id")
+
 
     ]);
 
@@ -650,7 +657,8 @@
     if (
       clientsResult.error ||
       servicesResult.error ||
-      optionsResult.error
+      optionsResult.error ||
+      compatibilityResult.error
     ) {
 
       console.error(
@@ -669,6 +677,7 @@
 
     services = servicesResult.data;
     options = optionsResult.data;
+    compatibilities = compatibilityResult.data;
 
 
     const clientSelect =
@@ -771,70 +780,88 @@
 
   function renderOptions() {
 
-    const service = getSelectedService();
+  const service = getSelectedService();
 
-    const container =
-      document.getElementById("options");
+  const container =
+    document.getElementById("options");
 
-    container.innerHTML = "";
+  container.innerHTML = "";
 
-    if (!service) {
-      container.innerHTML =
-        `<div class="hint">Choisis d'abord une prestation.</div>`;
-      return;
-    }
+  if (!service) {
+    container.innerHTML =
+      `<div class="hint">Choisis d'abord une prestation.</div>`;
+    return;
+  }
 
+  const compatibleIds = compatibilities
+    .filter(item => item.service_id === service.id)
+    .map(item => item.service_option_id);
 
-    /*
-      Règles V1 :
+  const available = options.filter(option =>
+    compatibleIds.includes(option.id)
+  );
 
-      Nail art :
-      uniquement pose / entretien.
+  if (!available.length) {
+    container.innerHTML =
+      `<div class="hint">Aucune option pour cette prestation.</div>`;
+    return;
+  }
 
-      Ongle cassé à +3 € :
-      uniquement pose / retouche.
-    */
+  const nailArtOptions =
+    available.filter(option => option.category === "nail_art");
 
-    const available = options.filter(option => {
-
-      if (option.category === "nail_art") {
-        return (
-          service.category === "pose" ||
-          service.category === "entretien"
-        ) &&
-        !service.name.toLowerCase().includes("dépose");
-      }
-
-      if (option.category === "réparation") {
-        return (
-          service.category === "pose" ||
-          service.name.toLowerCase().includes("retouche")
-        );
-      }
-
-      return false;
-    });
+  const repairOption =
+    available.find(option =>
+      option.name === "Ongle cassé pendant pose/retouche"
+    );
 
 
-    if (!available.length) {
+  /* NAIL ART : choix exclusif */
 
-      container.innerHTML =
-        `<div class="hint">Aucune option pour cette prestation.</div>`;
+  if (nailArtOptions.length) {
 
-      return;
-    }
+    const title = document.createElement("div");
+    title.className = "option-name";
+    title.textContent = "Nail art";
+    container.appendChild(title);
 
 
-    available.forEach(option => {
+    const none = document.createElement("label");
+    none.className = "option";
 
-      const element = document.createElement("label");
+    none.innerHTML = `
+      <input
+        type="radio"
+        name="nail-art"
+        class="nail-art-option"
+        value=""
+        checked
+      >
+
+      <span>
+        <span class="option-name">
+          Aucun nail art
+        </span>
+      </span>
+
+      <span>—</span>
+    `;
+
+    container.appendChild(none);
+
+
+    nailArtOptions.forEach(option => {
+
+      const element =
+        document.createElement("label");
 
       element.className = "option";
 
       element.innerHTML = `
         <input
-          type="checkbox"
-          class="service-option"
+          type="radio"
+          name="nail-art"
+          class="nail-art-option"
           value="${option.id}"
         >
 
@@ -856,18 +883,62 @@
 
       container.appendChild(element);
     });
-
-
-    document
-      .querySelectorAll(".service-option")
-      .forEach(input => {
-
-        input.addEventListener(
-          "change",
-          updateSummary
-        );
-      });
   }
+
+
+  /* ONGLES CASSÉS : quantité */
+
+  if (repairOption) {
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className = "option";
+
+    wrapper.innerHTML = `
+      <span>＋</span>
+
+      <span>
+        <span class="option-name">
+          ${escapeHtml(repairOption.name)}
+        </span>
+
+        <br>
+
+        <span class="option-info">
+          +${euro.format(repairOption.price_cents / 100)}
+          · +${formatDuration(repairOption.duration_minutes)}
+          par doigt
+        </span>
+      </span>
+
+      <select
+        id="repair-quantity"
+        data-option-id="${repairOption.id}"
+        style="width:75px;padding:8px;"
+      >
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    `;
+
+    container.appendChild(wrapper);
+  }
+
+
+  container
+    .querySelectorAll("input, select")
+    .forEach(input => {
+      input.addEventListener(
+        "change",
+        updateSummary
+      );
+    });
+}
 
 
   /* =========================================================
@@ -885,16 +956,57 @@
 
   function getSelectedOptions() {
 
-    const ids = [
-      ...document.querySelectorAll(
-        ".service-option:checked"
-      )
-    ].map(input => input.value);
+  const selected = [];
 
-    return options.filter(option =>
-      ids.includes(option.id)
+  const nailArt =
+    document.querySelector(
+      '.nail-art-option:checked'
     );
+
+  if (nailArt && nailArt.value) {
+
+    const option =
+      options.find(item =>
+        item.id === nailArt.value
+      );
+
+    if (option) {
+      selected.push({
+        ...option,
+        quantity: 1
+      });
+    }
   }
+
+
+  const repairQuantity =
+    document.getElementById(
+      "repair-quantity"
+    );
+
+  if (
+    repairQuantity &&
+    Number(repairQuantity.value) > 0
+  ) {
+
+    const option =
+      options.find(item =>
+        item.id ===
+        repairQuantity.dataset.optionId
+      );
+
+    if (option) {
+      selected.push({
+        ...option,
+        quantity:
+          Number(repairQuantity.value)
+      });
+    }
+  }
+
+
+  return selected;
+}
 
 
   function getTotals() {
@@ -914,8 +1026,11 @@
     return selectedOptions.reduce(
       (totals, option) => {
 
-        totals.price += option.price_cents;
-        totals.duration += option.duration_minutes;
+        totals.price +=
+          option.price_cents * option.quantity;
+
+        totals.duration +=
+          option.duration_minutes * option.quantity;;
 
         return totals;
 
@@ -1270,7 +1385,7 @@
               option.duration_minutes,
 
             quantity:
-              1
+              option.quantity
           }));
 
 
