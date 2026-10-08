@@ -202,6 +202,37 @@
     .detail { display:flex; justify-content:space-between; gap:20px; padding:12px 0; border-bottom:1px solid var(--line); font-size:12px; }
     .detail span { color:var(--muted); }
     .detail strong { text-align:right; }
+
+    /* ACTIONS RDV */
+    .modal { width:min(520px,100%); max-height:90vh; overflow:auto; }
+    .modal-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:22px; }
+    .action-button {
+      border:1px solid var(--line); border-radius:100px; padding:11px 15px;
+      background:var(--white); color:var(--ink); font-size:12px; font-weight:600;
+    }
+    .action-button.primary { background:var(--ink); color:white; border-color:var(--ink); }
+    .action-button.danger { color:#8b5151; border-color:rgba(139,81,81,.25); }
+    .action-button:disabled { opacity:.45; cursor:not-allowed; }
+    .status-pill {
+      display:inline-flex; padding:5px 9px; border-radius:100px;
+      background:var(--sage-light); font-size:10px; font-weight:600;
+    }
+    .status-pill.pending { background:var(--rose-light); }
+    .status-pill.completed { background:#efeee8; }
+    .form-box { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); }
+    .form-title { margin:0 0 14px; font-family:"Playfair Display",serif; font-size:20px; font-weight:500; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-field { display:flex; flex-direction:column; gap:6px; }
+    .form-field.full { grid-column:1/-1; }
+    .form-field label { color:var(--muted); font-size:10px; font-weight:600; }
+    .form-field input,.form-field select {
+      width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:10px;
+      background:white; color:var(--ink); font:inherit; font-size:12px;
+    }
+    .form-message { min-height:18px; margin-top:10px; color:var(--muted); font-size:11px; }
+    .form-message.error-message { color:#9b5757; }
+    .form-message.success-message { color:var(--sage-dark); }
+
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
       .nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}
@@ -328,8 +359,9 @@
     async function loadAppointments(){
       const {start,end}=rangeForView();
       const {data,error}=await supabaseClient.from("appointments").select(`
-        id, starts_at, ends_at, expected_price_cents, status,
-        service_name_snapshot, service_quantity, private_notes,
+        id, client_id, service_id, starts_at, ends_at, expected_price_cents, status,
+        service_name_snapshot, service_price_cents_snapshot, service_duration_minutes_snapshot,
+        service_quantity, private_notes,
         clients(first_name,last_name,phone,email)
       `).gte("starts_at",start.toISOString()).lt("starts_at",end.toISOString())
         .in("status",["pending","confirmed","completed"])
@@ -506,23 +538,320 @@
       }
     }
 
+    const statusLabels = {
+      pending:"En attente",
+      confirmed:"Confirmé",
+      completed:"Terminé",
+      cancelled_by_client:"Annulé par la cliente",
+      cancelled_by_admin:"Annulé",
+      late_cancellation:"Annulation tardive",
+      no_show:"Absence"
+    };
+
+    function closeModal(){
+      document.getElementById("modal-backdrop").classList.remove("open");
+    }
+
+    function toLocalDateInput(date){
+      return localKey(date);
+    }
+
+    function toLocalTimeInput(date){
+      return new Intl.DateTimeFormat("en-GB",{
+        timeZone:TZ,hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+      }).format(date);
+    }
+
+    function brusselsLocalToDate(dateKey,timeValue){
+      /*
+        Construit l'instant UTC correspondant à une date/heure de Bruxelles.
+        On part d'une estimation puis on corrige avec l'écart observé.
+      */
+      const [year,month,day]=dateKey.split("-").map(Number);
+      const [hour,minute]=timeValue.split(":").map(Number);
+      let guess=new Date(Date.UTC(year,month-1,day,hour,minute));
+
+      const parts=new Intl.DateTimeFormat("en-CA",{
+        timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",
+        hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+      }).formatToParts(guess);
+      const v={};
+      parts.forEach(p=>{if(p.type!=="literal")v[p.type]=p.value;});
+
+      const shownAsUTC=Date.UTC(
+        Number(v.year),Number(v.month)-1,Number(v.day),
+        Number(v.hour),Number(v.minute)
+      );
+      const wantedAsUTC=Date.UTC(year,month-1,day,hour,minute);
+      guess=new Date(guess.getTime()+(wantedAsUTC-shownAsUTC));
+
+      return guess;
+    }
+
     function openAppointment(a){
       const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
       const quantity=(a.service_quantity||1)>1 ? ` × ${a.service_quantity}` : "";
+      const statusLabel=statusLabels[a.status] || a.status;
+      const isCompleted=a.status==="completed";
+
       document.getElementById("modal-content").innerHTML=`
         <div class="detail"><span>Cliente</span><strong>${escapeHtml(client)}</strong></div>
         <div class="detail"><span>Date</span><strong>${capitalize(fullDate.format(new Date(a.starts_at)))}</strong></div>
         <div class="detail"><span>Heure</span><strong>${timeFormat.format(new Date(a.starts_at))} – ${timeFormat.format(new Date(a.ends_at))}</strong></div>
         <div class="detail"><span>Prestation</span><strong>${escapeHtml(a.service_name_snapshot)}${quantity}</strong></div>
         <div class="detail"><span>Montant prévu</span><strong>${euro.format((a.expected_price_cents||0)/100)}</strong></div>
-        <div class="detail"><span>Statut</span><strong>${escapeHtml(a.status)}</strong></div>
+        <div class="detail"><span>Statut</span><strong><span class="status-pill ${escapeHtml(a.status)}">${escapeHtml(statusLabel)}</span></strong></div>
         ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
+
+        <div id="appointment-action-area"></div>
+
+        <div class="modal-actions">
+          <button class="action-button" type="button" data-action="edit" ${isCompleted?"disabled":""}>Modifier</button>
+          <button class="action-button primary" type="button" data-action="complete" ${isCompleted?"disabled":""}>${isCompleted?"Déjà terminé":"Terminer"}</button>
+          <button class="action-button danger" type="button" data-action="cancel" ${isCompleted?"disabled":""}>Annuler</button>
+        </div>
       `;
+
+      document.querySelector('[data-action="edit"]')?.addEventListener("click",()=>showEditForm(a));
+      document.querySelector('[data-action="complete"]')?.addEventListener("click",()=>showCompleteForm(a));
+      document.querySelector('[data-action="cancel"]')?.addEventListener("click",()=>showCancelForm(a));
+
       document.getElementById("modal-backdrop").classList.add("open");
     }
 
-    document.getElementById("close-modal").addEventListener("click",()=>document.getElementById("modal-backdrop").classList.remove("open"));
-    document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")e.currentTarget.classList.remove("open")});
+    function showEditForm(a){
+      const area=document.getElementById("appointment-action-area");
+      const startDate=new Date(a.starts_at);
+      const durationMinutes=Math.max(15,Math.round((new Date(a.ends_at)-startDate)/60000));
+
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Modifier le rendez-vous</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Date</label>
+              <input id="edit-date" type="date" value="${toLocalDateInput(startDate)}">
+            </div>
+            <div class="form-field">
+              <label>Heure</label>
+              <input id="edit-time" type="time" step="300" value="${toLocalTimeInput(startDate)}">
+            </div>
+            <div class="form-field">
+              <label>Durée (minutes)</label>
+              <input id="edit-duration" type="number" min="15" step="5" value="${durationMinutes}">
+            </div>
+            <div class="form-field">
+              <label>Montant prévu (€)</label>
+              <input id="edit-price" type="number" min="0" step="0.01" value="${((a.expected_price_cents||0)/100).toFixed(2)}">
+            </div>
+          </div>
+          <div id="edit-message" class="form-message"></div>
+          <button id="save-edit" class="action-button primary" type="button">Enregistrer les modifications</button>
+        </div>`;
+
+      document.getElementById("save-edit").addEventListener("click",()=>saveAppointmentEdit(a));
+    }
+
+    async function saveAppointmentEdit(a){
+      const button=document.getElementById("save-edit");
+      const message=document.getElementById("edit-message");
+      const dateValue=document.getElementById("edit-date").value;
+      const timeValue=document.getElementById("edit-time").value;
+      const duration=Number(document.getElementById("edit-duration").value);
+      const priceEuros=Number(document.getElementById("edit-price").value.replace(",","."));
+
+      if(!dateValue || !timeValue || !Number.isFinite(duration) || duration<15 || !Number.isFinite(priceEuros) || priceEuros<0){
+        message.textContent="Vérifie la date, l’heure, la durée et le montant.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      const startsAt=brusselsLocalToDate(dateValue,timeValue);
+      const endsAt=new Date(startsAt.getTime()+duration*60000);
+
+      /* Empêche de déplacer le RDV sur un autre RDV actif. */
+      const {data:conflicts,error:conflictError}=await supabaseClient
+        .from("appointments")
+        .select("id")
+        .neq("id",a.id)
+        .in("status",["pending","confirmed"])
+        .lt("starts_at",endsAt.toISOString())
+        .gt("ends_at",startsAt.toISOString())
+        .limit(1);
+
+      if(conflictError){
+        console.error(conflictError);
+        message.textContent="Impossible de vérifier le créneau.";
+        message.className="form-message error-message";
+        return;
+      }
+      if(conflicts?.length){
+        message.textContent="Ce créneau chevauche déjà un autre rendez-vous.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      button.disabled=true;
+      message.textContent="Enregistrement…";
+      message.className="form-message";
+
+      const {error}=await supabaseClient.from("appointments").update({
+        starts_at:startsAt.toISOString(),
+        ends_at:endsAt.toISOString(),
+        expected_price_cents:Math.round(priceEuros*100)
+      }).eq("id",a.id);
+
+      if(error){
+        console.error(error);
+        button.disabled=false;
+        message.textContent="La modification n’a pas pu être enregistrée.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      closeModal();
+      await loadAppointments();
+    }
+
+    function showCompleteForm(a){
+      const area=document.getElementById("appointment-action-area");
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Terminer le rendez-vous</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Montant réellement payé (€)</label>
+              <input id="paid-amount" type="number" min="0" step="0.01" value="${((a.expected_price_cents||0)/100).toFixed(2)}">
+            </div>
+            <div class="form-field">
+              <label>Moyen de paiement</label>
+              <select id="payment-method">
+                <option value="card">Carte</option>
+                <option value="qr">QR</option>
+                <option value="cash">Espèces</option>
+                <option value="bank_transfer">Virement</option>
+                <option value="other">Autre</option>
+              </select>
+            </div>
+          </div>
+          <div id="complete-message" class="form-message">Le montant est prérempli avec le prix prévu, mais tu peux le corriger.</div>
+          <button id="confirm-complete" class="action-button primary" type="button">Valider le paiement et terminer</button>
+        </div>`;
+      document.getElementById("confirm-complete").addEventListener("click",()=>completeAppointment(a));
+    }
+
+    async function completeAppointment(a){
+      const button=document.getElementById("confirm-complete");
+      const message=document.getElementById("complete-message");
+      const amount=Number(document.getElementById("paid-amount").value.replace(",","."));
+      const method=document.getElementById("payment-method").value;
+
+      if(!Number.isFinite(amount) || amount<0){
+        message.textContent="Entre un montant valide.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      button.disabled=true;
+      message.textContent="Vérification…";
+      message.className="form-message";
+
+      /* Protection simple contre un double clic / double paiement final. */
+      const {data:existingPayments,error:paymentCheckError}=await supabaseClient
+        .from("payments")
+        .select("id")
+        .eq("appointment_id",a.id)
+        .eq("payment_type","final")
+        .limit(1);
+
+      if(paymentCheckError){
+        console.error(paymentCheckError);
+        button.disabled=false;
+        message.textContent="Impossible de vérifier les paiements existants.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      if(existingPayments?.length){
+        message.textContent="Un paiement final existe déjà pour ce rendez-vous.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      const {error:paymentError}=await supabaseClient.from("payments").insert({
+        appointment_id:a.id,
+        amount_cents:Math.round(amount*100),
+        payment_method:method,
+        payment_type:"final"
+      });
+
+      if(paymentError){
+        console.error(paymentError);
+        button.disabled=false;
+        message.textContent="Le paiement n’a pas pu être enregistré.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      const {error:appointmentError}=await supabaseClient.from("appointments")
+        .update({status:"completed"})
+        .eq("id",a.id)
+        .neq("status","completed");
+
+      if(appointmentError){
+        console.error(appointmentError);
+        message.textContent="Paiement enregistré, mais le statut du RDV n’a pas pu être modifié. Ne reclique pas : vérifie le rendez-vous.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      closeModal();
+      await loadAppointments();
+    }
+
+    function showCancelForm(a){
+      const area=document.getElementById("appointment-action-area");
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Annuler le rendez-vous</h3>
+          <div class="form-field">
+            <label>Raison / note interne (facultatif)</label>
+            <input id="cancel-reason" type="text" placeholder="Ex. cliente malade, changement de planning…">
+          </div>
+          <div id="cancel-message" class="form-message">Le rendez-vous restera dans Supabase avec le statut « annulé ».</div>
+          <button id="confirm-cancel" class="action-button danger" type="button">Confirmer l’annulation</button>
+        </div>`;
+      document.getElementById("confirm-cancel").addEventListener("click",()=>cancelAppointment(a));
+    }
+
+    async function cancelAppointment(a){
+      const button=document.getElementById("confirm-cancel");
+      const message=document.getElementById("cancel-message");
+      const reason=document.getElementById("cancel-reason").value.trim();
+
+      button.disabled=true;
+      message.textContent="Annulation…";
+      message.className="form-message";
+
+      const update={status:"cancelled_by_admin"};
+      if(reason) update.cancellation_reason=reason;
+
+      const {error}=await supabaseClient.from("appointments").update(update).eq("id",a.id);
+
+      if(error){
+        console.error(error);
+        button.disabled=false;
+        message.textContent="L’annulation n’a pas pu être enregistrée.";
+        message.className="form-message error-message";
+        return;
+      }
+
+      closeModal();
+      await loadAppointments();
+    }
+
+    document.getElementById("close-modal").addEventListener("click",closeModal);
+    document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")closeModal()});
     document.getElementById("week-view").addEventListener("click",()=>{currentView="week";localStorage.setItem("adminAgendaView","week");loadAppointments()});
     document.getElementById("month-view").addEventListener("click",()=>{currentView="month";localStorage.setItem("adminAgendaView","month");loadAppointments()});
     document.getElementById("today").addEventListener("click",()=>{currentDate=new Date();loadAppointments()});
