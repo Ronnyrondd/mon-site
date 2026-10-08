@@ -16,7 +16,9 @@
 .optionRow{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--line);padding:14px 0}.optionRow:last-child{border:0}.optionRow label{cursor:pointer;flex:1}.optionRow small{display:block;color:var(--soft)}input[type=radio],input[type=checkbox]{accent-color:var(--sage);width:18px;height:18px}.qty{display:flex;align-items:center;gap:10px}.qty button{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer}.qty span{min-width:16px;text-align:center}
 .datebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}input[type=date]{font:inherit;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:white;color:var(--ink)}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:20px}.slot{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;cursor:pointer;font:inherit}.slot:hover,.slot.selected{background:var(--sage);border-color:var(--sage);color:white}.empty{color:var(--soft);padding:18px 0}
 .summary{position:sticky;bottom:14px;background:var(--ink);color:white;border-radius:18px;padding:15px 18px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 12px 35px rgba(0,0,0,.18)}.summary small{display:block;opacity:.72}.summary strong{font-family:Fraunces,serif;font-size:20px}.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.notice{background:var(--pale);border-radius:14px;padding:13px 15px;font-size:13px;color:var(--sage2);margin-top:18px}
-@media(max-width:650px){.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}}
+
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.formgrid label{font-size:13px;color:var(--soft)}.formgrid input{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:white;color:var(--ink);font:inherit}.consent{display:flex;gap:9px;align-items:flex-start;margin-top:20px;font-size:13px;color:var(--soft)}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.secondary{border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:12px 19px;font:500 14px Jost;cursor:pointer}.review{background:#f6f3ec;border-radius:16px;padding:18px}.reviewline{display:flex;justify-content:space-between;gap:20px;padding:7px 0}.reviewline span:first-child{color:var(--soft)}.reviewline.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-weight:600}.error{margin-top:15px;padding:12px 14px;border-radius:12px;background:#f8e8e8;color:#8a3030;font-size:13px}.success{text-align:center;padding-top:45px;padding-bottom:45px}.successmark{margin:0 auto 18px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:26px}.success h2{font-size:38px;margin-top:8px}.linkbtn{display:inline-block;text-decoration:none;margin-top:10px}
+@media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -43,7 +45,44 @@
     <h2>3. Choisis ton créneau</h2><p class="sub">Les horaires proposés tiennent compte de la durée totale de ton rendez-vous.</p>
     <div class="datebar"><label for="date">Date</label><input id="date" type="date"></div>
     <div id="slots" class="slots"></div>
-    <div class="notice">Pour cette première version de test, aucun rendez-vous n'est encore envoyé lorsque tu sélectionnes un créneau.</div>
+    <div class="notice">Ton créneau reste disponible tant que la réservation n'est pas confirmée.</div>
+  </section>
+
+
+  <section id="contactPanel" class="panel hidden">
+    <h2>4. Tes coordonnées</h2>
+    <p class="sub">Ces informations me permettent de retrouver ton rendez-vous et de te contacter si nécessaire.</p>
+    <div class="formgrid">
+      <label>Prénom *<input id="firstName" autocomplete="given-name" required></label>
+      <label>Nom *<input id="lastName" autocomplete="family-name" required></label>
+      <label>E-mail *<input id="email" type="email" autocomplete="email" required></label>
+      <label>Téléphone *<input id="phone" type="tel" autocomplete="tel" required></label>
+      <label>Instagram <input id="instagram" placeholder="@..."></label>
+      <label>Date de naissance <input id="birthDate" type="date"></label>
+    </div>
+    <label class="consent"><input id="consent" type="checkbox"> <span>J'accepte que mes données soient utilisées pour gérer mon rendez-vous. *</span></label>
+    <div id="formError" class="error hidden"></div>
+    <div class="actions"><button id="reviewBtn" class="btn">Voir le récapitulatif</button></div>
+  </section>
+
+  <section id="reviewPanel" class="panel hidden">
+    <h2>5. Vérifie ton rendez-vous</h2>
+    <p class="sub">Une dernière vérification avant de confirmer.</p>
+    <div id="reviewBox" class="review"></div>
+    <div id="bookingError" class="error hidden"></div>
+    <div class="actions">
+      <button id="editBtn" class="secondary">Modifier</button>
+      <button id="confirmBtn" class="btn">Confirmer mon rendez-vous</button>
+    </div>
+  </section>
+
+  <section id="successPanel" class="panel hidden success">
+    <div class="successmark">✓</div>
+    <div class="eyebrow">Rendez-vous confirmé</div>
+    <h2>C'est réservé !</h2>
+    <p id="successText"></p>
+    <p class="sub">Tu peux fermer cette page. Ton rendez-vous est maintenant enregistré chez Thab's Lab.</p>
+    <a class="btn linkbtn" href="./">Retour au site</a>
   </section>
 
   <div id="summary" class="summary hidden">
@@ -124,7 +163,65 @@ async function loadSlots(){
  el.innerHTML="";data.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.slot=slot;renderSummary()};el.appendChild(b)});
 }
 const di=document.querySelector("#date"),today=new Date();di.min=localDate(today);const max=new Date(today);max.setDate(max.getDate()+31);di.max=localDate(max);di.value=localDate(today);di.onchange=()=>{state.slot=null;renderSummary();loadSlots()};
-document.querySelector("#continueBtn").onclick=()=>alert("Parfait : le créneau est bien sélectionné. La fiche coordonnées + confirmation sécurisée arrive à l'étape suivante.");
+
+function showError(id,msg){const e=document.querySelector(id);e.textContent=msg;e.classList.remove("hidden")}
+function clearError(id){const e=document.querySelector(id);e.textContent="";e.classList.add("hidden")}
+function fmtSlot(){
+ return new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at));
+}
+document.querySelector("#continueBtn").onclick=()=>{
+ if(!state.slot)return;
+ document.querySelector("#contactPanel").classList.remove("hidden");
+ document.querySelector("#contactPanel").scrollIntoView({behavior:"smooth",block:"start"});
+};
+document.querySelector("#reviewBtn").onclick=()=>{
+ clearError("#formError");
+ const first=document.querySelector("#firstName").value.trim(),last=document.querySelector("#lastName").value.trim(),
+ email=document.querySelector("#email").value.trim(),phone=document.querySelector("#phone").value.trim();
+ if(!first||!last||!email||!phone){showError("#formError","Prénom, nom, e-mail et téléphone sont obligatoires.");return}
+ if(!document.querySelector("#email").checkValidity()){showError("#formError","Vérifie l'adresse e-mail.");return}
+ if(!document.querySelector("#consent").checked){showError("#formError","Le consentement est nécessaire pour enregistrer le rendez-vous.");return}
+ const t=total();
+ const opts=state.options.length?state.options.map(o=>`${o.name}${(o.quantity||1)>1?` × ${o.quantity}`:""}`).join(", "):"Aucune";
+ document.querySelector("#reviewBox").innerHTML=`
+   <div class="reviewline"><span>Prestation</span><strong>${state.service.name}${state.serviceQty>1?` × ${state.serviceQty}`:""}</strong></div>
+   <div class="reviewline"><span>Options</span><strong>${opts}</strong></div>
+   <div class="reviewline"><span>Date</span><strong>${fmtSlot()}</strong></div>
+   <div class="reviewline"><span>Durée</span><strong>${mins(t.duration)}</strong></div>
+   <div class="reviewline total"><span>Total prévu</span><strong>${euro(t.price)}</strong></div>`;
+ document.querySelector("#reviewPanel").classList.remove("hidden");
+ document.querySelector("#reviewPanel").scrollIntoView({behavior:"smooth",block:"start"});
+};
+document.querySelector("#editBtn").onclick=()=>document.querySelector("#contactPanel").scrollIntoView({behavior:"smooth"});
+document.querySelector("#confirmBtn").onclick=async()=>{
+ clearError("#bookingError");
+ const btn=document.querySelector("#confirmBtn");btn.disabled=true;btn.textContent="Confirmation…";
+ const args={
+   p_service_id:state.service.id,p_starts_at:state.slot.starts_at,p_options:rpcOptions(),
+   p_first_name:document.querySelector("#firstName").value.trim(),
+   p_last_name:document.querySelector("#lastName").value.trim(),
+   p_email:document.querySelector("#email").value.trim(),
+   p_phone:document.querySelector("#phone").value.trim(),
+   p_instagram:document.querySelector("#instagram").value.trim()||null,
+   p_birth_date:document.querySelector("#birthDate").value||null,
+   p_consent:document.querySelector("#consent").checked
+ };
+ const {data,error}=await db.rpc("create_public_booking",args);
+ if(error){
+   console.error(error);
+   const unavailable=(error.message||"").includes("slot_unavailable");
+   showError("#bookingError",unavailable?"Oups, ce créneau vient d'être pris ou n'est plus disponible. Retourne au choix du créneau pour en sélectionner un autre.":"La réservation n'a pas pu être enregistrée. Vérifie tes informations ou réessaie dans un instant.");
+   btn.disabled=false;btn.textContent="Confirmer mon rendez-vous";return;
+ }
+ const row=data?.[0];
+ document.querySelector("#reviewPanel").classList.add("hidden");
+ document.querySelector("#contactPanel").classList.add("hidden");
+ document.querySelector("#summary").classList.add("hidden");
+ document.querySelector("#successText").textContent=`${state.service.name} — ${fmtSlot()} — ${euro(row?.expected_price_cents ?? total().price)}`;
+ document.querySelector("#successPanel").classList.remove("hidden");
+ document.querySelector("#successPanel").scrollIntoView({behavior:"smooth",block:"center"});
+};
+
 loadServices();
 </script>
 </body></html>
