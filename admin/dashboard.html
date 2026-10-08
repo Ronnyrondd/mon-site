@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Tableau de bord | Thab's Lab</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #f7f3ec;
+      --white: #fffdf9;
+      --ink: #292824;
+      --muted: #77746d;
+      --sage: #aeb8a2;
+      --sage-light: #e7eadf;
+      --sage-dark: #76806d;
+      --rose-light: #eee1dc;
+      --line: rgba(41, 40, 36, .10);
+      --shadow: 0 18px 45px rgba(41, 40, 36, .06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 34px 24px 26px;
+      background: var(--ink);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      padding: 0 12px 38px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      width: 100%;
+      padding: 13px 14px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: rgba(255,255,255,.62);
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(255,255,255,.09);
+      color: white;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 25px;
+    }
+
+    .admin-label {
+      padding: 0 12px 17px;
+      color: rgba(255,255,255,.45);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .logout {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 12px;
+      background: transparent;
+      color: rgba(255,255,255,.72);
+      text-align: left;
+    }
+
+    /* CONTENT */
+
+    .content {
+      min-width: 0;
+      padding: 44px clamp(25px, 4vw, 65px) 70px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 42px;
+    }
+
+    .eyebrow {
+      margin-bottom: 9px;
+      color: var(--sage-dark);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 500;
+      line-height: 1.05;
+    }
+
+    .date {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .primary-button {
+      flex-shrink: 0;
+      padding: 14px 21px;
+      border: 0;
+      border-radius: 100px;
+      background: var(--ink);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* STAT CARDS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 38px;
+    }
+
+    .stat {
+      min-height: 150px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.62);
+    }
+
+    .stat:nth-child(2) {
+      background: var(--sage-light);
+    }
+
+    .stat:nth-child(3) {
+      background: var(--rose-light);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      margin-top: 28px;
+      font-family: "Playfair Display", serif;
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .stat-detail {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* MAIN GRID */
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr);
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .panel-subtitle {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* APPOINTMENTS */
+
+    .appointment {
+      padding: 19px 24px;
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .appointment:last-child {
+      border-bottom: 0;
+    }
+
+    .appointment-time {
+      font-family: "Playfair Display", serif;
+      font-size: 21px;
+    }
+
+    .appointment-name {
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .appointment-service {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .appointment-price {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* NEXT APPOINTMENT */
+
+    .next-content {
+      padding: 27px 24px 30px;
+    }
+
+    .next-time {
+      font-family: "Playfair Display", serif;
+      font-size: 44px;
+      line-height: 1;
+    }
+
+    .next-date {
+      margin-top: 8px;
+      color: var(--sage-dark);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .next-client {
+      margin-top: 32px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .next-service {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .next-price {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .next-price strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 35px 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1050px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        position: static;
+        min-height: auto;
+        height: auto;
+        padding: 22px;
+      }
+
+      .brand {
+        padding: 0 0 20px;
+      }
+
+      .nav {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .nav-item {
+        width: auto;
+        white-space: nowrap;
+      }
+
+      .sidebar-bottom {
+        display: none;
+      }
+
+      .content {
+        padding: 30px 20px 60px;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .appointment {
+        grid-template-columns: 58px minmax(0, 1fr);
+      }
+
+      .appointment-price {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="loading-screen" class="loading-screen">
+  Vérification de ton espace…
+</div>
+
+<div class="app">
+
+  <aside class="sidebar">
+
+    <div class="brand">Thab's Lab</div>
+
+    <nav class="nav">
+      <button class="nav-item active">Vue d'ensemble</button>
+      <button class="nav-item">Agenda</button>
+      <button class="nav-item">Clientes</button>
+      <button class="nav-item">Prestations</button>
+      <button class="nav-item">Horaires</button>
+      <button class="nav-item">Finances</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="admin-label">Espace administrateur</div>
+      <button id="logout" class="logout">Se déconnecter</button>
+    </div>
+
+  </aside>
+
+
+  <main class="content">
+
+    <header class="topbar">
+
+      <div>
+        <div class="eyebrow">Tableau de bord</div>
+        <h1>Bonjour 👋</h1>
+        <div id="today-date" class="date"></div>
+      </div>
+
+      <button class="primary-button" type="button">
+        + Nouveau rendez-vous
+      </button>
+
+    </header>
+
+
+    <section class="stats">
+
+      <article class="stat">
+        <div class="stat-label">Rendez-vous aujourd'hui</div>
+        <div id="today-count" class="stat-value">—</div>
+        <div class="stat-detail">dans ton agenda</div>
+      </article>
+
+      <article class="stat">
+        <div class="stat-label">Recettes du mois</div>
+        <div id="month-revenue" class="stat-value">—</div>
+        <div class="stat-detail">déjà encaissées</div>
+      </article>
+
+      <article class="stat">
+        <div class="stat-label">À venir</div>
+        <div id="future-revenue" class="stat-value">—</div>
+        <div class="stat-detail">revenus attendus</div>
+      </article>
+
+      <article class="stat">
+        <div class="stat-label">Clientes</div>
+        <div id="client-count" class="stat-value">—</div>
+        <div class="stat-detail">dans ton fichier</div>
+      </article>
+
+    </section>
+
+
+    <section class="dashboard-grid">
+
+      <article class="panel">
+
+        <div class="panel-header">
+          <h2 class="panel-title">Aujourd'hui</h2>
+          <span id="today-small" class="panel-subtitle"></span>
+        </div>
+
+        <div id="today-appointments">
+          <div class="empty">Chargement des rendez-vous…</div>
+        </div>
+
+      </article>
+
+
+      <article class="panel">
+
+        <div class="panel-header">
+          <h2 class="panel-title">Prochain rendez-vous</h2>
+        </div>
+
+        <div id="next-appointment">
+          <div class="empty">Chargement…</div>
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+  /* =========================================================
+     CONFIGURATION
+     Mets EXACTEMENT les mêmes valeurs que dans admin/index.html
+     ========================================================= */
+
+  const SUPABASE_URL = "https://zlmwytycgopowalfrjwf.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+  /* =========================================================
+     OUTILS
+     ========================================================= */
+
+  const euro = new Intl.NumberFormat("fr-BE", {
+    style: "currency",
+    currency: "EUR"
+  });
+
+  const dateFormatter = new Intl.DateTimeFormat("fr-BE", {
+    timeZone: "Europe/Brussels",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  const shortDateFormatter = new Intl.DateTimeFormat("fr-BE", {
+    timeZone: "Europe/Brussels",
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat("fr-BE", {
+    timeZone: "Europe/Brussels",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+
+  function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+
+  function startOfTodayBrussels() {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Brussels",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
+
+    const values = {};
+
+    parts.forEach(part => {
+      if (part.type !== "literal") {
+        values[part.type] = part.value;
+      }
+    });
+
+    return `${values.year}-${values.month}-${values.day}`;
+  }
+
+
+  /* =========================================================
+     SÉCURITÉ
+     ========================================================= */
+
+  async function protectPage() {
+
+    const {
+      data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+      window.location.replace("./");
+      return false;
+    }
+
+    const { data: isAdmin, error } =
+      await supabaseClient.rpc("is_admin");
+
+    if (error || isAdmin !== true) {
+      await supabaseClient.auth.signOut();
+      window.location.replace("./");
+      return false;
+    }
+
+    document.getElementById("loading-screen").style.display = "none";
+
+    return true;
+  }
+
+
+  /* =========================================================
+     DASHBOARD
+     ========================================================= */
+
+  async function loadDashboard() {
+
+    const now = new Date();
+
+    document.getElementById("today-date").textContent =
+      capitalize(dateFormatter.format(now));
+
+    document.getElementById("today-small").textContent =
+      capitalize(shortDateFormatter.format(now));
+
+
+    /*
+      CLIENTES
+    */
+
+    const {
+      count: clientCount,
+      error: clientError
+    } = await supabaseClient
+      .from("clients")
+      .select("*", { count: "exact", head: true });
+
+    if (!clientError) {
+      document.getElementById("client-count").textContent =
+        clientCount ?? 0;
+    }
+
+
+    /*
+      TOUS LES RDV À VENIR
+    */
+
+    const {
+      data: futureAppointments,
+      error: futureError
+    } = await supabaseClient
+      .from("appointments")
+      .select(`
+        id,
+        starts_at,
+        ends_at,
+        expected_price_cents,
+        status,
+        service_name_snapshot,
+        clients (
+          first_name,
+          last_name
+        )
+      `)
+      .gte("starts_at", now.toISOString())
+      .in("status", ["confirmed", "pending"])
+      .order("starts_at", { ascending: true });
+
+    if (!futureError) {
+
+      const futureTotal = futureAppointments.reduce(
+        (total, appointment) =>
+          total + appointment.expected_price_cents,
+        0
+      );
+
+      document.getElementById("future-revenue").textContent =
+        euro.format(futureTotal / 100);
+
+      renderNextAppointment(futureAppointments[0] ?? null);
+    }
+
+
+    /*
+      RDV D'AUJOURD'HUI
+
+      On utilise une fenêtre large puis on vérifie la date
+      en Europe/Brussels pour éviter les surprises UTC.
+    */
+
+    const todayKey = startOfTodayBrussels();
+
+    const {
+      data: todayCandidates,
+      error: todayError
+    } = await supabaseClient
+      .from("appointments")
+      .select(`
+        id,
+        starts_at,
+        expected_price_cents,
+        status,
+        service_name_snapshot,
+        clients (
+          first_name,
+          last_name
+        )
+      `)
+      .gte(
+        "starts_at",
+        new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+      )
+      .lte(
+        "starts_at",
+        new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      )
+      .in("status", ["confirmed", "completed", "pending"])
+      .order("starts_at", { ascending: true });
+
+    if (!todayError) {
+
+      const todayAppointments = todayCandidates.filter(appointment => {
+
+        const key = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Brussels",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(new Date(appointment.starts_at));
+
+        return key === todayKey;
+      });
+
+      document.getElementById("today-count").textContent =
+        todayAppointments.length;
+
+      renderTodayAppointments(todayAppointments);
+    }
+
+
+    /*
+      RECETTES DU MOIS
+
+      Ici on compte uniquement les paiements réellement enregistrés.
+    */
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const monthStart = new Date(year, month, 1);
+    const nextMonthStart = new Date(year, month + 1, 1);
+
+    const {
+      data: payments,
+      error: paymentError
+    } = await supabaseClient
+      .from("payments")
+      .select("amount_cents, payment_type, paid_at")
+      .gte("paid_at", monthStart.toISOString())
+      .lt("paid_at", nextMonthStart.toISOString());
+
+    if (!paymentError) {
+
+      const revenue = payments.reduce((total, payment) => {
+
+        if (payment.payment_type === "refund") {
+          return total - payment.amount_cents;
+        }
+
+        return total + payment.amount_cents;
+
+      }, 0);
+
+      document.getElementById("month-revenue").textContent =
+        euro.format(revenue / 100);
+    }
+  }
+
+
+  /* =========================================================
+     AFFICHAGE RDV DU JOUR
+     ========================================================= */
+
+  function renderTodayAppointments(appointments) {
+
+    const container =
+      document.getElementById("today-appointments");
+
+    if (!appointments.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          Aucun rendez-vous prévu aujourd'hui.<br>
+          Profite du calme… tant qu'il dure 😌
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML = appointments.map(appointment => {
+
+      const client = appointment.clients;
+
+      const clientName = client
+        ? `${client.first_name} ${client.last_name}`
+        : "Cliente";
+
+      return `
+        <div class="appointment">
+
+          <div class="appointment-time">
+            ${timeFormatter.format(new Date(appointment.starts_at))}
+          </div>
+
+          <div>
+            <div class="appointment-name">
+              ${escapeHtml(clientName)}
+            </div>
+
+            <div class="appointment-service">
+              ${escapeHtml(appointment.service_name_snapshot)}
+            </div>
+          </div>
+
+          <div class="appointment-price">
+            ${euro.format(appointment.expected_price_cents / 100)}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+  }
+
+
+  /* =========================================================
+     PROCHAIN RDV
+     ========================================================= */
+
+  function renderNextAppointment(appointment) {
+
+    const container =
+      document.getElementById("next-appointment");
+
+    if (!appointment) {
+
+      container.innerHTML = `
+        <div class="empty">
+          Aucun rendez-vous à venir pour le moment.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const date = new Date(appointment.starts_at);
+
+    const client = appointment.clients;
+
+    const clientName = client
+      ? `${client.first_name} ${client.last_name}`
+      : "Cliente";
+
+
+    container.innerHTML = `
+      <div class="next-content">
+
+        <div class="next-time">
+          ${timeFormatter.format(date)}
+        </div>
+
+        <div class="next-date">
+          ${capitalize(shortDateFormatter.format(date))}
+        </div>
+
+        <div class="next-client">
+          ${escapeHtml(clientName)}
+        </div>
+
+        <div class="next-service">
+          ${escapeHtml(appointment.service_name_snapshot)}
+        </div>
+
+        <div class="next-price">
+          <span>Montant prévu</span>
+          <strong>
+            ${euro.format(appointment.expected_price_cents / 100)}
+          </strong>
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  /*
+    Évite qu'un nom/message contenant du HTML
+    puisse être interprété par le navigateur.
+  */
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+
+  /* =========================================================
+     DÉCONNEXION
+     ========================================================= */
+
+  document
+    .getElementById("logout")
+    .addEventListener("click", async () => {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.replace("./");
+    });
+
+
+  /* =========================================================
+     DÉMARRAGE
+     ========================================================= */
+
+  async function init() {
+
+    const allowed = await protectPage();
+
+    if (!allowed) return;
+
+    await loadDashboard();
+  }
+
+  init();
+
+</script>
+
+</body>
+</html>
