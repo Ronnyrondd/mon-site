@@ -427,6 +427,23 @@
             id="service-description"
             class="hint"
           ></div>
+          <div id="service-quantity-wrapper" class="field hidden" style="margin-top:18px;">
+            <label for="service-quantity">
+              Nombre de doigts *
+            </label>
+
+            <select id="service-quantity">
+              <option value="1">1 doigt</option>
+              <option value="2">2 doigts</option>
+              <option value="3">3 doigts</option>
+              <option value="4">4 doigts</option>
+              <option value="5">5 doigts</option>
+            </select>
+
+            <div class="hint">
+              5 € et 15 min par ongle cassé.
+            </div>
+          </div>
 
         </section>
 
@@ -719,65 +736,42 @@
      ========================================================= */
 
   document
-    .getElementById("existing-client-button")
-    .addEventListener("click", () => {
+  .getElementById("service")
+  .addEventListener("change", () => {
 
-      newClientMode = false;
-
-      document
-        .getElementById("existing-client")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("new-client")
-        .classList.add("hidden");
-
-      document
-        .getElementById("existing-client-button")
-        .classList.add("active");
-
-      document
-        .getElementById("new-client-button")
-        .classList.remove("active");
-    });
+    updateServiceQuantity();
+    renderOptions();
+    updateSummary();
+  });
 
 
-  document
-    .getElementById("new-client-button")
-    .addEventListener("click", () => {
+function updateServiceQuantity() {
 
-      newClientMode = true;
+  const service = getSelectedService();
 
-      document
-        .getElementById("existing-client")
-        .classList.add("hidden");
+  const wrapper =
+    document.getElementById(
+      "service-quantity-wrapper"
+    );
 
-      document
-        .getElementById("new-client")
-        .classList.remove("hidden");
+  const quantity =
+    document.getElementById(
+      "service-quantity"
+    );
 
-      document
-        .getElementById("new-client-button")
-        .classList.add("active");
+  if (
+    service &&
+    service.category === "réparation"
+  ) {
 
-      document
-        .getElementById("existing-client-button")
-        .classList.remove("active");
-    });
+    wrapper.classList.remove("hidden");
 
+  } else {
 
-  /* =========================================================
-     PRESTATION + OPTIONS
-     ========================================================= */
-
-  document
-    .getElementById("service")
-    .addEventListener("change", () => {
-
-      renderOptions();
-      updateSummary();
-    });
-
+    wrapper.classList.add("hidden");
+    quantity.value = "1";
+  }
+}
 
   function renderOptions() {
 
@@ -1023,24 +1017,36 @@
     const selectedOptions =
       getSelectedOptions();
 
-    return selectedOptions.reduce(
-      (totals, option) => {
+    const serviceQuantity =
+  service.category === "réparation"
+    ? Number(
+        document.getElementById(
+          "service-quantity"
+        ).value
+      )
+    : 1;
 
-        totals.price +=
-          option.price_cents * option.quantity;
 
-        totals.duration +=
-          option.duration_minutes * option.quantity;
+return selectedOptions.reduce(
+  (totals, option) => {
 
-        return totals;
+    totals.price +=
+      option.price_cents * option.quantity;
 
-      },
-      {
-        price: service.price_cents,
-        duration: service.duration_minutes
-      }
-    );
+    totals.duration +=
+      option.duration_minutes * option.quantity;
+
+    return totals;
+
+  },
+  {
+    price:
+      service.price_cents * serviceQuantity,
+
+    duration:
+      service.duration_minutes * serviceQuantity
   }
+);
 
 
   function formatDuration(minutes) {
@@ -1118,6 +1124,10 @@
 
   document
     .getElementById("time")
+    .addEventListener("change", updateSummary);
+    
+  document
+    .getElementById("service-quantity")
     .addEventListener("change", updateSummary);
 
 
@@ -1315,7 +1325,15 @@
 
             client_id: clientId,
             service_id: service.id,
-
+            service_quantity:
+              service.category === "réparation"
+              ? Number(
+                document.getElementById(
+                  "service-quantity"
+                ).value
+              )
+              : 1,
+            
             service_name_snapshot:
               service.name,
 
