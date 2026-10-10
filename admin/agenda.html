@@ -274,8 +274,8 @@
     .hand-svg{position:absolute;inset:2% 2% 0;width:96%;height:98%;overflow:visible}
 
     .hand-photo{
-      position:absolute;left:7%;top:1%;width:86%;height:99%;
-      object-fit:contain;object-position:center bottom;
+      position:absolute;left:1.5%;top:1%;width:97%;height:98%;
+      object-fit:contain;object-position:center center;
       pointer-events:none;user-select:none;z-index:1;
       filter:saturate(.92) contrast(.98);
       transform-origin:center center;
@@ -709,7 +709,7 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · V5</div>
+          <div class="prep-label">✏️ Nail Designer · V5.1</div>
           <div id="nail-designer" class="designer-shell">
             <div class="designer-toolbar">
               <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
@@ -724,7 +724,7 @@
               <label class="designer-range">Pinceau <input id="designer-size" type="range" min="1" max="20" value="6"></label>
             </div>
             <div class="designer-skin-row">
-              <span class="designer-skin-label">Peau / carnation · variantes V5 à venir</span>
+              <span class="designer-skin-label">Peau / carnation · variantes illustrées à venir</span>
               <button class="skin-swatch" type="button" data-skin="#f4d4c1" style="background:#f4d4c1" aria-label="Carnation claire"></button>
               <button class="skin-swatch" type="button" data-skin="#e8b99a" style="background:#e8b99a" aria-label="Carnation claire à médium"></button>
               <button class="skin-swatch" type="button" data-skin="#c98f69" style="background:#c98f69" aria-label="Carnation médium"></button>
@@ -780,8 +780,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:67.2,y:56.0,r:42},index:{x:55.8,y:10.0,r:4},middle:{x:42.7,y:1.8,r:0},ring:{x:29.5,y:8.0,r:-3},pinky:{x:17.1,y:24.5,r:-4}},
-        right:{thumb:{x:25.8,y:56.0,r:-42},index:{x:37.2,y:10.0,r:-4},middle:{x:50.3,y:1.8,r:0},ring:{x:63.5,y:8.0,r:3},pinky:{x:75.9,y:24.5,r:4}}
+        left:{thumb:{x:77.0,y:57.0,r:43},index:{x:59.0,y:10.0,r:5},middle:{x:45.5,y:0.5,r:0},ring:{x:31.8,y:10.8,r:-4},pinky:{x:18.0,y:31.0,r:-12}},
+        right:{thumb:{x:16.0,y:57.0,r:-43},index:{x:34.0,y:10.0,r:-5},middle:{x:47.5,y:0.5,r:0},ring:{x:61.2,y:10.8,r:4},pinky:{x:75.0,y:31.0,r:12}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -796,11 +796,11 @@
       function dims(n){
         const lengthScale={xs:.72,s:.86,m:1,l:1.18,xl:1.38}[n.length]||1;
         const widthScale={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        return {w:7.0*widthScale,h:14.8*lengthScale,lengthScale};
+        return {w:5.9*widthScale,h:13.2*lengthScale,lengthScale};
       }
       function addHandIllusion(){
         const hand=document.createElement("img");
-        hand.src="../images/nail-designer-hand-v5.png";
+        hand.src="../images/nail-designer-work-hand-v5.jpg";
         hand.alt="";
         hand.draggable=false;
         hand.className="hand-photo"+(state.activeHand==="right"?" right":"");
@@ -828,7 +828,7 @@
           wrap.title=labels[f];
           wrap.style.left=p.x+"%";
           const baseTop=p.y;
-          const growth=(d.lengthScale-1)*10.5;
+          const growth=(d.lengthScale-1)*9.2;
           wrap.style.top=(baseTop-growth)+"%";
           wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
           wrap.style.transform=`rotate(${p.r}deg)`;
