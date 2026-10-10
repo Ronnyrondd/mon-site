@@ -302,6 +302,42 @@
       border-radius:46% 46% 22px 22px / 25px 25px 16px 16px;
     }
 
+
+    .template-fingertips{
+      position:absolute;
+      inset:18% 5% 5%;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:4.8%;
+      align-items:end;
+      z-index:1;
+      transform-origin:center;
+    }
+    .template-fingertip{
+      position:relative;
+      width:100%;
+      height:70%;
+      min-height:180px;
+      background:var(--skin,#e9b794);
+      border:1.4px solid rgba(67,49,40,.60);
+      border-bottom-color:rgba(67,49,40,.28);
+      border-radius:48% 48% 18px 18px / 34px 34px 14px 14px;
+      transform-origin:50% 100%;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
+    }
+    .template-fingertip[data-finger="pinky"]{height:57%}
+    .template-fingertip[data-finger="ring"]{height:67%}
+    .template-fingertip[data-finger="middle"]{height:74%}
+    .template-fingertip[data-finger="index"]{height:68%}
+    .template-fingertip[data-finger="thumb"]{height:60%}
+    .template-crease{
+      position:absolute;
+      left:28%;right:28%;bottom:22%;
+      height:8px;
+      border-top:1px solid rgba(75,53,43,.18);
+      border-radius:50%;
+    }
+
     .hand-photo{
       position:absolute;left:1.5%;top:1%;width:97%;height:98%;
       object-fit:contain;object-position:center center;
@@ -738,7 +774,7 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · V7 · Template</div>
+          <div class="prep-label">✏️ Nail Designer · Template</div>
           <div id="nail-designer" class="designer-shell">
             <div class="designer-toolbar">
               <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
@@ -809,8 +845,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:85.0,y:34.5,r:12},index:{x:67.2,y:14.5,r:1.5},middle:{x:49.2,y:5.5,r:0},ring:{x:31.1,y:13.5,r:-1.5},pinky:{x:12.0,y:28.5,r:-4}},
-        right:{thumb:{x:10.0,y:34.5,r:-12},index:{x:27.8,y:14.5,r:-1.5},middle:{x:45.8,y:5.5,r:0},ring:{x:63.9,y:13.5,r:1.5},pinky:{x:83.0,y:28.5,r:4}}
+        left:{thumb:{x:84.3,y:37.0,r:0},index:{x:65.3,y:29.0,r:0},middle:{x:46.3,y:23.0,r:0},ring:{x:27.3,y:30.0,r:0},pinky:{x:8.3,y:39.0,r:0}},
+        right:{thumb:{x:8.3,y:37.0,r:0},index:{x:27.3,y:29.0,r:0},middle:{x:46.3,y:23.0,r:0},ring:{x:65.3,y:30.0,r:0},pinky:{x:84.3,y:39.0,r:0}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -825,56 +861,39 @@
       function dims(n){
         const lengthScale={xs:.72,s:.86,m:1,l:1.18,xl:1.38}[n.length]||1;
         const widthScale={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        return {w:7.0*widthScale,h:17.0*lengthScale,lengthScale};
+        return {w:8.2*widthScale,h:18.0*lengthScale,lengthScale};
       }
       function addHandIllusion(){
         const wrap=document.createElement("div");
         wrap.className="technical-hand";
 
         const skins={
-          skin1:"#f6d2bf",
-          skin2:"#e9b794",
-          skin3:"#cf936b",
-          skin4:"#ad6f4c",
-          skin5:"#7c4933",
-          skin6:"#4c2b22"
+          skin1:"#f6d2bf", skin2:"#e9b794", skin3:"#cf936b",
+          skin4:"#ad6f4c", skin5:"#7c4933", skin6:"#4c2b22"
         };
         wrap.style.setProperty("--skin", skins[state.skin] || "#e9b794");
 
-        const morphology={fine:.91,standard:1,large:1.10}[state.morphology]||1;
-        const fw={thin:.88,standard:1,thick:1.13}[state.fingerWidth]||1;
+        const morphology={fine:.92,standard:1,large:1.08}[state.morphology]||1;
+        const fw={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
         const widthScale=morphology*fw;
 
-        // Five independent fingers: deliberately spaced for XL/stiletto + decorations.
-        // x/y/w/h are percentages of the drawing stage.
-        const fingers={
-          pinky:{x:8.5,y:28,w:12.0,h:64,r:-4},
-          ring:{x:27.0,y:13,w:13.2,h:79,r:-1.5},
-          middle:{x:45.0,y:5,w:13.5,h:87,r:0},
-          index:{x:63.2,y:14,w:13.2,h:78,r:1.5},
-          thumb:{x:81.2,y:34,w:13.5,h:58,r:12}
-        };
+        const row=document.createElement("div");
+        row.className="template-fingertips";
 
-        Object.entries(fingers).forEach(([name,f])=>{
-          const el=document.createElement("div");
-          el.className="tech-finger"+(name==="thumb"?" tech-thumb":"");
-          el.style.left=`${f.x + (f.w*(1-widthScale))/2}%`;
-          el.style.top=`${f.y}%`;
-          el.style.width=`${f.w*widthScale}%`;
-          el.style.height=`${f.h}%`;
-          const mirror=state.activeHand==="right" ? -1 : 1;
-          const rot=state.activeHand==="right" ? -f.r : f.r;
-          el.style.transform=`scaleX(${mirror}) rotate(${rot}deg)`;
+        ["pinky","ring","middle","index","thumb"].forEach(name=>{
+          const finger=document.createElement("div");
+          finger.className="template-fingertip";
+          finger.dataset.finger=name;
+          finger.style.transform=`scaleX(${widthScale})`;
 
-          const cut=document.createElement("span");
-          cut.className="tech-cuticle";
-          el.appendChild(cut);
-          wrap.appendChild(el);
+          const crease=document.createElement("span");
+          crease.className="template-crease";
+          finger.appendChild(crease);
+          row.appendChild(finger);
         });
 
-        if(state.activeHand==="right"){
-          wrap.style.transform="scaleX(-1)";
-        }
+        if(state.activeHand==="right") row.style.transform="scaleX(-1)";
+        wrap.appendChild(row);
         stage.appendChild(wrap);
       }
 
@@ -896,7 +915,7 @@
           wrap.title=labels[f];
           wrap.style.left=p.x+"%";
           const baseTop=p.y;
-          const growth=(d.lengthScale-1)*11.0;
+          const growth=(d.lengthScale-1)*10.0;
           wrap.style.top=(baseTop-growth)+"%";
           wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
           wrap.style.transform=`rotate(${p.r}deg)`;
