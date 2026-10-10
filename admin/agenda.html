@@ -243,6 +243,11 @@
     .prep-note{width:100%;min-height:82px;resize:vertical;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);font:inherit;font-size:12px;line-height:1.45}
     .prep-note-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
     .prep-note-message{font-size:10px}
+    .prep-media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+    .prep-media-card{display:block;aspect-ratio:1/1;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:white}
+    .prep-media-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
+    .prep-media-card:hover img{transform:scale(1.02)}
+    .prep-media-empty{color:var(--muted);font-size:12px;line-height:1.5}
 
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
@@ -662,10 +667,35 @@
         <div class="prep-row"><span>Boisson</span><strong>${displayValue(beverage)}</strong></div>
         <div class="prep-row"><span>Détails</span><strong>${displayValue(data?.beverage_details)}</strong></div></div>`
         :`<div class="prep-section"><div class="prep-empty">La cliente n’a pas encore renseigné ses préférences.</div></div>`}
+        <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
+        <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
         <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
         <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
       document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
+      await loadAppointmentInspirations(a.id);
+    }
+
+    async function loadAppointmentInspirations(appointmentId){
+      const target=document.getElementById("prep-media");
+      if(!target)return;
+      const {data:media,error}=await supabaseClient.from("appointment_media")
+        .select("id,storage_path,caption,display_order,created_at")
+        .eq("appointment_id",appointmentId).eq("media_type","inspiration")
+        .order("display_order",{ascending:true}).order("created_at",{ascending:true});
+      if(error){console.error(error);target.textContent="Impossible de charger les inspirations.";return;}
+      if(!media?.length){target.textContent="Aucune photo d’inspiration.";return;}
+
+      const cards=[];
+      for(const item of media){
+        const {data:signed,error:signedError}=await supabaseClient.storage
+          .from("appointment-media").createSignedUrl(item.storage_path,3600);
+        if(signedError||!signed?.signedUrl){console.error(signedError);continue;}
+        cards.push(`<a class="prep-media-card" href="${escapeHtml(signed.signedUrl)}" target="_blank" rel="noopener noreferrer" title="Ouvrir l’inspiration"><img src="${escapeHtml(signed.signedUrl)}" alt="Inspiration nail art" loading="lazy"></a>`);
+      }
+      if(!cards.length){target.textContent="Les inspirations existent, mais leur aperçu n’a pas pu être chargé.";return;}
+      target.className="prep-media-grid";
+      target.innerHTML=cards.join("");
     }
 
     async function savePreparationNotes(appointmentId){
