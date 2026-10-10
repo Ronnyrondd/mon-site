@@ -232,6 +232,17 @@
     .form-message { min-height:18px; margin-top:10px; color:var(--muted); font-size:11px; }
     .form-message.error-message { color:#9b5757; }
     .form-message.success-message { color:var(--sage-dark); }
+    .prep-box{margin-top:20px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(247,243,236,.55)}
+    .prep-title{margin:0 0 14px;font-family:"Playfair Display",serif;font-size:20px;font-weight:500}
+    .prep-section+.prep-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+    .prep-label{margin-bottom:8px;color:var(--sage-dark);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+    .prep-row{display:grid;grid-template-columns:105px 1fr;gap:12px;padding:5px 0;font-size:12px;line-height:1.45}
+    .prep-row span,.prep-empty,.prep-loading,.prep-note-message{color:var(--muted)}
+    .prep-row strong{font-weight:600;overflow-wrap:anywhere}
+    .prep-empty,.prep-loading{font-size:12px;line-height:1.5}
+    .prep-note{width:100%;min-height:82px;resize:vertical;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);font:inherit;font-size:12px;line-height:1.45}
+    .prep-note-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+    .prep-note-message{font-size:10px}
 
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
@@ -602,7 +613,7 @@
         <div class="detail"><span>Montant prévu</span><strong>${euro.format((a.expected_price_cents||0)/100)}</strong></div>
         <div class="detail"><span>Statut</span><strong><span class="status-pill ${escapeHtml(a.status)}">${escapeHtml(statusLabel)}</span></strong></div>
         ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
-
+        <div id="appointment-preparation" class="prep-box"><h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-loading">Chargement des préférences…</div></div>
         <div id="appointment-action-area"></div>
 
         <div class="modal-actions">
@@ -617,6 +628,54 @@
       document.querySelector('[data-action="cancel"]')?.addEventListener("click",()=>showCancelForm(a));
 
       document.getElementById("modal-backdrop").classList.add("open");
+      loadAppointmentPreparation(a);
+    }
+
+    function preferenceLabel(value,type){
+      const labels={
+        conversation_preference:{quiet:"Rendez-vous calme",chat:"Discussion",no_preference:"Pas de préférence"},
+        music_preference:{music:"Avec musique",no_music:"Sans musique",no_preference:"Pas de préférence"}
+      };
+      return labels[type]?.[value]||"";
+    }
+    function displayValue(value){const s=String(value??"").trim();return s?escapeHtml(s):"—";}
+
+    async function loadAppointmentPreparation(a){
+      const box=document.getElementById("appointment-preparation"); if(!box)return;
+      const {data,error}=await supabaseClient.from("appointment_designs")
+        .select(`appointment_id,nail_shape,nail_length,color_wishes,client_design_note,conversation_preference,music_preference,beverage_id,beverage_details,private_preparation_notes,beverages(name)`)
+        .eq("appointment_id",a.id).maybeSingle();
+      if(error){console.error(error);box.innerHTML=`<h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-empty">Impossible de charger les préférences pour le moment.</div>`;return;}
+      const has=!!(data&&(data.nail_shape||data.nail_length||data.color_wishes||data.client_design_note||data.conversation_preference||data.music_preference||data.beverage_id||data.beverage_details));
+      const beverage=data?.beverages?.name||"";
+      const conversation=preferenceLabel(data?.conversation_preference,"conversation_preference");
+      const music=preferenceLabel(data?.music_preference,"music_preference");
+      box.innerHTML=`<h3 class="prep-title">Préparation du rendez-vous</h3>
+        ${has?`<div class="prep-section"><div class="prep-label">💅 Ma pose</div>
+        <div class="prep-row"><span>Forme</span><strong>${displayValue(data?.nail_shape)}</strong></div>
+        <div class="prep-row"><span>Longueur</span><strong>${displayValue(data?.nail_length)}</strong></div>
+        <div class="prep-row"><span>Couleurs</span><strong>${displayValue(data?.color_wishes)}</strong></div>
+        <div class="prep-row"><span>Souhait</span><strong>${displayValue(data?.client_design_note)}</strong></div></div>
+        <div class="prep-section"><div class="prep-label">🌿 Mon moment</div>
+        <div class="prep-row"><span>Ambiance</span><strong>${displayValue(conversation)}</strong></div>
+        <div class="prep-row"><span>Musique</span><strong>${displayValue(music)}</strong></div>
+        <div class="prep-row"><span>Boisson</span><strong>${displayValue(beverage)}</strong></div>
+        <div class="prep-row"><span>Détails</span><strong>${displayValue(data?.beverage_details)}</strong></div></div>`
+        :`<div class="prep-section"><div class="prep-empty">La cliente n’a pas encore renseigné ses préférences.</div></div>`}
+        <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
+        <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
+        <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
+      document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
+    }
+
+    async function savePreparationNotes(appointmentId){
+      const button=document.getElementById("save-preparation-notes"),message=document.getElementById("prep-note-message");
+      const notes=document.getElementById("private-preparation-notes")?.value.trim()||""; if(!button||!message)return;
+      button.disabled=true;message.textContent="Enregistrement…";
+      const {error}=await supabaseClient.from("appointment_designs").upsert({appointment_id:appointmentId,private_preparation_notes:notes||null,updated_at:new Date().toISOString()},{onConflict:"appointment_id"});
+      button.disabled=false;
+      if(error){console.error(error);message.textContent="La note n’a pas pu être enregistrée.";return;}
+      message.textContent="Note enregistrée ✓";setTimeout(()=>{if(message)message.textContent=""},2500);
     }
 
     function showEditForm(a){
