@@ -709,7 +709,7 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · V5.1</div>
+          <div class="prep-label">✏️ Nail Designer · V5.2</div>
           <div id="nail-designer" class="designer-shell">
             <div class="designer-toolbar">
               <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
@@ -780,8 +780,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:77.0,y:57.0,r:43},index:{x:59.0,y:10.0,r:5},middle:{x:45.5,y:0.5,r:0},ring:{x:31.8,y:10.8,r:-4},pinky:{x:18.0,y:31.0,r:-12}},
-        right:{thumb:{x:16.0,y:57.0,r:-43},index:{x:34.0,y:10.0,r:-5},middle:{x:47.5,y:0.5,r:0},ring:{x:61.2,y:10.8,r:4},pinky:{x:75.0,y:31.0,r:12}}
+        left:{thumb:{x:81.3,y:57.0,r:43},index:{x:64.5,y:17.2,r:5},middle:{x:49.3,y:10.2,r:0},ring:{x:33.7,y:19.1,r:-4},pinky:{x:20.0,y:37.2,r:-12}},
+        right:{thumb:{x:12.8,y:57.0,r:-43},index:{x:29.6,y:17.2,r:-5},middle:{x:44.8,y:10.2,r:0},ring:{x:60.4,y:19.1,r:4},pinky:{x:74.1,y:37.2,r:12}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -796,7 +796,7 @@
       function dims(n){
         const lengthScale={xs:.72,s:.86,m:1,l:1.18,xl:1.38}[n.length]||1;
         const widthScale={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        return {w:5.9*widthScale,h:13.2*lengthScale,lengthScale};
+        return {w:5.2*widthScale,h:11.8*lengthScale,lengthScale};
       }
       function addHandIllusion(){
         const hand=document.createElement("img");
@@ -828,7 +828,7 @@
           wrap.title=labels[f];
           wrap.style.left=p.x+"%";
           const baseTop=p.y;
-          const growth=(d.lengthScale-1)*9.2;
+          const growth=(d.lengthScale-1)*8.4;
           wrap.style.top=(baseTop-growth)+"%";
           wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
           wrap.style.transform=`rotate(${p.r}deg)`;
