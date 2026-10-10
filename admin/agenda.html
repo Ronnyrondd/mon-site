@@ -783,7 +783,13 @@
           else if(n.shape==="coffin")wrap.style.clipPath="polygon(20% 0,80% 0,100% 30%,88% 100%,12% 100%,0 30%)";
           const c=document.createElement("canvas"); c.width=220;c.height=420;wrap.appendChild(c);stage.appendChild(wrap);
           redraw(c,n);
-          wrap.addEventListener("pointerdown",e=>{state.selected=f;syncControls();render();startStroke(e,c,n);});
+          c.addEventListener("pointerdown",e=>{
+            state.selected=f;
+            stage.querySelectorAll(".designer-nail").forEach(el=>el.classList.remove("selected"));
+            wrap.classList.add("selected");
+            syncControls();
+            startStroke(e,c,n);
+          });
           c.addEventListener("pointermove",e=>moveStroke(e,c,n));
           c.addEventListener("pointerup",endStroke);c.addEventListener("pointercancel",endStroke);c.addEventListener("pointerleave",endStroke);
         }
