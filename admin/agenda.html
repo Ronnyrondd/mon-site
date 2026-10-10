@@ -273,6 +273,35 @@
     .hand-joint{position:absolute;left:17%;right:17%;height:1px;background:rgba(115,79,61,.09);top:49%;box-shadow:0 7px 0 rgba(115,79,61,.055)}
     .hand-svg{position:absolute;inset:2% 2% 0;width:96%;height:98%;overflow:visible}
 
+
+    .technical-hand{
+      position:absolute;inset:0;z-index:1;pointer-events:none;
+    }
+    .tech-finger{
+      position:absolute;
+      background:var(--skin,#e8b28f);
+      border:1.35px solid rgba(73,52,42,.62);
+      border-radius:46% 46% 18px 18px / 24px 24px 12px 12px;
+      transform-origin:50% 100%;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    }
+    .tech-finger:after{
+      content:"";
+      position:absolute;left:23%;right:23%;top:48%;
+      height:9%;
+      border-top:1px solid rgba(91,65,51,.20);
+      border-radius:50%;
+    }
+    .tech-cuticle{
+      position:absolute;
+      left:19%;right:19%;top:5.5%;height:13%;
+      border-bottom:1.2px solid rgba(83,59,47,.38);
+      border-radius:0 0 50% 50%;
+    }
+    .tech-thumb{
+      border-radius:46% 46% 22px 22px / 25px 25px 16px 16px;
+    }
+
     .hand-photo{
       position:absolute;left:1.5%;top:1%;width:97%;height:98%;
       object-fit:contain;object-position:center center;
@@ -709,7 +738,7 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · V6</div>
+          <div class="prep-label">✏️ Nail Designer · V7 · Template</div>
           <div id="nail-designer" class="designer-shell">
             <div class="designer-toolbar">
               <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
@@ -724,7 +753,7 @@
               <label class="designer-range">Pinceau <input id="designer-size" type="range" min="1" max="20" value="6"></label>
             </div>
             <div class="designer-skin-row">
-              <span class="designer-skin-label">Peau / carnation · variantes illustrées à venir</span>
+              <span class="designer-skin-label">Peau / carnation</span>
               <button class="skin-swatch" type="button" data-skin="#f4d4c1" style="background:#f4d4c1" aria-label="Carnation claire"></button>
               <button class="skin-swatch" type="button" data-skin="#e8b99a" style="background:#e8b99a" aria-label="Carnation claire à médium"></button>
               <button class="skin-swatch" type="button" data-skin="#c98f69" style="background:#c98f69" aria-label="Carnation médium"></button>
@@ -780,8 +809,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:78.0,y:57.0,r:43},index:{x:61.9,y:14.7,r:6},middle:{x:47.2,y:4.5,r:0},ring:{x:32.7,y:15.4,r:-5},pinky:{x:18.6,y:34.2,r:-12}},
-        right:{thumb:{x:17.0,y:57.0,r:-43},index:{x:33.1,y:14.7,r:-6},middle:{x:47.8,y:4.5,r:0},ring:{x:62.3,y:15.4,r:5},pinky:{x:76.4,y:34.2,r:12}}
+        left:{thumb:{x:85.0,y:34.5,r:12},index:{x:67.2,y:14.5,r:1.5},middle:{x:49.2,y:5.5,r:0},ring:{x:31.1,y:13.5,r:-1.5},pinky:{x:12.0,y:28.5,r:-4}},
+        right:{thumb:{x:10.0,y:34.5,r:-12},index:{x:27.8,y:14.5,r:-1.5},middle:{x:45.8,y:5.5,r:0},ring:{x:63.9,y:13.5,r:1.5},pinky:{x:83.0,y:28.5,r:4}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -796,18 +825,57 @@
       function dims(n){
         const lengthScale={xs:.72,s:.86,m:1,l:1.18,xl:1.38}[n.length]||1;
         const widthScale={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        return {w:5.0*widthScale,h:12.0*lengthScale,lengthScale};
+        return {w:7.0*widthScale,h:17.0*lengthScale,lengthScale};
       }
       function addHandIllusion(){
-        const hand=document.createElement("img");
-        hand.src="../images/nail-designer-work-hand-v6.jpg";
-        hand.alt="";
-        hand.draggable=false;
-        hand.className="hand-photo"+(state.activeHand==="right"?" right":"");
-        const morph={fine:.94,standard:1,large:1.06}[state.morphology]||1;
-        const finger={thin:.97,standard:1,thick:1.03}[state.fingerWidth]||1;
-        hand.style.transform=(state.activeHand==="right"?"scaleX(-1) ":"")+`scaleX(${morph*finger})`;
-        stage.appendChild(hand);
+        const wrap=document.createElement("div");
+        wrap.className="technical-hand";
+
+        const skins={
+          skin1:"#f6d2bf",
+          skin2:"#e9b794",
+          skin3:"#cf936b",
+          skin4:"#ad6f4c",
+          skin5:"#7c4933",
+          skin6:"#4c2b22"
+        };
+        wrap.style.setProperty("--skin", skins[state.skin] || "#e9b794");
+
+        const morphology={fine:.91,standard:1,large:1.10}[state.morphology]||1;
+        const fw={thin:.88,standard:1,thick:1.13}[state.fingerWidth]||1;
+        const widthScale=morphology*fw;
+
+        // Five independent fingers: deliberately spaced for XL/stiletto + decorations.
+        // x/y/w/h are percentages of the drawing stage.
+        const fingers={
+          pinky:{x:8.5,y:28,w:12.0,h:64,r:-4},
+          ring:{x:27.0,y:13,w:13.2,h:79,r:-1.5},
+          middle:{x:45.0,y:5,w:13.5,h:87,r:0},
+          index:{x:63.2,y:14,w:13.2,h:78,r:1.5},
+          thumb:{x:81.2,y:34,w:13.5,h:58,r:12}
+        };
+
+        Object.entries(fingers).forEach(([name,f])=>{
+          const el=document.createElement("div");
+          el.className="tech-finger"+(name==="thumb"?" tech-thumb":"");
+          el.style.left=`${f.x + (f.w*(1-widthScale))/2}%`;
+          el.style.top=`${f.y}%`;
+          el.style.width=`${f.w*widthScale}%`;
+          el.style.height=`${f.h}%`;
+          const mirror=state.activeHand==="right" ? -1 : 1;
+          const rot=state.activeHand==="right" ? -f.r : f.r;
+          el.style.transform=`scaleX(${mirror}) rotate(${rot}deg)`;
+
+          const cut=document.createElement("span");
+          cut.className="tech-cuticle";
+          el.appendChild(cut);
+          wrap.appendChild(el);
+        });
+
+        if(state.activeHand==="right"){
+          wrap.style.transform="scaleX(-1)";
+        }
+        stage.appendChild(wrap);
       }
 
       function radius(n){
@@ -828,7 +896,7 @@
           wrap.title=labels[f];
           wrap.style.left=p.x+"%";
           const baseTop=p.y;
-          const growth=(d.lengthScale-1)*8.8;
+          const growth=(d.lengthScale-1)*11.0;
           wrap.style.top=(baseTop-growth)+"%";
           wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
           wrap.style.transform=`rotate(${p.r}deg)`;
@@ -875,7 +943,7 @@
       handSelect.onchange=()=>{state.activeHand=handSelect.value;state.selected="middle";syncControls();render();};
       morphology.onchange=()=>{state.morphology=morphology.value;render();};
       fingerWidth.onchange=()=>{state.fingerWidth=fingerWidth.value;render();};
-      document.querySelectorAll(".skin-swatch").forEach(b=>b.onclick=()=>{state.skin=b.dataset.skin;syncControls();});
+      document.querySelectorAll(".skin-swatch").forEach(b=>b.onclick=()=>{state.skin=b.dataset.skin;syncControls();render();});
       shape.onchange=()=>{current().shape=shape.value;render();};
       length.onchange=()=>{current().length=length.value;render();};
       document.getElementById("designer-eraser").onclick=()=>{state.eraser=!state.eraser;syncControls();};
