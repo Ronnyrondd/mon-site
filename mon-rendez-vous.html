@@ -11,7 +11,7 @@ h1,h2{font-family:Fraunces,serif;font-weight:500}.hero{text-align:center;padding
 .appt{background:var(--ink);color:white}.appt .sub{color:#d7d0c8}.big{font:500 25px Fraunces;margin:12px 0}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:rgba(255,255,255,.12);padding:7px 10px;border-radius:999px;font-size:13px}
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.choice{border:1px solid var(--line);border-radius:14px;padding:13px;background:white;cursor:pointer;text-align:center;font:inherit}.choice.on{border-color:var(--sage);background:var(--pale)}
 label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input,textarea,select{width:100%;font:inherit;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:white;margin-top:6px;color:var(--ink)}textarea{min-height:90px;resize:vertical}
-.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}
+.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}
 .hidden{display:none!important}.loading{text-align:center;padding:80px 20px;color:var(--soft)}.error{background:#f7e8e8;color:#8a3030;padding:14px;border-radius:12px}
 @media(max-width:620px){.choices{grid-template-columns:1fr}.actions .btn{width:100%}}
 </style></head><body><main class="wrap">
@@ -19,7 +19,7 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 <div id="loading" class="loading">Chargement de ton rendez-vous…</div>
 <div id="invalid" class="card hidden"><h2>Lien invalide</h2><p class="sub">Ce lien ne correspond à aucun rendez-vous. Vérifie le lien reçu ou contacte-moi.</p></div>
 <div id="content" class="hidden">
-<section class="card appt"><div class="eyebrow" style="color:#dce3c9">Mon rendez-vous</div><div id="service" class="big"></div><div id="date"></div><div id="options" class="chips"></div><div id="price" style="margin-top:14px"></div></section>
+<section class="card appt"><div class="eyebrow" style="color:#dce3c9">Mon rendez-vous</div><div id="service" class="big"></div><div id="date"></div><div id="options" class="chips"></div><div id="price" style="margin-top:14px"></div><button id="addCalendarBtn" class="btn calendar-btn" type="button">📅 Ajouter à mon agenda</button></section>
 
 <section class="card"><h2>🎨 Ma pose</h2><p class="sub">Tu as déjà une idée ? Tu peux me laisser quelques indications. Tout est facultatif.</p>
 <label class="field">Forme souhaitée<input id="shape" placeholder="Amande, carré, coffin…"></label>
@@ -65,6 +65,44 @@ async function init(){
  if(["cancelled_by_client","cancelled_by_admin"].includes(appt.status))document.querySelector("#alreadyCancelled").classList.remove("hidden");else if(appt.cancellation_allowed)document.querySelector("#cancelAllowed").classList.remove("hidden");else document.querySelector("#cancelBlocked").classList.remove("hidden");
  document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
 }
+
+function icsEscape(v){return String(v||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
+function icsUtc(date){return new Date(date).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/,"Z")}
+function downloadCalendarEvent(){
+  if(!appt)return;
+  const start=new Date(appt.starts_at);
+  const end=appt.ends_at ? new Date(appt.ends_at) : new Date(start.getTime()+(appt.duration_minutes||60)*60000);
+  const optionNames=(appt.options||[]).map(o=>o.name+(o.quantity>1?` × ${o.quantity}`:"")).join(", ");
+  const description=[
+    appt.service_name,
+    optionNames ? `Options : ${optionNames}` : "",
+    "Rendez-vous chez Thab's Lab."
+  ].filter(Boolean).join("\\n");
+  const ics=[
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Thabs Lab//Rendez-vous//FR",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${appt.id||token}@thabslab.be`,
+    `DTSTAMP:${icsUtc(new Date())}`,
+    `DTSTART:${icsUtc(start)}`,
+    `DTEND:${icsUtc(end)}`,
+    `SUMMARY:${icsEscape("Rendez-vous – Thab's Lab")}`,
+    `DESCRIPTION:${icsEscape(description)}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\\r\\n");
+  const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="rendez-vous-thabslab.ics";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.querySelector("#addCalendarBtn").onclick=downloadCalendarEvent;
+
 function bad(){document.querySelector("#loading").classList.add("hidden");document.querySelector("#invalid").classList.remove("hidden")}
 document.querySelector("#save").onclick=async()=>{const btn=document.querySelector("#save");btn.disabled=true;
  const {data,error}=await db.rpc("save_private_appointment_preferences",{p_token:token,p_conversation_preference:conv,p_music_preference:music,p_beverage_id:document.querySelector("#beverage").value||null,p_beverage_details:document.querySelector("#beverageDetails").value||null,p_nail_shape:document.querySelector("#shape").value||null,p_nail_length:document.querySelector("#length").value||null,p_color_wishes:document.querySelector("#colors").value||null,p_client_design_note:document.querySelector("#designNote").value||null});
