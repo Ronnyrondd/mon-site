@@ -271,6 +271,9 @@
     .hand-palm{position:absolute;background:var(--hand-skin);border:1px solid rgba(83,67,59,.14);box-shadow:inset 0 10px 25px rgba(255,255,255,.16)}
     .hand-finger{position:absolute;background:var(--hand-skin);border:1px solid rgba(83,67,59,.14);border-bottom:0;border-radius:48% 48% 16% 16%;transform-origin:50% 100%}
     .hand-joint{position:absolute;left:17%;right:17%;height:1px;background:rgba(115,79,61,.09);top:49%;box-shadow:0 7px 0 rgba(115,79,61,.055)}
+    .hand-svg{position:absolute;inset:2% 2% 0;width:96%;height:98%;overflow:visible}
+    .hand-silhouette{fill:var(--hand-skin);stroke:rgba(83,67,59,.18);stroke-width:1.2;vector-effect:non-scaling-stroke}
+    .hand-detail{fill:none;stroke:rgba(105,73,57,.13);stroke-width:1;stroke-linecap:round;vector-effect:non-scaling-stroke}
     .hand-illusion.right{transform:scaleX(-1)}
 
     @media(max-width:760px) {
@@ -765,8 +768,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:15,y:54,r:-42},index:{x:30.7,y:20,r:-7},middle:{x:46,y:11,r:0},ring:{x:61,y:17,r:7},pinky:{x:76,y:29,r:14}},
-        right:{thumb:{x:76,y:54,r:42},index:{x:61,y:20,r:7},middle:{x:46,y:11,r:0},ring:{x:30.7,y:17,r:-7},pinky:{x:15,y:29,r:-14}}
+        left:{thumb:{x:10.5,y:37,r:-58},index:{x:28.5,y:10,r:0},middle:{x:42.3,y:2.5,r:0},ring:{x:56.2,y:7,r:4},pinky:{x:70.3,y:18,r:10}},
+        right:{thumb:{x:80.5,y:37,r:58},index:{x:62.5,y:10,r:0},middle:{x:48.7,y:2.5,r:0},ring:{x:34.8,y:7,r:-4},pinky:{x:20.7,y:18,r:-10}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -781,31 +784,25 @@
       function dims(n){
         const lengthScale={xs:.76,s:.88,m:1,l:1.16,xl:1.34}[n.length]||1;
         const widthScale={thin:.86,standard:1,thick:1.14}[state.fingerWidth]||1;
-        return {w:8.8*widthScale,h:19*lengthScale};
+        return {w:7.2*widthScale,h:15.5*lengthScale};
       }
       function addHandIllusion(){
-        const h=state.activeHand, mirror=h==="right";
-        const morph={fine:.9,standard:1,large:1.1}[state.morphology]||1;
-        const fw={thin:.88,standard:1,thick:1.12}[state.fingerWidth]||1;
-        const root=document.createElement("div");root.className="hand-illusion"+(mirror?" right":"");
-        root.style.setProperty("--hand-skin",state.skin);
-        const palm=document.createElement("div");palm.className="hand-palm";
-        palm.style.cssText=`left:${25-(morph-1)*12}%;top:55%;width:${54*morph}%;height:50%;border-radius:42% 42% 28% 28% / 24% 24% 18% 18%;`;
-        root.appendChild(palm);
-        const fingerData={
-          thumb:{x:13,y:53,w:12,h:36,r:-42},
-          index:{x:29,y:20,w:12,h:50,r:-7},
-          middle:{x:44,y:11,w:12.5,h:55,r:0},
-          ring:{x:59,y:17,w:12,h:51,r:7},
-          pinky:{x:74,y:29,w:10.5,h:43,r:14}
-        };
-        for(const f of fingers){
-          const p=fingerData[f],el=document.createElement("div");el.className="hand-finger";
-          el.style.left=p.x+"%";el.style.top=p.y+"%";el.style.width=(p.w*fw)+"%";el.style.height=p.h+"%";el.style.transform=`rotate(${p.r}deg)`;
-          const joint=document.createElement("div");joint.className="hand-joint";el.appendChild(joint);root.appendChild(el);
-        }
-        stage.appendChild(root);
+        const root=document.createElement("div");root.className="hand-illusion";root.style.setProperty("--hand-skin",state.skin);
+        const morph={fine:.94,standard:1,large:1.06}[state.morphology]||1;
+        const fw={thin:.94,standard:1,thick:1.06}[state.fingerWidth]||1;
+        const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+        svg.setAttribute("viewBox","0 0 600 470");svg.setAttribute("class","hand-svg");
+        if(state.activeHand==="right")svg.style.transform="scaleX(-1)";
+        const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+        g.setAttribute("transform",`translate(${300-300*morph} 0) scale(${morph} 1)`);svg.appendChild(g);
+        const p=document.createElementNS("http://www.w3.org/2000/svg","path");p.setAttribute("class","hand-silhouette");
+        const o=(fw-1)*9;
+        p.setAttribute("d",`M177 470 C166 439 157 407 153 372 C150 347 148 323 145 301 C142 282 129 269 111 258 L62 228 C45 218 37 201 44 186 C51 171 68 166 83 174 L142 205 C154 211 165 208 169 196 L${171-o} 83 C${171-o} 59 ${184-o} 45 201 45 C${218+o} 45 ${229+o} 59 ${229+o} 82 L${230+o} 174 C${230+o} 181 238 181 239 173 L${244-o} 47 C${245-o} 22 ${259-o} 8 277 8 C${296+o} 8 ${309+o} 23 ${309+o} 48 L${309+o} 166 C${309+o} 174 318 174 319 166 L${326-o} 65 C${328-o} 41 ${342-o} 28 360 30 C${378+o} 32 ${390+o} 47 ${388+o} 71 L${379+o} 177 C${378+o} 185 387 188 390 180 L${401-o} 111 C${405-o} 88 ${419-o} 77 436 81 C${453+o} 85 ${462+o} 101 ${457+o} 124 L${435+o} 235 C432 253 437 270 449 285 C468 308 475 334 468 363 C461 392 447 424 431 470 Z`);
+        g.appendChild(p);
+        ["M180 137 C193 132 207 132 220 137","M251 111 C267 106 285 106 302 111","M329 130 C346 126 363 127 379 133","M400 164 C416 162 432 166 444 174","M171 249 C192 240 216 239 237 246","M248 231 C269 224 293 224 314 231","M326 241 C347 235 370 238 388 248"].forEach(d=>{const q=document.createElementNS("http://www.w3.org/2000/svg","path");q.setAttribute("class","hand-detail");q.setAttribute("d",d);g.appendChild(q);});
+        root.appendChild(svg);stage.appendChild(root);
       }
+
       function radius(n){
         if(n.shape==="square")return "18% 18% 35% 35%";
         if(n.shape==="coffin")return "28% 28% 38% 38%";
