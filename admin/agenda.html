@@ -248,6 +248,21 @@
     .prep-media-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
     .prep-media-card:hover img{transform:scale(1.02)}
     .prep-media-empty{color:var(--muted);font-size:12px;line-height:1.5}
+    .designer-shell{margin-top:12px}
+    .designer-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+    .designer-toolbar select,.designer-toolbar input[type="color"]{height:36px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);font:inherit;font-size:11px}
+    .designer-toolbar select{padding:0 9px}
+    .designer-toolbar input[type="color"]{width:42px;padding:3px}
+    .designer-range{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px}
+    .designer-range input{width:78px}
+    .designer-stage{position:relative;width:100%;aspect-ratio:1.28/1;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#f3eee7;touch-action:none;user-select:none}
+    .designer-hand{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+    .designer-nail{position:absolute;border:1.5px solid rgba(83,67,59,.28);background:rgba(255,252,248,.74);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);overflow:hidden;transform-origin:50% 100%;cursor:crosshair}
+    .designer-nail canvas{width:100%;height:100%;display:block;touch-action:none}
+    .designer-nail.selected{outline:2px solid var(--sage-dark);outline-offset:2px}
+    .designer-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px;align-items:center}
+    .designer-status{font-size:10px;color:var(--muted)}
+    .designer-help{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45}
 
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
@@ -648,7 +663,7 @@
     async function loadAppointmentPreparation(a){
       const box=document.getElementById("appointment-preparation"); if(!box)return;
       const {data,error}=await supabaseClient.from("appointment_designs")
-        .select(`appointment_id,nail_shape,nail_length,color_wishes,client_design_note,conversation_preference,music_preference,beverage_id,beverage_details,private_preparation_notes,beverages(name)`)
+        .select(`appointment_id,nail_shape,nail_length,color_wishes,client_design_note,conversation_preference,music_preference,beverage_id,beverage_details,private_preparation_notes,sketch_data,beverages(name)`)
         .eq("appointment_id",a.id).maybeSingle();
       if(error){console.error(error);box.innerHTML=`<h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-empty">Impossible de charger les préférences pour le moment.</div>`;return;}
       const has=!!(data&&(data.nail_shape||data.nail_length||data.color_wishes||data.client_design_note||data.conversation_preference||data.music_preference||data.beverage_id||data.beverage_details));
@@ -669,11 +684,37 @@
         :`<div class="prep-section"><div class="prep-empty">La cliente n’a pas encore renseigné ses préférences.</div></div>`}
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
+        <div class="prep-section">
+          <div class="prep-label">✏️ Nail Designer · V1</div>
+          <div id="nail-designer" class="designer-shell">
+            <div class="designer-toolbar">
+              <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
+              <select id="designer-shape">
+                <option value="round">Rond</option><option value="almond">Amande</option><option value="square">Carré</option><option value="coffin">Coffin</option><option value="stiletto">Stiletto</option>
+              </select>
+              <select id="designer-length"><option value="xs">XS</option><option value="s">S</option><option value="m" selected>M</option><option value="l">L</option><option value="xl">XL</option></select>
+              <input id="designer-color" type="color" value="#7d2335" title="Couleur">
+              <label class="designer-range">Opacité <input id="designer-opacity" type="range" min="10" max="100" value="100"></label>
+              <label class="designer-range">Pinceau <input id="designer-size" type="range" min="1" max="20" value="6"></label>
+            </div>
+            <div id="designer-stage" class="designer-stage"></div>
+            <div class="designer-actions">
+              <button id="designer-undo" class="action-button" type="button">↶ Annuler</button>
+              <button id="designer-redo" class="action-button" type="button">↷ Rétablir</button>
+              <button id="designer-eraser" class="action-button" type="button">Gomme</button>
+              <button id="designer-clear" class="action-button" type="button">Effacer l’ongle</button>
+              <button id="designer-save" class="action-button primary" type="button">Enregistrer le croquis</button>
+              <span id="designer-status" class="designer-status"></span>
+            </div>
+            <div class="designer-help">Clique un ongle pour le sélectionner. Forme et longueur s’appliquent à l’ongle sélectionné. Dessin au doigt, stylet ou souris.</div>
+          </div>
+        </div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
         <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
         <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
       document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
       await loadAppointmentInspirations(a.id);
+      initNailDesigner(a.id, data?.sketch_data || null);
     }
 
     async function loadAppointmentInspirations(appointmentId){
@@ -696,6 +737,91 @@
       if(!cards.length){target.textContent="Les inspirations existent, mais leur aperçu n’a pas pu être chargé.";return;}
       target.className="prep-media-grid";
       target.innerHTML=cards.join("");
+    }
+
+
+    function initNailDesigner(appointmentId,saved){
+      const stage=document.getElementById("designer-stage"); if(!stage)return;
+      const fingers=["thumb","index","middle","ring","pinky"];
+      const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
+      const defaults={
+        left:{thumb:{x:10,y:59,r:-32},index:{x:28,y:22,r:-8},middle:{x:45,y:13,r:0},ring:{x:62,y:19,r:7},pinky:{x:78,y:32,r:15}},
+        right:{thumb:{x:78,y:59,r:32},index:{x:62,y:22,r:8},middle:{x:45,y:13,r:0},ring:{x:28,y:19,r:-7},pinky:{x:12,y:32,r:-15}}
+      };
+      let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,nails:{left:{},right:{}}};
+      for(const h of ["left","right"])for(const f of fingers){
+        state.nails[h][f] ||= {shape:"round",length:"m",strokes:[]};
+      }
+      let redo=[];
+      const handSelect=document.getElementById("designer-hand"),shape=document.getElementById("designer-shape"),length=document.getElementById("designer-length");
+      const color=document.getElementById("designer-color"),opacity=document.getElementById("designer-opacity"),size=document.getElementById("designer-size");
+      handSelect.value=state.activeHand||"left";
+
+      function dims(n){
+        const scale={xs:.78,s:.9,m:1,l:1.16,xl:1.34}[n.length]||1;
+        return {w:10*scale,h:25*scale};
+      }
+      function radius(n){
+        if(n.shape==="square")return "18% 18% 35% 35%";
+        if(n.shape==="coffin")return "28% 28% 38% 38%";
+        if(n.shape==="stiletto")return "50% 50% 38% 38%";
+        if(n.shape==="almond")return "50% 50% 42% 42%";
+        return "48% 48% 42% 42%";
+      }
+      function render(){
+        stage.innerHTML="";
+        const h=state.activeHand;
+        for(const f of fingers){
+          const n=state.nails[h][f],p=defaults[h][f],d=dims(n);
+          const wrap=document.createElement("div");
+          wrap.className="designer-nail"+(state.selected===f?" selected":"");
+          wrap.title=labels[f];
+          wrap.style.left=p.x+"%";wrap.style.top=p.y+"%";wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
+          wrap.style.transform=`rotate(${p.r}deg)`;
+          wrap.style.borderRadius=radius(n);
+          if(n.shape==="stiletto")wrap.style.clipPath="polygon(50% 0,100% 38%,88% 100%,12% 100%,0 38%)";
+          else if(n.shape==="coffin")wrap.style.clipPath="polygon(20% 0,80% 0,100% 30%,88% 100%,12% 100%,0 30%)";
+          const c=document.createElement("canvas"); c.width=220;c.height=420;wrap.appendChild(c);stage.appendChild(wrap);
+          redraw(c,n);
+          wrap.addEventListener("pointerdown",e=>{state.selected=f;syncControls();render();startStroke(e,c,n);});
+          c.addEventListener("pointermove",e=>moveStroke(e,c,n));
+          c.addEventListener("pointerup",endStroke);c.addEventListener("pointercancel",endStroke);c.addEventListener("pointerleave",endStroke);
+        }
+      }
+      function redraw(c,n){
+        const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.lineCap="round";ctx.lineJoin="round";
+        for(const s of n.strokes){
+          if(!s.points?.length)continue;
+          ctx.save();ctx.globalCompositeOperation=s.eraser?"destination-out":"source-over";ctx.globalAlpha=s.opacity;ctx.strokeStyle=s.color;ctx.lineWidth=s.size*4;
+          ctx.beginPath();ctx.moveTo(s.points[0][0]*c.width,s.points[0][1]*c.height);
+          for(const p of s.points.slice(1))ctx.lineTo(p[0]*c.width,p[1]*c.height);
+          ctx.stroke();ctx.restore();
+        }
+      }
+      let drawing=null,drawCanvas=null;
+      function point(e,c){const r=c.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];}
+      function startStroke(e,c,n){
+        e.preventDefault();c.setPointerCapture?.(e.pointerId);redo=[];
+        drawing={color:color.value,opacity:Number(opacity.value)/100,size:Number(size.value),eraser:!!state.eraser,points:[point(e,c)]};
+        n.strokes.push(drawing);drawCanvas=c;
+      }
+      function moveStroke(e,c,n){if(!drawing||drawCanvas!==c)return;drawing.points.push(point(e,c));redraw(c,n);}
+      function endStroke(){drawing=null;drawCanvas=null;}
+      function current(){return state.nails[state.activeHand][state.selected];}
+      function syncControls(){const n=current();shape.value=n.shape;length.value=n.length;handSelect.value=state.activeHand;document.getElementById("designer-eraser").classList.toggle("primary",state.eraser);}
+      handSelect.onchange=()=>{state.activeHand=handSelect.value;state.selected="middle";syncControls();render();};
+      shape.onchange=()=>{current().shape=shape.value;render();};
+      length.onchange=()=>{current().length=length.value;render();};
+      document.getElementById("designer-eraser").onclick=()=>{state.eraser=!state.eraser;syncControls();};
+      document.getElementById("designer-clear").onclick=()=>{const n=current();redo.push(n.strokes.slice());n.strokes=[];render();};
+      document.getElementById("designer-undo").onclick=()=>{const n=current();if(n.strokes.length){redo.push(n.strokes.pop());render();}};
+      document.getElementById("designer-redo").onclick=()=>{const n=current();if(redo.length){const x=redo.pop();Array.isArray(x)?n.strokes.push(...x):n.strokes.push(x);render();}};
+      document.getElementById("designer-save").onclick=async()=>{
+        const b=document.getElementById("designer-save"),m=document.getElementById("designer-status");b.disabled=true;m.textContent="Enregistrement…";
+        const {error}=await supabaseClient.from("appointment_designs").upsert({appointment_id:appointmentId,sketch_data:state,updated_at:new Date().toISOString()},{onConflict:"appointment_id"});
+        b.disabled=false;m.textContent=error?"Impossible d’enregistrer.":"Croquis enregistré ✓";if(error)console.error(error);else setTimeout(()=>m.textContent="",2500);
+      };
+      syncControls();render();
     }
 
     async function savePreparationNotes(appointmentId){
