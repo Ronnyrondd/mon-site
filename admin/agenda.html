@@ -272,6 +272,15 @@
     .hand-finger{position:absolute;background:var(--hand-skin);border:1px solid rgba(83,67,59,.14);border-bottom:0;border-radius:48% 48% 16% 16%;transform-origin:50% 100%}
     .hand-joint{position:absolute;left:17%;right:17%;height:1px;background:rgba(115,79,61,.09);top:49%;box-shadow:0 7px 0 rgba(115,79,61,.055)}
     .hand-svg{position:absolute;inset:2% 2% 0;width:96%;height:98%;overflow:visible}
+
+    .hand-photo{
+      position:absolute;left:7%;top:1%;width:86%;height:99%;
+      object-fit:contain;object-position:center bottom;
+      pointer-events:none;user-select:none;z-index:1;
+      filter:saturate(.92) contrast(.98);
+      transform-origin:center center;
+    }
+    .hand-photo.right{transform:scaleX(-1)}
     .hand-silhouette{fill:var(--hand-skin);stroke:rgba(83,67,59,.18);stroke-width:1.2;vector-effect:non-scaling-stroke}
     .hand-detail{fill:none;stroke:rgba(105,73,57,.13);stroke-width:1;stroke-linecap:round;vector-effect:non-scaling-stroke}
     .hand-highlight{fill:none;stroke:rgba(255,255,255,.20);stroke-width:14;stroke-linecap:round;opacity:.55}
@@ -700,7 +709,7 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · V4</div>
+          <div class="prep-label">✏️ Nail Designer · V5</div>
           <div id="nail-designer" class="designer-shell">
             <div class="designer-toolbar">
               <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
@@ -715,7 +724,7 @@
               <label class="designer-range">Pinceau <input id="designer-size" type="range" min="1" max="20" value="6"></label>
             </div>
             <div class="designer-skin-row">
-              <span class="designer-skin-label">Peau / carnation</span>
+              <span class="designer-skin-label">Peau / carnation · variantes V5 à venir</span>
               <button class="skin-swatch" type="button" data-skin="#f4d4c1" style="background:#f4d4c1" aria-label="Carnation claire"></button>
               <button class="skin-swatch" type="button" data-skin="#e8b99a" style="background:#e8b99a" aria-label="Carnation claire à médium"></button>
               <button class="skin-swatch" type="button" data-skin="#c98f69" style="background:#c98f69" aria-label="Carnation médium"></button>
@@ -771,8 +780,8 @@
       const fingers=["thumb","index","middle","ring","pinky"];
       const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
       const defaults={
-        left:{thumb:{x:11.5,y:38,r:-58},index:{x:29.2,y:10.2,r:0},middle:{x:42.9,y:2.2,r:0},ring:{x:56.8,y:7.3,r:4},pinky:{x:71.1,y:18.6,r:10}},
-        right:{thumb:{x:81.5,y:38,r:58},index:{x:63.8,y:10.2,r:0},middle:{x:50.1,y:2.2,r:0},ring:{x:36.2,y:7.3,r:-4},pinky:{x:21.9,y:18.6,r:-10}}
+        left:{thumb:{x:67.2,y:56.0,r:42},index:{x:55.8,y:10.0,r:4},middle:{x:42.7,y:1.8,r:0},ring:{x:29.5,y:8.0,r:-3},pinky:{x:17.1,y:24.5,r:-4}},
+        right:{thumb:{x:25.8,y:56.0,r:-42},index:{x:37.2,y:10.0,r:-4},middle:{x:50.3,y:1.8,r:0},ring:{x:63.5,y:8.0,r:3},pinky:{x:75.9,y:24.5,r:4}}
       };
       let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
       state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
@@ -790,24 +799,15 @@
         return {w:7.0*widthScale,h:14.8*lengthScale,lengthScale};
       }
       function addHandIllusion(){
-        const root=document.createElement("div");root.className="hand-illusion";root.style.setProperty("--hand-skin",state.skin);
+        const hand=document.createElement("img");
+        hand.src="../images/nail-designer-hand-v5.png";
+        hand.alt="";
+        hand.draggable=false;
+        hand.className="hand-photo"+(state.activeHand==="right"?" right":"");
         const morph={fine:.94,standard:1,large:1.06}[state.morphology]||1;
-        const fw={thin:.94,standard:1,thick:1.06}[state.fingerWidth]||1;
-        const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
-        svg.setAttribute("viewBox","0 0 600 470");svg.setAttribute("class","hand-svg");
-        if(state.activeHand==="right")svg.style.transform="scaleX(-1)";
-        const defs=document.createElementNS("http://www.w3.org/2000/svg","defs");
-        defs.innerHTML=`<linearGradient id="skinGlow" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="white" stop-opacity=".18"/><stop offset="48%" stop-color="white" stop-opacity="0"/><stop offset="100%" stop-color="#6f402c" stop-opacity=".08"/></linearGradient>`;
-        svg.appendChild(defs);
-        const g=document.createElementNS("http://www.w3.org/2000/svg","g");
-        g.setAttribute("transform",`translate(${300-300*morph} 0) scale(${morph} 1)`);svg.appendChild(g);
-        const p=document.createElementNS("http://www.w3.org/2000/svg","path");p.setAttribute("class","hand-silhouette");
-        const o=(fw-1)*9;
-        p.setAttribute("d",`M177 470 C166 439 157 407 153 372 C150 347 148 323 145 301 C142 282 129 269 111 258 L62 228 C45 218 37 201 44 186 C51 171 68 166 83 174 L142 205 C154 211 165 208 169 196 L${171-o} 83 C${171-o} 59 ${184-o} 45 201 45 C${218+o} 45 ${229+o} 59 ${229+o} 82 L${230+o} 174 C${230+o} 181 238 181 239 173 L${244-o} 47 C${245-o} 22 ${259-o} 8 277 8 C${296+o} 8 ${309+o} 23 ${309+o} 48 L${309+o} 166 C${309+o} 174 318 174 319 166 L${326-o} 65 C${328-o} 41 ${342-o} 28 360 30 C${378+o} 32 ${390+o} 47 ${388+o} 71 L${379+o} 177 C${378+o} 185 387 188 390 180 L${401-o} 111 C${405-o} 88 ${419-o} 77 436 81 C${453+o} 85 ${462+o} 101 ${457+o} 124 L${435+o} 235 C432 253 437 270 449 285 C468 308 475 334 468 363 C461 392 447 424 431 470 Z`);
-        g.appendChild(p);
-        const glow=p.cloneNode();glow.setAttribute("fill","url(#skinGlow)");glow.setAttribute("stroke","none");g.appendChild(glow);
-        ["M180 137 C193 132 207 132 220 137","M251 111 C267 106 285 106 302 111","M329 130 C346 126 363 127 379 133","M400 164 C416 162 432 166 444 174","M171 249 C192 240 216 239 237 246","M248 231 C269 224 293 224 314 231","M326 241 C347 235 370 238 388 248"].forEach(d=>{const q=document.createElementNS("http://www.w3.org/2000/svg","path");q.setAttribute("class","hand-detail");q.setAttribute("d",d);g.appendChild(q);});
-        root.appendChild(svg);stage.appendChild(root);
+        const finger={thin:.97,standard:1,thick:1.03}[state.fingerWidth]||1;
+        hand.style.transform=(state.activeHand==="right"?"scaleX(-1) ":"")+`scaleX(${morph*finger})`;
+        stage.appendChild(hand);
       }
 
       function radius(n){
@@ -875,7 +875,7 @@
       handSelect.onchange=()=>{state.activeHand=handSelect.value;state.selected="middle";syncControls();render();};
       morphology.onchange=()=>{state.morphology=morphology.value;render();};
       fingerWidth.onchange=()=>{state.fingerWidth=fingerWidth.value;render();};
-      document.querySelectorAll(".skin-swatch").forEach(b=>b.onclick=()=>{state.skin=b.dataset.skin;syncControls();render();});
+      document.querySelectorAll(".skin-swatch").forEach(b=>b.onclick=()=>{state.skin=b.dataset.skin;syncControls();});
       shape.onchange=()=>{current().shape=shape.value;render();};
       length.onchange=()=>{current().length=length.value;render();};
       document.getElementById("designer-eraser").onclick=()=>{state.eraser=!state.eraser;syncControls();};
