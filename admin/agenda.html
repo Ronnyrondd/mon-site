@@ -353,6 +353,13 @@
     .designer-nail{background:linear-gradient(100deg,rgba(255,255,255,.78),rgba(255,247,242,.62) 48%,rgba(236,211,197,.42));}
     .hand-illusion.right{transform:scaleX(-1)}
 
+
+    .prep-media-card{cursor:zoom-in;padding:0}
+    .prep-media-lightbox{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(24,23,21,.82)}
+    .prep-media-lightbox.open{display:flex}
+    .prep-media-lightbox img{max-width:min(100%,1000px);max-height:88vh;object-fit:contain;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+    .prep-media-lightbox-close{position:absolute;top:18px;right:22px;width:42px;height:42px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(255,255,255,.10);color:white;font-size:25px;line-height:1}
+
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
       .nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}
@@ -418,6 +425,12 @@
       </div>
       <div id="modal-content"></div>
     </div>
+  </div>
+
+
+  <div id="prep-media-lightbox" class="prep-media-lightbox" aria-hidden="true">
+    <button id="prep-media-lightbox-close" class="prep-media-lightbox-close" type="button" aria-label="Fermer">×</button>
+    <img id="prep-media-lightbox-image" alt="Inspiration nail art agrandie">
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -773,48 +786,29 @@
         :`<div class="prep-section"><div class="prep-empty">La cliente n’a pas encore renseigné ses préférences.</div></div>`}
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
-        <div class="prep-section">
-          <div class="prep-label">✏️ Nail Designer · Template</div>
-          <div id="nail-designer" class="designer-shell">
-            <div class="designer-toolbar">
-              <select id="designer-hand"><option value="left">Main gauche</option><option value="right">Main droite</option></select>
-              <select id="designer-morphology" title="Morphologie de la main"><option value="fine">Main fine</option><option value="standard" selected>Main standard</option><option value="large">Main large</option></select>
-              <select id="designer-fingers" title="Largeur des doigts"><option value="thin">Doigts fins</option><option value="standard" selected>Doigts standards</option><option value="thick">Doigts plus épais</option></select>
-              <select id="designer-shape">
-                <option value="round">Rond</option><option value="almond">Amande</option><option value="square">Carré</option><option value="coffin">Coffin</option><option value="stiletto">Stiletto</option>
-              </select>
-              <select id="designer-length"><option value="xs">XS</option><option value="s">S</option><option value="m" selected>M</option><option value="l">L</option><option value="xl">XL</option></select>
-              <input id="designer-color" type="color" value="#7d2335" title="Couleur">
-              <label class="designer-range">Opacité <input id="designer-opacity" type="range" min="10" max="100" value="100"></label>
-              <label class="designer-range">Pinceau <input id="designer-size" type="range" min="1" max="20" value="6"></label>
-            </div>
-            <div class="designer-skin-row">
-              <span class="designer-skin-label">Peau / carnation</span>
-              <button class="skin-swatch" type="button" data-skin="#f4d4c1" style="background:#f4d4c1" aria-label="Carnation claire"></button>
-              <button class="skin-swatch" type="button" data-skin="#e8b99a" style="background:#e8b99a" aria-label="Carnation claire à médium"></button>
-              <button class="skin-swatch" type="button" data-skin="#c98f69" style="background:#c98f69" aria-label="Carnation médium"></button>
-              <button class="skin-swatch" type="button" data-skin="#a56849" style="background:#a56849" aria-label="Carnation mate"></button>
-              <button class="skin-swatch" type="button" data-skin="#74452f" style="background:#74452f" aria-label="Carnation foncée"></button>
-              <button class="skin-swatch" type="button" data-skin="#4b2b20" style="background:#4b2b20" aria-label="Carnation très foncée"></button>
-            </div>
-            <div id="designer-stage" class="designer-stage"></div>
-            <div class="designer-actions">
-              <button id="designer-undo" class="action-button" type="button">↶ Annuler</button>
-              <button id="designer-redo" class="action-button" type="button">↷ Rétablir</button>
-              <button id="designer-eraser" class="action-button" type="button">Gomme</button>
-              <button id="designer-clear" class="action-button" type="button">Effacer l’ongle</button>
-              <button id="designer-save" class="action-button primary" type="button">Enregistrer le croquis</button>
-              <span id="designer-status" class="designer-status"></span>
-            </div>
-            <div class="designer-help">Clique un ongle pour le sélectionner. Forme et longueur s’appliquent à l’ongle sélectionné. Dessin au doigt, stylet ou souris.</div>
-          </div>
-        </div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
         <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
         <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
       document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
       await loadAppointmentInspirations(a.id);
-      initNailDesigner(a.id, data?.sketch_data || null);
+    }
+
+    function openInspirationLightbox(url){
+      const lightbox=document.getElementById("prep-media-lightbox");
+      const image=document.getElementById("prep-media-lightbox-image");
+      if(!lightbox||!image||!url)return;
+      image.src=url;
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden","false");
+    }
+
+    function closeInspirationLightbox(){
+      const lightbox=document.getElementById("prep-media-lightbox");
+      const image=document.getElementById("prep-media-lightbox-image");
+      if(!lightbox||!image)return;
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden","true");
+      image.removeAttribute("src");
     }
 
     async function loadAppointmentInspirations(appointmentId){
@@ -832,11 +826,14 @@
         const {data:signed,error:signedError}=await supabaseClient.storage
           .from("appointment-media").createSignedUrl(item.storage_path,3600);
         if(signedError||!signed?.signedUrl){console.error(signedError);continue;}
-        cards.push(`<a class="prep-media-card" href="${escapeHtml(signed.signedUrl)}" target="_blank" rel="noopener noreferrer" title="Ouvrir l’inspiration"><img src="${escapeHtml(signed.signedUrl)}" alt="Inspiration nail art" loading="lazy"></a>`);
+        cards.push(`<button class="prep-media-card" type="button" data-inspiration-url="${escapeHtml(signed.signedUrl)}" title="Agrandir l’inspiration"><img src="${escapeHtml(signed.signedUrl)}" alt="Inspiration nail art" loading="lazy"></button>`);
       }
       if(!cards.length){target.textContent="Les inspirations existent, mais leur aperçu n’a pas pu être chargé.";return;}
       target.className="prep-media-grid";
       target.innerHTML=cards.join("");
+      target.querySelectorAll("[data-inspiration-url]").forEach(card=>{
+        card.addEventListener("click",()=>openInspirationLightbox(card.dataset.inspirationUrl));
+      });
     }
 
 
@@ -1232,6 +1229,15 @@
       await loadAppointments();
     }
     init();
-  </script>
+  
+    document.getElementById("prep-media-lightbox-close")?.addEventListener("click",closeInspirationLightbox);
+    document.getElementById("prep-media-lightbox")?.addEventListener("click",e=>{
+      if(e.target.id==="prep-media-lightbox") closeInspirationLightbox();
+    });
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape") closeInspirationLightbox();
+    });
+
+</script>
 </body>
 </html>
