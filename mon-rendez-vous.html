@@ -12,8 +12,19 @@ h1,h2{font-family:Fraunces,serif;font-weight:500}.hero{text-align:center;padding
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.choice{border:1px solid var(--line);border-radius:14px;padding:13px;background:white;cursor:pointer;text-align:center;font:inherit}.choice.on{border-color:var(--sage);background:var(--pale)}
 label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input,textarea,select{width:100%;font:inherit;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:white;margin-top:6px;color:var(--ink)}textarea{min-height:90px;resize:vertical}
 .btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}
+.inspiration{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.inspiration-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.inspiration-count{font-size:12px;color:var(--soft);white-space:nowrap}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}
+.photo-card{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:var(--pale);border:1px solid var(--line)}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-remove{position:absolute;right:7px;top:7px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(43,36,31,.82);color:white;cursor:pointer;font-size:16px}
+.upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}
+.upload-label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;background:white;padding:11px 16px;font-weight:600;font-size:13px;cursor:pointer}
+.upload-label.disabled{opacity:.45;pointer-events:none}.upload-label input{display:none}
+.upload-status{font-size:12px;color:var(--soft)}
 .hidden{display:none!important}.loading{text-align:center;padding:80px 20px;color:var(--soft)}.error{background:#f7e8e8;color:#8a3030;padding:14px;border-radius:12px}
-@media(max-width:620px){.choices{grid-template-columns:1fr}.actions .btn{width:100%}}
+@media(max-width:620px){.choices{grid-template-columns:1fr}.actions .btn{width:100%}.photo-grid{grid-template-columns:repeat(3,1fr)}}
 </style></head><body><main class="wrap">
 <section class="hero"><div class="eyebrow">Espace privé</div><h1>Mon rendez-vous</h1><p class="sub">Retrouve ton rendez-vous et personnalise ton moment.</p></section>
 <div id="loading" class="loading">Chargement de ton rendez-vous…</div>
@@ -26,7 +37,19 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 <label class="field">Longueur souhaitée<input id="length" placeholder="Courte, moyenne, longue…"></label>
 <label class="field">Couleurs / envies<input id="colors" placeholder="Bordeaux, nude, chrome…"></label>
 <label class="field">Une idée ou un petit message pour ta pose<textarea id="designNote" placeholder="Pas de panique si tu ne sais pas encore, on pourra décider ensemble ♡"></textarea></label>
-<div class="msg">📎 Les photos d'inspiration arriveront très bientôt ici.</div>
+<div class="inspiration">
+  <div class="inspiration-head">
+    <div><strong>📎 Mes inspirations</strong><div class="sub" style="margin-top:4px">Ajoute jusqu’à 3 photos pour me montrer ce que tu imagines.</div></div>
+    <div id="photoCount" class="inspiration-count">0 / 3</div>
+  </div>
+  <div id="photoGrid" class="photo-grid"></div>
+  <div class="upload-row">
+    <label id="uploadLabel" class="upload-label">＋ Ajouter une photo
+      <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif">
+    </label>
+    <span id="uploadStatus" class="upload-status"></span>
+  </div>
+</div>
 </section>
 
 <section class="card"><h2>🌿 Mon moment</h2><p class="sub">Comment as-tu envie de profiter de ton rendez-vous ? Tu peux aussi ne rien choisir.</p>
@@ -47,10 +70,87 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 </div></main>
 <script>
 const db=supabase.createClient("https://zlmwytycgopowalfrjwf.supabase.co","sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG");
-const token=new URLSearchParams(location.search).get("token");let appt=null,conv=null,music=null;
+const token=new URLSearchParams(location.search).get("token");let appt=null,conv=null,music=null,media=[];
 const euro=c=>(c/100).toLocaleString("fr-BE",{style:"currency",currency:"EUR"});
 function select(group,val){document.querySelectorAll(`#${group} .choice`).forEach(b=>b.classList.toggle("on",b.dataset.v===val));if(group==="conversation")conv=val;else music=val}
 document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>select(b.parentElement.id,b.dataset.v));
+
+const MEDIA_FUNCTION="https://zlmwytycgopowalfrjwf.supabase.co/functions/v1/appointment-media";
+
+async function mediaRequest(body,isForm=false){
+  const headers=isForm?{}:{"Content-Type":"application/json"};
+  const res=await fetch(MEDIA_FUNCTION,{
+    method:"POST",
+    headers,
+    body:isForm?body:JSON.stringify(body)
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(data.error||"media_error");
+  return data;
+}
+function renderMedia(){
+  const grid=document.querySelector("#photoGrid"),count=document.querySelector("#photoCount"),
+        label=document.querySelector("#uploadLabel");
+  grid.innerHTML="";
+  media.forEach(item=>{
+    const card=document.createElement("div");card.className="photo-card";
+    const img=document.createElement("img");img.src=item.url;img.alt="Photo d’inspiration";
+    const del=document.createElement("button");del.type="button";del.className="photo-remove";
+    del.setAttribute("aria-label","Supprimer cette photo");del.textContent="×";
+    del.onclick=()=>removeMedia(item.id,del);
+    card.append(img,del);grid.appendChild(card);
+  });
+  count.textContent=`${media.length} / 3`;
+  label.classList.toggle("disabled",media.length>=3);
+}
+async function loadMedia(){
+  try{
+    const data=await mediaRequest({action:"list",token});
+    media=data.media||[];renderMedia();
+  }catch(e){
+    console.error(e);
+    document.querySelector("#uploadStatus").textContent="Impossible de charger les inspirations.";
+  }
+}
+async function uploadMedia(file){
+  const status=document.querySelector("#uploadStatus"),input=document.querySelector("#photoInput");
+  if(!file)return;
+  if(media.length>=3){status.textContent="Tu as déjà ajouté 3 photos.";return}
+  if(file.size>5*1024*1024){status.textContent="Cette photo dépasse 5 Mo.";input.value="";return}
+  const allowed=["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+  if(file.type && !allowed.includes(file.type)){status.textContent="Format non accepté.";input.value="";return}
+  status.textContent="Envoi de la photo…";input.disabled=true;
+  const form=new FormData();form.append("action","upload");form.append("token",token);form.append("file",file);
+  try{
+    await mediaRequest(form,true);
+    status.textContent="Photo ajoutée ✓";
+    await loadMedia();
+  }catch(e){
+    console.error(e);
+    const messages={
+      maximum_files_reached:"Tu as déjà ajouté 3 photos.",
+      file_too_large:"Cette photo dépasse 5 Mo.",
+      invalid_file_type:"Ce format de photo n’est pas accepté.",
+      appointment_cancelled:"Ce rendez-vous est annulé."
+    };
+    status.textContent=messages[e.message]||"Impossible d’envoyer la photo pour le moment.";
+  }finally{
+    input.disabled=false;input.value="";
+  }
+}
+async function removeMedia(id,button){
+  if(!confirm("Supprimer cette photo d’inspiration ?"))return;
+  button.disabled=true;
+  const status=document.querySelector("#uploadStatus");status.textContent="Suppression…";
+  try{
+    await mediaRequest({action:"delete",token,media_id:id});
+    media=media.filter(x=>x.id!==id);renderMedia();status.textContent="Photo supprimée.";
+  }catch(e){
+    console.error(e);button.disabled=false;status.textContent="Impossible de supprimer la photo.";
+  }
+}
+document.querySelector("#photoInput").addEventListener("change",e=>uploadMedia(e.target.files?.[0]));
+
 async function init(){
  if(!token){bad();return}
  const [{data,error},{data:bev}]=await Promise.all([db.rpc("get_private_appointment",{p_token:token}),db.rpc("get_public_beverages")]);
@@ -64,6 +164,7 @@ async function init(){
  if(appt.conversation_preference)select("conversation",appt.conversation_preference);if(appt.music_preference)select("music",appt.music_preference);
  if(["cancelled_by_client","cancelled_by_admin"].includes(appt.status))document.querySelector("#alreadyCancelled").classList.remove("hidden");else if(appt.cancellation_allowed)document.querySelector("#cancelAllowed").classList.remove("hidden");else document.querySelector("#cancelBlocked").classList.remove("hidden");
  document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
+ await loadMedia();
 }
 
 function icsEscape(v){return String(v||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
