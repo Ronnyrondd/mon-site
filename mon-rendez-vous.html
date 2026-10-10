@@ -78,12 +78,18 @@ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>select(b.parentEle
 const MEDIA_FUNCTION="https://zlmwytycgopowalfrjwf.supabase.co/functions/v1/appointment-media";
 
 async function mediaRequest(body,isForm=false){
-  const headers=isForm?{}:{"Content-Type":"application/json"};
+  const headers={
+    "apikey":"sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG",
+    "Authorization":"Bearer sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG"
+  };
+  if(!isForm)headers["Content-Type"]="application/json";
+
   const res=await fetch(MEDIA_FUNCTION,{
     method:"POST",
     headers,
     body:isForm?body:JSON.stringify(body)
   });
+
   const data=await res.json().catch(()=>({}));
   if(!res.ok)throw new Error(data.error||"media_error");
   return data;
