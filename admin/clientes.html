@@ -30,6 +30,10 @@
     .section{margin-top:26px}.section-title{margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-dark)}
     .next-card{padding:16px;border-radius:14px;background:var(--sage-light);font-size:12px;line-height:1.65}.history{border-top:1px solid var(--line)}.history-row{display:grid;grid-template-columns:95px minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);font-size:11px}.history-service{font-weight:600}.history-status{margin-top:3px;color:var(--muted);font-size:10px}.history-price{font-weight:600}
     .notes{width:100%;min-height:105px;resize:vertical;padding:13px;border:1px solid var(--line);border-radius:12px;background:white;outline:none}.notes:focus{border-color:var(--sage)}.note-actions{display:flex;align-items:center;gap:12px;margin-top:9px}.small-button{padding:9px 13px;border:0;border-radius:100px;background:var(--ink);color:white;font-size:11px;font-weight:600}.save-message{color:var(--muted);font-size:10px}
+    .history-row{align-items:start}
+    .history-meta{margin-top:5px;color:var(--muted);font-size:10px;line-height:1.5}
+    .history-money{text-align:right}.history-expected{margin-top:4px;color:var(--muted);font-size:9px;font-weight:400}
+    .history-photos{grid-column:2/-1;margin-top:2px}.photo-summary{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:100px;background:var(--cream);color:var(--muted);font-size:9px}
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
     @media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
@@ -87,6 +91,7 @@
   function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
   function cap(v){return v?v.charAt(0).toUpperCase()+v.slice(1):v}
   function clientName(c){return `${c.first_name||""} ${c.last_name||""}`.trim()||"Cliente"}
+  const paymentMethodLabels={card:"Carte",qr:"QR",cash:"Espèces",bank_transfer:"Virement",other:"Autre"};
 
   async function protectPage(){
     const {data:{session}}=await supabaseClient.auth.getSession();
@@ -124,25 +129,23 @@
     const profile=document.getElementById("profile");
     profile.innerHTML='<div class="empty">Chargement de la fiche…</div>';
 
-    const [{data:appointments,error:appointmentError},{data:payments,error:paymentError}]=await Promise.all([
+    const [{data:history,error:historyError},{data:appointments,error:appointmentError}]=await Promise.all([
+      supabaseClient.rpc("admin_get_client_history",{p_client_id:id}),
       supabaseClient.from("appointments")
         .select("id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot")
-        .eq("client_id",id).order("starts_at",{ascending:false}),
-      supabaseClient.from("payments")
-        .select("amount_cents,payment_type,paid_at,appointments!inner(client_id)")
-        .eq("appointments.client_id",id)
+        .eq("client_id",id).order("starts_at",{ascending:false})
     ]);
 
-    if(appointmentError||paymentError){
-      console.error(appointmentError||paymentError);
+    if(historyError||appointmentError){
+      console.error(historyError||appointmentError);
       profile.innerHTML='<div class="empty">Impossible de charger toute la fiche cliente.</div>';return;
     }
 
-    const appts=appointments||[], now=new Date();
-    const visits=appts.filter(a=>a.status==="completed").length;
+    const appts=appointments||[], historyRows=history||[], now=new Date();
+    const visits=historyRows.filter(a=>a.status==="completed").length;
     const next=[...appts].filter(a=>new Date(a.starts_at)>=now&&["pending","confirmed"].includes(a.status))
       .sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at))[0]||null;
-    const total=(payments||[]).reduce((sum,p)=>p.payment_type==="refund"?sum-p.amount_cents:sum+p.amount_cents,0);
+    const total=historyRows.reduce((sum,a)=>sum+Number(a.paid_amount_cents||0),0);
     const birthday=c.birth_date ? new Date(`${c.birth_date}T12:00:00`) : null;
     const statusLabel={pending:"En attente",confirmed:"Confirmé",completed:"Terminé",cancelled_by_client:"Annulé par la cliente",cancelled_by_admin:"Annulé",late_cancellation:"Annulation tardive",no_show:"Absence"};
 
@@ -179,11 +182,25 @@
       <div class="section">
         <h3 class="section-title">Historique</h3>
         <div class="history">
-          ${appts.length?appts.map(a=>`<div class="history-row">
-            <div>${dateFmt.format(new Date(a.starts_at))}<br>${timeFmt.format(new Date(a.starts_at))}</div>
-            <div><div class="history-service">${escapeHtml(a.service_name_snapshot)}</div><div class="history-status">${escapeHtml(statusLabel[a.status]||a.status)}</div></div>
-            <div class="history-price">${euro.format((a.expected_price_cents||0)/100)}</div>
-          </div>`).join(""):'<div class="empty">Aucun rendez-vous enregistré.</div>'}
+          ${historyRows.length?historyRows.map(a=>{
+            const paid=Number(a.paid_amount_cents||0);
+            const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
+            const photoCount=Number(a.result_photo_count||0);
+            return `<div class="history-row">
+              <div>${dateFmt.format(new Date(a.starts_at))}<br>${timeFmt.format(new Date(a.starts_at))}</div>
+              <div>
+                <div class="history-service">${escapeHtml(a.service_name)}</div>
+                <div class="history-status">${escapeHtml(statusLabel[a.status]||a.status)}</div>
+                ${method?`<div class="history-meta">${escapeHtml(method)}</div>`:""}
+                ${a.private_notes?`<div class="history-meta">Note · ${escapeHtml(a.private_notes)}</div>`:""}
+              </div>
+              <div class="history-money">
+                <div class="history-price">${euro.format(paid/100)}</div>
+                ${Number(a.expected_price_cents||0)!==paid?`<div class="history-expected">Prévu ${euro.format((a.expected_price_cents||0)/100)}</div>`:""}
+              </div>
+              ${photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:""}
+            </div>`;
+          }).join(""):'<div class="empty">Aucun rendez-vous enregistré.</div>'}
         </div>
       </div>
     </div>`;
