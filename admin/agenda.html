@@ -1154,54 +1154,27 @@
       }
 
       button.disabled=true;
-      message.textContent="Vérification…";
+      message.textContent="Enregistrement…";
       message.className="form-message";
 
-      /* Protection simple contre un double clic / double paiement final. */
-      const {data:existingPayments,error:paymentCheckError}=await supabaseClient
-        .from("payments")
-        .select("id")
-        .eq("appointment_id",a.id)
-        .eq("payment_type","final")
-        .limit(1);
-
-      if(paymentCheckError){
-        console.error(paymentCheckError);
-        button.disabled=false;
-        message.textContent="Impossible de vérifier les paiements existants.";
-        message.className="form-message error-message";
-        return;
-      }
-
-      if(existingPayments?.length){
-        message.textContent="Un paiement final existe déjà pour ce rendez-vous.";
-        message.className="form-message error-message";
-        return;
-      }
-
-      const {error:paymentError}=await supabaseClient.from("payments").insert({
-        appointment_id:a.id,
-        amount_cents:Math.round(amount*100),
-        payment_method:method,
-        payment_type:"final"
+      const {data,error}=await supabaseClient.rpc("admin_complete_appointment",{
+        p_appointment_id:a.id,
+        p_amount_cents:Math.round(amount*100),
+        p_payment_method:method
       });
 
-      if(paymentError){
-        console.error(paymentError);
+      if(error){
+        console.error(error);
         button.disabled=false;
-        message.textContent="Le paiement n’a pas pu être enregistré.";
+        message.textContent=error.message || "Le rendez-vous n’a pas pu être terminé.";
         message.className="form-message error-message";
         return;
       }
 
-      const {error:appointmentError}=await supabaseClient.from("appointments")
-        .update({status:"completed"})
-        .eq("id",a.id)
-        .neq("status","completed");
-
-      if(appointmentError){
-        console.error(appointmentError);
-        message.textContent="Paiement enregistré, mais le statut du RDV n’a pas pu être modifié. Ne reclique pas : vérifie le rendez-vous.";
+      if(!data?.success){
+        console.error("Réponse inattendue de admin_complete_appointment",data);
+        button.disabled=false;
+        message.textContent="Le rendez-vous n’a pas pu être terminé.";
         message.className="form-message error-message";
         return;
       }
