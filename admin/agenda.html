@@ -55,6 +55,7 @@
     .appointment { padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--sage-light); cursor:pointer; }
     .appointment.pending { background:var(--rose-light); }
     .appointment.completed { background:#f0efe9; opacity:.75; }
+    .appointment.no_show { background:#f3ece8; opacity:.72; border-style:dashed; }
     .appointment-time { font-size:12px; font-weight:600; }
     .appointment-client { margin-top:5px; font-size:12px; font-weight:600; }
     .appointment-service { margin-top:2px; color:var(--muted); font-size:10px; line-height:1.35; }
@@ -142,6 +143,7 @@
     }
     .timeline-appointment.pending { background:var(--rose-light); }
     .timeline-appointment.completed { background:#f0efe9; opacity:.76; }
+    .timeline-appointment.no_show { background:#f3ece8; opacity:.72; border-style:dashed; }
     .timeline-appointment .appointment-time { font-size:10px; }
     .timeline-appointment .appointment-client {
       margin-top:2px;
@@ -219,6 +221,7 @@
     }
     .status-pill.pending { background:var(--rose-light); }
     .status-pill.completed { background:#efeee8; }
+    .status-pill.no_show { background:#f3e8e3; color:#7b5a50; }
     .form-box { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); }
     .form-title { margin:0 0 14px; font-family:"Playfair Display",serif; font-size:20px; font-weight:500; }
     .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -495,9 +498,10 @@
         id, client_id, service_id, starts_at, ends_at, expected_price_cents, status,
         service_name_snapshot, service_price_cents_snapshot, service_duration_minutes_snapshot,
         service_quantity, private_notes,
-        clients(first_name,last_name,phone,email)
+        clients(first_name,last_name,phone,email),
+        payments(id,amount_cents,payment_method,payment_type,created_at)
       `).gte("starts_at",start.toISOString()).lt("starts_at",end.toISOString())
-        .in("status",["pending","confirmed","completed"])
+        .in("status",["pending","confirmed","completed","no_show"])
         .order("starts_at",{ascending:true});
 
       if(error){
@@ -721,11 +725,44 @@
       return guess;
     }
 
+    const paymentMethodLabels = {
+      card:"Carte",
+      qr:"QR",
+      cash:"Espèces",
+      bank_transfer:"Virement",
+      other:"Autre"
+    };
+
+    function finalPaymentFor(a){
+      const list=(a.payments||[]).filter(p=>p.payment_type==="final");
+      list.sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+      return list[0]||null;
+    }
+
     function openAppointment(a){
       const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
       const quantity=(a.service_quantity||1)>1 ? ` × ${a.service_quantity}` : "";
       const statusLabel=statusLabels[a.status] || a.status;
       const isCompleted=a.status==="completed";
+      const isNoShow=a.status==="no_show";
+      const payment=finalPaymentFor(a);
+      const paymentLine=isCompleted
+        ? `<div class="detail"><span>Montant encaissé</span><strong>${payment ? `${euro.format((payment.amount_cents||0)/100)} · ${escapeHtml(paymentMethodLabels[payment.payment_method]||payment.payment_method)}` : "Aucun paiement enregistré"}</strong></div>`
+        : "";
+
+      let actions="";
+      if(isCompleted){
+        actions=`
+          <button class="action-button" type="button" data-action="payment">Modifier le paiement</button>
+          <button class="action-button danger" type="button" data-action="no-show">Marquer comme non réalisé</button>`;
+      }else if(isNoShow){
+        actions=`<button class="action-button primary" type="button" data-action="restore">Rétablir le rendez-vous</button>`;
+      }else{
+        actions=`
+          <button class="action-button" type="button" data-action="edit">Modifier</button>
+          <button class="action-button primary" type="button" data-action="complete">Terminer</button>
+          <button class="action-button danger" type="button" data-action="cancel">Annuler</button>`;
+      }
 
       document.getElementById("modal-content").innerHTML=`
         <div class="detail"><span>Cliente</span><strong>${escapeHtml(client)}</strong></div>
@@ -733,21 +770,20 @@
         <div class="detail"><span>Heure</span><strong>${timeFormat.format(new Date(a.starts_at))} – ${timeFormat.format(new Date(a.ends_at))}</strong></div>
         <div class="detail"><span>Prestation</span><strong>${escapeHtml(a.service_name_snapshot)}${quantity}</strong></div>
         <div class="detail"><span>Montant prévu</span><strong>${euro.format((a.expected_price_cents||0)/100)}</strong></div>
+        ${paymentLine}
         <div class="detail"><span>Statut</span><strong><span class="status-pill ${escapeHtml(a.status)}">${escapeHtml(statusLabel)}</span></strong></div>
         ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
         <div id="appointment-preparation" class="prep-box"><h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-loading">Chargement des préférences…</div></div>
         <div id="appointment-action-area"></div>
-
-        <div class="modal-actions">
-          <button class="action-button" type="button" data-action="edit" ${isCompleted?"disabled":""}>Modifier</button>
-          <button class="action-button primary" type="button" data-action="complete" ${isCompleted?"disabled":""}>${isCompleted?"Déjà terminé":"Terminer"}</button>
-          <button class="action-button danger" type="button" data-action="cancel" ${isCompleted?"disabled":""}>Annuler</button>
-        </div>
+        <div class="modal-actions">${actions}</div>
       `;
 
       document.querySelector('[data-action="edit"]')?.addEventListener("click",()=>showEditForm(a));
       document.querySelector('[data-action="complete"]')?.addEventListener("click",()=>showCompleteForm(a));
       document.querySelector('[data-action="cancel"]')?.addEventListener("click",()=>showCancelForm(a));
+      document.querySelector('[data-action="payment"]')?.addEventListener("click",()=>showPaymentCorrectionForm(a));
+      document.querySelector('[data-action="no-show"]')?.addEventListener("click",()=>showNoShowForm(a));
+      document.querySelector('[data-action="restore"]')?.addEventListener("click",()=>showRestoreForm(a));
 
       document.getElementById("modal-backdrop").classList.add("open");
       loadAppointmentPreparation(a);
@@ -1170,6 +1206,135 @@
         return;
       }
 
+      closeModal();
+      await loadAppointments();
+    }
+
+    function showPaymentCorrectionForm(a){
+      const area=document.getElementById("appointment-action-area");
+      const payment=finalPaymentFor(a);
+      const amount=((payment?.amount_cents ?? a.expected_price_cents ?? 0)/100).toFixed(2);
+      const method=payment?.payment_method || "card";
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Modifier le paiement</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Montant réellement encaissé (€)</label>
+              <input id="correct-paid-amount" type="number" min="0" step="0.01" value="${amount}">
+            </div>
+            <div class="form-field">
+              <label>Moyen de paiement</label>
+              <select id="correct-payment-method">
+                <option value="card">Carte</option>
+                <option value="qr">QR</option>
+                <option value="cash">Espèces</option>
+                <option value="bank_transfer">Virement</option>
+                <option value="other">Autre</option>
+              </select>
+            </div>
+          </div>
+          <div id="correct-payment-message" class="form-message">Le prix prévu reste inchangé : seule la somme réellement encaissée est corrigée.</div>
+          <button id="save-payment-correction" class="action-button primary" type="button">Enregistrer la correction</button>
+        </div>`;
+      document.getElementById("correct-payment-method").value=method;
+      document.getElementById("save-payment-correction").addEventListener("click",()=>correctPayment(a));
+    }
+
+    async function correctPayment(a){
+      const button=document.getElementById("save-payment-correction");
+      const message=document.getElementById("correct-payment-message");
+      const amount=Number(document.getElementById("correct-paid-amount").value.replace(",","."));
+      const method=document.getElementById("correct-payment-method").value;
+      if(!Number.isFinite(amount)||amount<0){
+        message.textContent="Entre un montant valide.";
+        message.className="form-message error-message";
+        return;
+      }
+      button.disabled=true;
+      message.textContent="Enregistrement…";
+      message.className="form-message";
+      const {error}=await supabaseClient.rpc("admin_correct_appointment_finances",{
+        p_appointment_id:a.id,
+        p_action:"update_payment",
+        p_amount_cents:Math.round(amount*100),
+        p_payment_method:method
+      });
+      if(error){
+        console.error(error);
+        button.disabled=false;
+        message.textContent="La correction du paiement n’a pas pu être enregistrée.";
+        message.className="form-message error-message";
+        return;
+      }
+      closeModal();
+      await loadAppointments();
+    }
+
+    function showNoShowForm(a){
+      const area=document.getElementById("appointment-action-area");
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Marquer comme non réalisé</h3>
+          <div class="form-message">Le rendez-vous restera dans l’historique avec le statut « Absence ». Son paiement final sera retiré et ne comptera plus dans les revenus.</div>
+          <button id="confirm-no-show" class="action-button danger" type="button">Confirmer : prestation non réalisée</button>
+        </div>`;
+      document.getElementById("confirm-no-show").addEventListener("click",()=>markNoShow(a));
+    }
+
+    async function markNoShow(a){
+      const button=document.getElementById("confirm-no-show");
+      const box=button.closest(".form-box");
+      const message=box.querySelector(".form-message");
+      button.disabled=true;
+      message.textContent="Correction en cours…";
+      const {error}=await supabaseClient.rpc("admin_correct_appointment_finances",{
+        p_appointment_id:a.id,
+        p_action:"mark_no_show",
+        p_amount_cents:null,
+        p_payment_method:null
+      });
+      if(error){
+        console.error(error);
+        button.disabled=false;
+        message.textContent="La correction n’a pas pu être enregistrée.";
+        message.className="form-message error-message";
+        return;
+      }
+      closeModal();
+      await loadAppointments();
+    }
+
+    function showRestoreForm(a){
+      const area=document.getElementById("appointment-action-area");
+      area.innerHTML=`
+        <div class="form-box">
+          <h3 class="form-title">Rétablir le rendez-vous</h3>
+          <div class="form-message">Le rendez-vous repassera en « Confirmé ». Aucun paiement ne sera recréé automatiquement : tu pourras ensuite le terminer avec le vrai montant encaissé.</div>
+          <button id="confirm-restore" class="action-button primary" type="button">Rétablir</button>
+        </div>`;
+      document.getElementById("confirm-restore").addEventListener("click",()=>restoreAppointment(a));
+    }
+
+    async function restoreAppointment(a){
+      const button=document.getElementById("confirm-restore");
+      const box=button.closest(".form-box");
+      const message=box.querySelector(".form-message");
+      button.disabled=true;
+      message.textContent="Rétablissement…";
+      const {error}=await supabaseClient.rpc("admin_correct_appointment_finances",{
+        p_appointment_id:a.id,
+        p_action:"restore",
+        p_amount_cents:null,
+        p_payment_method:null
+      });
+      if(error){
+        console.error(error);
+        button.disabled=false;
+        message.textContent="Le rendez-vous n’a pas pu être rétabli.";
+        message.className="form-message error-message";
+        return;
+      }
       closeModal();
       await loadAppointments();
     }
