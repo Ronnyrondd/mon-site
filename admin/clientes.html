@@ -43,6 +43,15 @@
     .result-thumb img{width:100%;height:100%;object-fit:cover;display:block}.result-delete{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border:0;border-radius:50%;background:var(--ink);color:white;font-size:13px;padding:0}
     .photo-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(20,20,18,.78)}
     .photo-modal.open{display:flex}.photo-modal img{max-width:min(100%,1000px);max-height:88vh;border-radius:16px}.photo-modal-close{position:fixed;top:20px;right:20px;width:42px;height:42px;border:0;border-radius:50%;background:white;color:var(--ink);font-size:24px}
+    .pose-open{cursor:pointer}.pose-open:hover{background:rgba(231,234,223,.45)}
+    .pose-modal{position:fixed;inset:0;z-index:250;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(20,20,18,.55)}
+    .pose-modal.open{display:flex}.pose-sheet{width:min(820px,100%);max-height:90vh;overflow:auto;border-radius:24px;background:var(--white);box-shadow:0 25px 80px rgba(0,0,0,.20)}
+    .pose-sheet-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:20px;padding:24px 26px;border-bottom:1px solid var(--line);background:rgba(255,253,249,.96)}
+    .pose-sheet-head h2{margin:2px 0 0;font-family:"Playfair Display",serif;font-size:28px;font-weight:500}.pose-close{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:white;font-size:22px}
+    .pose-body{padding:25px 26px 30px}.pose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pose-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:white}.pose-card.wide{grid-column:1/-1}
+    .pose-card h3{margin:0 0 12px;color:var(--sage-dark);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.pose-line{margin:7px 0;font-size:12px;line-height:1.55}.pose-line strong{font-weight:600}
+    .pose-note{padding:12px;border-radius:12px;background:var(--cream);font-size:11px;line-height:1.6;white-space:pre-wrap}.pose-gallery{display:flex;gap:10px;flex-wrap:wrap}.pose-gallery button{width:92px;height:92px;padding:0;border:0;border-radius:13px;overflow:hidden;background:var(--cream)}.pose-gallery img{width:100%;height:100%;object-fit:cover}.pose-empty{color:var(--muted);font-size:11px;line-height:1.6}
+    @media(max-width:650px){.pose-grid{grid-template-columns:1fr}.pose-card.wide{grid-column:auto}.pose-modal{padding:10px}.pose-sheet{max-height:94vh}.pose-body,.pose-sheet-head{padding-left:18px;padding-right:18px}}
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
     @media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
@@ -50,6 +59,12 @@
 </head>
 <body>
 <div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
+<div id="pose-modal" class="pose-modal" aria-hidden="true">
+  <div class="pose-sheet">
+    <div class="pose-sheet-head"><div><div class="eyebrow">Dossier de pose</div><h2 id="pose-modal-title">Rendez-vous</h2></div><button id="pose-modal-close" class="pose-close" type="button">×</button></div>
+    <div id="pose-modal-body" class="pose-body"><div class="empty">Chargement…</div></div>
+  </div>
+</div>
 <div id="photo-modal" class="photo-modal" aria-hidden="true"><button id="photo-modal-close" class="photo-modal-close" type="button">×</button><img id="photo-modal-image" alt="Photo de la pose"></div>
 <div class="app">
   <aside class="sidebar">
@@ -184,6 +199,55 @@
     document.querySelectorAll("[data-client-id]").forEach(el=>el.addEventListener("click",()=>openClient(el.dataset.clientId)));
   }
 
+  const conversationLabels={quiet:"Plutôt calme",chat:"J’aime discuter",no_preference:"Pas de préférence",silence:"Plutôt calme",talk:"J’aime discuter"};
+  const musicLabels={music:"Avec musique",no_music:"Sans musique",no_preference:"Pas de préférence",yes:"Avec musique",no:"Sans musique"};
+  function friendlyPreference(value,labels){return value?(labels[value]||value.replaceAll("_"," ")):null}
+
+  async function signedMediaForAppointment(appointmentId,mediaType){
+    const {data,error}=await supabaseClient.from("appointment_media").select("id,storage_path,caption,display_order,created_at").eq("appointment_id",appointmentId).eq("media_type",mediaType).order("display_order",{ascending:true}).order("created_at",{ascending:true});
+    if(error)throw error;
+    const result=[];
+    for(const item of data||[]){const {data:signed,error:signedError}=await supabaseClient.storage.from(MEDIA_BUCKET).createSignedUrl(item.storage_path,3600);if(!signedError&&signed?.signedUrl)result.push({...item,url:signed.signedUrl})}
+    return result;
+  }
+  function poseGallery(items,label){
+    if(!items.length)return '<div class="pose-empty">Aucune photo enregistrée.</div>';
+    return `<div class="pose-gallery">${items.map(item=>`<button type="button" data-pose-photo="${escapeHtml(item.url)}"><img src="${escapeHtml(item.url)}" alt="${escapeHtml(label)}"></button>`).join("")}</div>`;
+  }
+  async function openPoseDossier(appointmentId){
+    const modal=document.getElementById("pose-modal"),body=document.getElementById("pose-modal-body"),title=document.getElementById("pose-modal-title");
+    modal.classList.add("open");modal.setAttribute("aria-hidden","false");body.innerHTML='<div class="empty">Chargement de la fiche de pose…</div>';
+    try{
+      const [{data:a,error:aError},{data:design,error:dError},{data:options,error:oError},{data:payments,error:pError},inspirations,results]=await Promise.all([
+        supabaseClient.from("appointments").select("id,starts_at,ends_at,status,service_name_snapshot,expected_price_cents,client_message,private_notes").eq("id",appointmentId).single(),
+        supabaseClient.from("appointment_designs").select("nail_shape,nail_length,color_wishes,client_design_note,conversation_preference,music_preference,beverage_id,beverage_details,private_preparation_notes").eq("appointment_id",appointmentId).maybeSingle(),
+        supabaseClient.from("appointment_options").select("option_name_snapshot,quantity").eq("appointment_id",appointmentId),
+        supabaseClient.from("payments").select("amount_cents,payment_type,payment_method,paid_at").eq("appointment_id",appointmentId).order("paid_at",{ascending:false}),
+        signedMediaForAppointment(appointmentId,"inspiration"),signedMediaForAppointment(appointmentId,"result")
+      ]);
+      if(aError||dError||oError||pError)throw(aError||dError||oError||pError);
+      let beverageName=null;
+      if(design?.beverage_id){const {data:b}=await supabaseClient.from("beverages").select("name").eq("id",design.beverage_id).maybeSingle();if(b)beverageName=b.name}
+      const netPaid=(payments||[]).reduce((s,p)=>p.payment_type==="refund"?s-Number(p.amount_cents||0):s+Number(p.amount_cents||0),0);
+      const finalPayment=(payments||[]).find(p=>p.payment_type==="final");
+      const optionsHtml=(options||[]).length?(options||[]).map(o=>`${escapeHtml(o.option_name_snapshot)}${Number(o.quantity||1)>1?` × ${o.quantity}`:""}`).join("<br>"):"Aucune option";
+      const duration=Math.round((new Date(a.ends_at)-new Date(a.starts_at))/60000);
+      const statusLabels={pending:"En attente",confirmed:"Confirmé",completed:"Terminé",cancelled_by_client:"Annulé par la cliente",cancelled_by_admin:"Annulé",late_cancellation:"Annulation tardive",no_show:"Absence"};
+      title.textContent=`${a.service_name_snapshot} · ${dateFmt.format(new Date(a.starts_at))}`;
+      body.innerHTML=`<div class="pose-grid">
+        <section class="pose-card"><h3>Ma pose</h3><div class="pose-line"><strong>Forme</strong> · ${escapeHtml(design?.nail_shape||"Non renseignée")}</div><div class="pose-line"><strong>Longueur</strong> · ${escapeHtml(design?.nail_length||"Non renseignée")}</div><div class="pose-line"><strong>Couleurs</strong> · ${escapeHtml(design?.color_wishes||"Non renseigné")}</div>${design?.client_design_note?`<div class="pose-note">${escapeHtml(design.client_design_note)}</div>`:""}</section>
+        <section class="pose-card"><h3>Mon moment</h3><div class="pose-line"><strong>Ambiance</strong> · ${escapeHtml(friendlyPreference(design?.conversation_preference,conversationLabels)||"Non renseigné")}</div><div class="pose-line"><strong>Musique</strong> · ${escapeHtml(friendlyPreference(design?.music_preference,musicLabels)||"Non renseigné")}</div><div class="pose-line"><strong>Boisson</strong> · ${escapeHtml([beverageName,design?.beverage_details].filter(Boolean).join(" · ")||"Non renseignée")}</div></section>
+        <section class="pose-card wide"><h3>Inspirations envoyées</h3>${poseGallery(inspirations,"Inspiration")}</section>
+        <section class="pose-card wide"><h3>Résultat de la pose</h3>${poseGallery(results,"Pose réalisée")}</section>
+        <section class="pose-card"><h3>Rendez-vous</h3><div class="pose-line"><strong>${cap(longDateFmt.format(new Date(a.starts_at)))}</strong> à ${timeFmt.format(new Date(a.starts_at))}</div><div class="pose-line">${escapeHtml(a.service_name_snapshot)}</div><div class="pose-line">${optionsHtml}</div><div class="pose-line"><strong>Durée</strong> · ${duration} min</div><div class="pose-line"><strong>Statut</strong> · ${escapeHtml(statusLabels[a.status]||a.status)}</div></section>
+        <section class="pose-card"><h3>Paiement</h3><div class="pose-line"><strong>Prévu</strong> · ${euro.format(Number(a.expected_price_cents||0)/100)}</div><div class="pose-line"><strong>Encaissé</strong> · ${euro.format(netPaid/100)}</div><div class="pose-line"><strong>Moyen</strong> · ${escapeHtml(finalPayment?.payment_method?(paymentMethodLabels[finalPayment.payment_method]||finalPayment.payment_method):"—")}</div></section>
+        <section class="pose-card wide"><h3>Notes</h3>${a.client_message?`<div class="pose-line"><strong>Message cliente</strong></div><div class="pose-note">${escapeHtml(a.client_message)}</div>`:""}${a.private_notes?`<div class="pose-line"><strong>Note du rendez-vous</strong></div><div class="pose-note">${escapeHtml(a.private_notes)}</div>`:""}${design?.private_preparation_notes?`<div class="pose-line"><strong>Préparation privée</strong></div><div class="pose-note">${escapeHtml(design.private_preparation_notes)}</div>`:""}${!a.client_message&&!a.private_notes&&!design?.private_preparation_notes?'<div class="pose-empty">Aucune note enregistrée pour cette pose.</div>':""}</section>
+      </div>`;
+      body.querySelectorAll("[data-pose-photo]").forEach(btn=>btn.addEventListener("click",()=>openPhoto(btn.dataset.posePhoto)));
+    }catch(error){console.error(error);body.innerHTML='<div class="empty">Impossible de charger la fiche de pose.</div>'}
+  }
+  function closePoseDossier(){document.getElementById("pose-modal").classList.remove("open");document.getElementById("pose-modal").setAttribute("aria-hidden","true")}
+
   async function openClient(id){
     selectedClientId=id; renderClientList();
     const c=clients.find(x=>x.id===id); if(!c)return;
@@ -247,7 +311,7 @@
             const paid=Number(a.paid_amount_cents||0);
             const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
             const photoCount=Number(a.result_photo_count||0);
-            return `<div class="history-row">
+            return `<div class="history-row pose-open" data-pose-id="${a.appointment_id}">
               <div>${dateFmt.format(new Date(a.starts_at))}<br>${timeFmt.format(new Date(a.starts_at))}</div>
               <div>
                 <div class="history-service">${escapeHtml(a.service_name)}</div>
@@ -268,6 +332,7 @@
 
     document.getElementById("save-notes").addEventListener("click",()=>saveNotes(c));
     historyRows.filter(a=>a.status==="completed").forEach(a=>{const button=document.querySelector(`[data-add-result="${a.appointment_id}"]`),input=document.getElementById(`result-input-${a.appointment_id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",()=>uploadResultPhotos(a.appointment_id,input))}renderResultMedia(a.appointment_id)});
+    profile.querySelectorAll("[data-pose-id]").forEach(row=>row.addEventListener("click",e=>{if(e.target.closest("button,input"))return;openPoseDossier(row.dataset.poseId)}));
   }
 
   async function saveNotes(c){
@@ -281,9 +346,11 @@
   }
 
   document.getElementById("search").addEventListener("input",renderClientList);
+  document.getElementById("pose-modal-close").addEventListener("click",closePoseDossier);
+  document.getElementById("pose-modal").addEventListener("click",e=>{if(e.target.id==="pose-modal")closePoseDossier()});
   document.getElementById("photo-modal-close").addEventListener("click",closePhoto);
   document.getElementById("photo-modal").addEventListener("click",e=>{if(e.target.id==="photo-modal")closePhoto()});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closePhoto()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePhoto();closePoseDossier()}});
   document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
   async function init(){if(!await protectPage())return;await loadClients()}
