@@ -34,6 +34,15 @@
     .history-meta{margin-top:5px;color:var(--muted);font-size:10px;line-height:1.5}
     .history-money{text-align:right}.history-expected{margin-top:4px;color:var(--muted);font-size:9px;font-weight:400}
     .history-photos{grid-column:2/-1;margin-top:2px}.photo-summary{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:100px;background:var(--cream);color:var(--muted);font-size:9px}
+    .result-tools{grid-column:2/-1;margin-top:8px}
+    .result-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .photo-button{padding:8px 11px;border:1px solid var(--line);border-radius:100px;background:white;color:var(--ink);font-size:10px;font-weight:600}
+    .photo-button:hover{border-color:var(--sage);background:var(--sage-light)}.photo-button:disabled{opacity:.55}
+    .result-message{color:var(--muted);font-size:9px}.result-gallery{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+    .result-thumb-wrap{position:relative;width:72px;height:72px}.result-thumb{width:72px;height:72px;padding:0;border:0;border-radius:12px;overflow:hidden;background:var(--cream)}
+    .result-thumb img{width:100%;height:100%;object-fit:cover;display:block}.result-delete{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border:0;border-radius:50%;background:var(--ink);color:white;font-size:13px;padding:0}
+    .photo-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(20,20,18,.78)}
+    .photo-modal.open{display:flex}.photo-modal img{max-width:min(100%,1000px);max-height:88vh;border-radius:16px}.photo-modal-close{position:fixed;top:20px;right:20px;width:42px;height:42px;border:0;border-radius:50%;background:white;color:var(--ink);font-size:24px}
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
     @media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
@@ -41,6 +50,7 @@
 </head>
 <body>
 <div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
+<div id="photo-modal" class="photo-modal" aria-hidden="true"><button id="photo-modal-close" class="photo-modal-close" type="button">×</button><img id="photo-modal-image" alt="Photo de la pose"></div>
 <div class="app">
   <aside class="sidebar">
     <div class="brand">Thab's Lab</div>
@@ -92,6 +102,57 @@
   function cap(v){return v?v.charAt(0).toUpperCase()+v.slice(1):v}
   function clientName(c){return `${c.first_name||""} ${c.last_name||""}`.trim()||"Cliente"}
   const paymentMethodLabels={card:"Carte",qr:"QR",cash:"Espèces",bank_transfer:"Virement",other:"Autre"};
+  const MEDIA_BUCKET="appointment-media", RESULT_MAX_FILES=5, RESULT_MAX_SIZE=5*1024*1024;
+  const RESULT_ALLOWED_TYPES=["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+  function resultExtension(name){const ext=(name.split(".").pop()||"jpg").toLowerCase();return ["jpg","jpeg","png","webp","heic","heif"].includes(ext)?ext:"jpg"}
+
+  async function getResultMedia(appointmentId){
+    const {data,error}=await supabaseClient.from("appointment_media").select("id,storage_path,caption,display_order,created_at").eq("appointment_id",appointmentId).eq("media_type","result").order("display_order",{ascending:true}).order("created_at",{ascending:true});
+    if(error)throw error;
+    const items=[];
+    for(const item of data||[]){const {data:signed,error:signedError}=await supabaseClient.storage.from(MEDIA_BUCKET).createSignedUrl(item.storage_path,3600);if(!signedError&&signed?.signedUrl)items.push({...item,url:signed.signedUrl})}
+    return items;
+  }
+  async function renderResultMedia(appointmentId){
+    const box=document.getElementById(`result-media-${appointmentId}`);if(!box)return;
+    box.innerHTML='<span class="result-message">Chargement…</span>';
+    try{
+      const items=await getResultMedia(appointmentId);
+      box.innerHTML=items.length?items.map(item=>`<div class="result-thumb-wrap"><button class="result-thumb" type="button" data-open-photo="${escapeHtml(item.url)}"><img src="${escapeHtml(item.url)}" alt="Pose réalisée"></button><button class="result-delete" type="button" data-delete-result="${item.id}" data-appointment-id="${appointmentId}" data-storage-path="${escapeHtml(item.storage_path)}">×</button></div>`).join(""):'<span class="result-message">Aucune photo de la pose pour le moment.</span>';
+      box.querySelectorAll("[data-open-photo]").forEach(b=>b.addEventListener("click",()=>openPhoto(b.dataset.openPhoto)));
+      box.querySelectorAll("[data-delete-result]").forEach(b=>b.addEventListener("click",()=>deleteResultPhoto(b)));
+    }catch(e){console.error(e);box.innerHTML='<span class="result-message">Impossible de charger les photos.</span>'}
+  }
+  async function uploadResultPhotos(appointmentId,input){
+    const files=[...(input.files||[])];if(!files.length)return;
+    const msg=document.getElementById(`result-message-${appointmentId}`),button=document.querySelector(`[data-add-result="${appointmentId}"]`);if(button)button.disabled=true;
+    try{
+      const existing=await getResultMedia(appointmentId);
+      if(existing.length+files.length>RESULT_MAX_FILES)throw new Error(`Maximum ${RESULT_MAX_FILES} photos par pose.`);
+      for(const file of files){
+        if(!RESULT_ALLOWED_TYPES.includes(file.type))throw new Error("Format non accepté : JPG, PNG, WEBP, HEIC ou HEIF.");
+        if(file.size>RESULT_MAX_SIZE)throw new Error("Une photo dépasse 5 Mo.");
+        const path=`${appointmentId}/result/${crypto.randomUUID()}.${resultExtension(file.name)}`;
+        const {error:up}=await supabaseClient.storage.from(MEDIA_BUCKET).upload(path,file,{contentType:file.type,upsert:false});if(up)throw up;
+        const {error:ins}=await supabaseClient.from("appointment_media").insert({appointment_id:appointmentId,media_type:"result",storage_path:path,uploaded_by:"admin",display_order:existing.length});
+        if(ins){await supabaseClient.storage.from(MEDIA_BUCKET).remove([path]);throw ins}
+        existing.push({storage_path:path});
+      }
+      if(msg)msg.textContent="Photos ajoutées ✓";await renderResultMedia(appointmentId);
+    }catch(e){console.error(e);if(msg)msg.textContent=e?.message||"Erreur lors de l’ajout."}
+    finally{input.value="";if(button)button.disabled=false}
+  }
+  async function deleteResultPhoto(button){
+    if(!confirm("Supprimer cette photo de la pose ?"))return;
+    button.disabled=true;const appointmentId=button.dataset.appointmentId,mediaId=button.dataset.deleteResult,path=button.dataset.storagePath;
+    try{
+      const {error:se}=await supabaseClient.storage.from(MEDIA_BUCKET).remove([path]);if(se)throw se;
+      const {error:de}=await supabaseClient.from("appointment_media").delete().eq("id",mediaId).eq("appointment_id",appointmentId).eq("media_type","result");if(de)throw de;
+      await renderResultMedia(appointmentId);
+    }catch(e){console.error(e);alert("Impossible de supprimer cette photo.");button.disabled=false}
+  }
+  function openPhoto(url){document.getElementById("photo-modal-image").src=url;document.getElementById("photo-modal").classList.add("open")}
+  function closePhoto(){document.getElementById("photo-modal").classList.remove("open");document.getElementById("photo-modal-image").src=""}
 
   async function protectPage(){
     const {data:{session}}=await supabaseClient.auth.getSession();
@@ -198,7 +259,7 @@
                 <div class="history-price">${euro.format(paid/100)}</div>
                 ${Number(a.expected_price_cents||0)!==paid?`<div class="history-expected">Prévu ${euro.format((a.expected_price_cents||0)/100)}</div>`:""}
               </div>
-              ${photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:""}
+              ${a.status==="completed"?`<div class="result-tools"><div class="result-actions"><button class="photo-button" type="button" data-add-result="${a.appointment_id}">+ Ajouter des photos</button><input id="result-input-${a.appointment_id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="result-message-${a.appointment_id}" class="result-message">${photoCount?`${photoCount} photo${photoCount>1?"s":""}`:""}</span></div><div id="result-media-${a.appointment_id}" class="result-gallery"></div></div>`:(photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:"")}
             </div>`;
           }).join(""):'<div class="empty">Aucun rendez-vous enregistré.</div>'}
         </div>
@@ -206,6 +267,7 @@
     </div>`;
 
     document.getElementById("save-notes").addEventListener("click",()=>saveNotes(c));
+    historyRows.filter(a=>a.status==="completed").forEach(a=>{const button=document.querySelector(`[data-add-result="${a.appointment_id}"]`),input=document.getElementById(`result-input-${a.appointment_id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",()=>uploadResultPhotos(a.appointment_id,input))}renderResultMedia(a.appointment_id)});
   }
 
   async function saveNotes(c){
@@ -219,6 +281,9 @@
   }
 
   document.getElementById("search").addEventListener("input",renderClientList);
+  document.getElementById("photo-modal-close").addEventListener("click",closePhoto);
+  document.getElementById("photo-modal").addEventListener("click",e=>{if(e.target.id==="photo-modal")closePhoto()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closePhoto()});
   document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
   async function init(){if(!await protectPage())return;await loadClients()}
