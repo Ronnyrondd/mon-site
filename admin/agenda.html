@@ -251,110 +251,22 @@
     .prep-media-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
     .prep-media-card:hover img{transform:scale(1.02)}
     .prep-media-empty{color:var(--muted);font-size:12px;line-height:1.5}
-    .designer-shell{margin-top:12px}
-    .designer-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-    .designer-toolbar select,.designer-toolbar input[type="color"]{height:36px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);font:inherit;font-size:11px}
-    .designer-toolbar select{padding:0 9px}
-    .designer-toolbar input[type="color"]{width:42px;padding:3px}
-    .designer-range{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px}
-    .designer-range input{width:78px}
-    .designer-stage{position:relative;width:100%;aspect-ratio:1.28/1;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#f3eee7;touch-action:none;user-select:none}
-    .designer-hand{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-    .designer-nail{position:absolute;border:1.5px solid rgba(83,67,59,.28);background:rgba(255,252,248,.74);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5);overflow:hidden;transform-origin:50% 100%;cursor:crosshair}
-    .designer-nail canvas{width:100%;height:100%;display:block;touch-action:none}
-    .designer-nail.selected{outline:2px solid var(--sage-dark);outline-offset:2px}
-    .designer-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px;align-items:center}
-    .designer-status{font-size:10px;color:var(--muted)}
-    .designer-help{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45}
-    .designer-skin-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:10px}
-    .designer-skin-label{font-size:10px;color:var(--muted);font-weight:600;margin-right:2px}
-    .skin-swatch{width:28px;height:28px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px var(--line);padding:0}
-    .skin-swatch.active{box-shadow:0 0 0 2px var(--sage-dark)}
-    .hand-illusion{position:absolute;inset:0;pointer-events:none}
-    .hand-palm{position:absolute;background:var(--hand-skin);border:1px solid rgba(83,67,59,.14);box-shadow:inset 0 10px 25px rgba(255,255,255,.16)}
-    .hand-finger{position:absolute;background:var(--hand-skin);border:1px solid rgba(83,67,59,.14);border-bottom:0;border-radius:48% 48% 16% 16%;transform-origin:50% 100%}
-    .hand-joint{position:absolute;left:17%;right:17%;height:1px;background:rgba(115,79,61,.09);top:49%;box-shadow:0 7px 0 rgba(115,79,61,.055)}
-    .hand-svg{position:absolute;inset:2% 2% 0;width:96%;height:98%;overflow:visible}
+    /* CROQUIS NAIL ART — éditeur simple sur image */
+    .sketch-shell{margin-top:10px}
+    .sketch-stage{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#f3eee7;touch-action:none;user-select:none}
+    .sketch-stage canvas{width:100%;height:100%;display:block;touch-action:none}
+    .sketch-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+    .sketch-toolbar select,.sketch-toolbar input[type="color"]{height:36px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);font:inherit;font-size:11px}
+    .sketch-toolbar select{padding:0 9px}
+    .sketch-toolbar input[type="color"]{width:42px;padding:3px}
+    .sketch-range{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px}
+    .sketch-range input{width:82px}
+    .sketch-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+    .sketch-status{font-size:10px;color:var(--muted)}
+    .sketch-help{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45}
+    .sketch-upload{display:none}
+    .sketch-tool.active{background:var(--ink);color:white;border-color:var(--ink)}
 
-
-    .technical-hand{
-      position:absolute;inset:0;z-index:1;pointer-events:none;
-    }
-    .tech-finger{
-      position:absolute;
-      background:var(--skin,#e8b28f);
-      border:1.35px solid rgba(73,52,42,.62);
-      border-radius:46% 46% 18px 18px / 24px 24px 12px 12px;
-      transform-origin:50% 100%;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
-    }
-    .tech-finger:after{
-      content:"";
-      position:absolute;left:23%;right:23%;top:48%;
-      height:9%;
-      border-top:1px solid rgba(91,65,51,.20);
-      border-radius:50%;
-    }
-    .tech-cuticle{
-      position:absolute;
-      left:19%;right:19%;top:5.5%;height:13%;
-      border-bottom:1.2px solid rgba(83,59,47,.38);
-      border-radius:0 0 50% 50%;
-    }
-    .tech-thumb{
-      border-radius:46% 46% 22px 22px / 25px 25px 16px 16px;
-    }
-
-
-    .template-fingertips{
-      position:absolute;
-      inset:18% 5% 5%;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:4.8%;
-      align-items:end;
-      z-index:1;
-      transform-origin:center;
-    }
-    .template-fingertip{
-      position:relative;
-      width:100%;
-      height:70%;
-      min-height:180px;
-      background:var(--skin,#e9b794);
-      border:1.4px solid rgba(67,49,40,.60);
-      border-bottom-color:rgba(67,49,40,.28);
-      border-radius:48% 48% 18px 18px / 34px 34px 14px 14px;
-      transform-origin:50% 100%;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
-    }
-    .template-fingertip[data-finger="pinky"]{height:57%}
-    .template-fingertip[data-finger="ring"]{height:67%}
-    .template-fingertip[data-finger="middle"]{height:74%}
-    .template-fingertip[data-finger="index"]{height:68%}
-    .template-fingertip[data-finger="thumb"]{height:60%}
-    .template-crease{
-      position:absolute;
-      left:28%;right:28%;bottom:22%;
-      height:8px;
-      border-top:1px solid rgba(75,53,43,.18);
-      border-radius:50%;
-    }
-
-    .hand-photo{
-      position:absolute;left:1.5%;top:1%;width:97%;height:98%;
-      object-fit:contain;object-position:center center;
-      pointer-events:none;user-select:none;z-index:1;
-      filter:saturate(.92) contrast(.98);
-      transform-origin:center center;
-    }
-    .hand-photo.right{transform:scaleX(-1)}
-    .hand-silhouette{fill:var(--hand-skin);stroke:rgba(83,67,59,.18);stroke-width:1.2;vector-effect:non-scaling-stroke}
-    .hand-detail{fill:none;stroke:rgba(105,73,57,.13);stroke-width:1;stroke-linecap:round;vector-effect:non-scaling-stroke}
-    .hand-highlight{fill:none;stroke:rgba(255,255,255,.20);stroke-width:14;stroke-linecap:round;opacity:.55}
-    .hand-shadow{fill:none;stroke:rgba(92,54,37,.08);stroke-width:12;stroke-linecap:round}
-    .designer-nail{background:linear-gradient(100deg,rgba(255,255,255,.78),rgba(255,247,242,.62) 48%,rgba(236,211,197,.42));}
-    .hand-illusion.right{transform:scaleX(-1)}
 
 
     .prep-media-card{cursor:zoom-in;padding:0}
@@ -822,11 +734,40 @@
         :`<div class="prep-section"><div class="prep-empty">La cliente n’a pas encore renseigné ses préférences.</div></div>`}
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
+        <div class="prep-section"><div class="prep-label">✏️ Mon croquis</div>
+          <div class="sketch-shell">
+            <div class="sketch-stage"><canvas id="sketch-canvas" width="1200" height="900"></canvas></div>
+            <div class="sketch-toolbar">
+              <button class="action-button sketch-tool active" id="sketch-draw" type="button">✏️ Dessiner</button>
+              <button class="action-button sketch-tool" id="sketch-chrome" type="button">✨ Chrome</button>
+              <button class="action-button sketch-tool" id="sketch-rhinestone" type="button">💎 Strass</button>
+              <select id="sketch-decoration" aria-label="Décoration">
+                <option value="">✦ Déco</option>
+                <option value="star">Étoile</option><option value="sparkle">Éclat</option>
+                <option value="heart">Cœur</option><option value="flower">Fleur</option><option value="dot">Pois</option>
+              </select>
+              <input id="sketch-color" type="color" value="#7f6b62" aria-label="Couleur">
+              <label class="sketch-range">Taille <input id="sketch-size" type="range" min="2" max="42" value="10"></label>
+              <button class="action-button sketch-tool" id="sketch-eraser" type="button">Gomme</button>
+            </div>
+            <div class="sketch-actions">
+              <input id="sketch-background-input" class="sketch-upload" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif">
+              <button id="sketch-background" class="action-button" type="button">Ajouter / changer le fond</button>
+              <button id="sketch-undo" class="action-button" type="button">↶ Annuler</button>
+              <button id="sketch-redo" class="action-button" type="button">↷ Rétablir</button>
+              <button id="sketch-clear" class="action-button" type="button">Effacer les décos</button>
+              <button id="sketch-save" class="action-button primary" type="button">Enregistrer le croquis</button>
+              <span id="sketch-status" class="sketch-status"></span>
+            </div>
+            <div class="sketch-help">Ajoute ton template ou une photo en fond, puis dessine dessus. Strass, décos et chrome se posent directement sur l’image.</div>
+          </div>
+        </div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
         <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
         <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
       document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
       await loadAppointmentInspirations(a.id);
+      await initSimpleSketch(a.id);
     }
 
     function openInspirationLightbox(url){
@@ -873,141 +814,116 @@
     }
 
 
-    function initNailDesigner(appointmentId,saved){
-      const stage=document.getElementById("designer-stage"); if(!stage)return;
-      const fingers=["thumb","index","middle","ring","pinky"];
-      const labels={thumb:"Pouce",index:"Index",middle:"Majeur",ring:"Annulaire",pinky:"Auriculaire"};
-      const defaults={
-        left:{thumb:{x:84.3,y:37.0,r:0},index:{x:65.3,y:29.0,r:0},middle:{x:46.3,y:23.0,r:0},ring:{x:27.3,y:30.0,r:0},pinky:{x:8.3,y:39.0,r:0}},
-        right:{thumb:{x:8.3,y:37.0,r:0},index:{x:27.3,y:29.0,r:0},middle:{x:46.3,y:23.0,r:0},ring:{x:65.3,y:30.0,r:0},pinky:{x:84.3,y:39.0,r:0}}
+    async function initSimpleSketch(appointmentId){
+      const canvas=document.getElementById("sketch-canvas"); if(!canvas)return;
+      const ctx=canvas.getContext("2d"),status=document.getElementById("sketch-status");
+      const color=document.getElementById("sketch-color"),size=document.getElementById("sketch-size");
+      const deco=document.getElementById("sketch-decoration"),fileInput=document.getElementById("sketch-background-input");
+      let tool="draw",drawing=false,last=null,undo=[],redo=[],baseImage=null;
+
+      function setStatus(message,clear=true){status.textContent=message||"";if(clear&&message)setTimeout(()=>{if(status.textContent===message)status.textContent=""},2500)}
+      function snapshot(){undo.push(canvas.toDataURL("image/png"));if(undo.length>20)undo.shift();redo=[]}
+      function restoreDataUrl(url){return new Promise(resolve=>{const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);resolve()};img.src=url})}
+      function blank(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#f7f3ec";ctx.fillRect(0,0,canvas.width,canvas.height)}
+      function setTool(next){
+        tool=next;document.querySelectorAll(".sketch-tool").forEach(b=>b.classList.remove("active"));
+        const map={draw:"sketch-draw",chrome:"sketch-chrome",rhinestone:"sketch-rhinestone",eraser:"sketch-eraser"};
+        if(map[next])document.getElementById(map[next])?.classList.add("active");
+        if(next!=="decoration")deco.value="";
+      }
+      function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+      function drawLine(a,b){
+        const w=Number(size.value)*2.2;ctx.save();ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=w;
+        if(tool==="eraser"){ctx.globalCompositeOperation="destination-out";ctx.strokeStyle="#000"}
+        else if(tool==="chrome"){
+          const g=ctx.createLinearGradient(a.x,a.y,b.x+Math.max(20,w),b.y+Math.max(20,w));
+          g.addColorStop(0,"#5f6265");g.addColorStop(.22,"#f7f7f5");g.addColorStop(.45,"#9fa3a5");g.addColorStop(.68,"#fff");g.addColorStop(1,"#696c70");
+          ctx.strokeStyle=g;ctx.shadowColor="rgba(255,255,255,.7)";ctx.shadowBlur=w*.35;
+        }else ctx.strokeStyle=color.value;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();
+      }
+      function drawRhinestone(p){
+        const r=Math.max(8,Number(size.value)*1.7);ctx.save();
+        const g=ctx.createRadialGradient(p.x-r*.3,p.y-r*.35,r*.12,p.x,p.y,r);
+        g.addColorStop(0,"#fff");g.addColorStop(.28,"#e9f0f0");g.addColorStop(.58,"#b8c3c5");g.addColorStop(1,"#6f7779");
+        ctx.fillStyle=g;ctx.strokeStyle="rgba(80,75,70,.45)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+        ctx.fillStyle="rgba(255,255,255,.9)";ctx.beginPath();ctx.arc(p.x-r*.32,p.y-r*.35,r*.22,0,Math.PI*2);ctx.fill();ctx.restore();
+      }
+      function drawDecoration(p,type){
+        const r=Math.max(10,Number(size.value)*2);ctx.save();ctx.translate(p.x,p.y);ctx.fillStyle=color.value;ctx.strokeStyle=color.value;ctx.lineWidth=Math.max(3,r*.14);
+        if(type==="star"||type==="sparkle"){
+          const points=type==="star"?5:4,outer=r,inner=type==="star"?r*.42:r*.18;ctx.beginPath();
+          for(let i=0;i<points*2;i++){const rr=i%2===0?outer:inner,ang=-Math.PI/2+i*Math.PI/points,x=Math.cos(ang)*rr,y=Math.sin(ang)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}
+          ctx.closePath();ctx.fill();
+        }else if(type==="heart"){
+          ctx.beginPath();ctx.moveTo(0,r*.75);ctx.bezierCurveTo(-r*1.2,-r*.05,-r*.75,-r*.9,0,-r*.35);ctx.bezierCurveTo(r*.75,-r*.9,r*1.2,-r*.05,0,r*.75);ctx.fill();
+        }else if(type==="flower"){
+          for(let i=0;i<5;i++){ctx.save();ctx.rotate(i*Math.PI*2/5);ctx.beginPath();ctx.ellipse(0,-r*.55,r*.28,r*.55,0,0,Math.PI*2);ctx.fill();ctx.restore()}
+          ctx.fillStyle="#fffdf9";ctx.beginPath();ctx.arc(0,0,r*.22,0,Math.PI*2);ctx.fill();
+        }else{ctx.beginPath();ctx.arc(0,0,r*.45,0,Math.PI*2);ctx.fill()}
+        ctx.restore();
+      }
+
+      blank();
+      const {data:existing,error:existingError}=await supabaseClient.from("appointment_media").select("id,storage_path,created_at")
+        .eq("appointment_id",appointmentId).eq("media_type","sketch").order("created_at",{ascending:false}).limit(1).maybeSingle();
+      if(existingError)console.error(existingError);
+      if(existing?.storage_path){
+        const {data:signed}=await supabaseClient.storage.from("appointment-media").createSignedUrl(existing.storage_path,3600);
+        if(signed?.signedUrl){const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height)};img.src=signed.signedUrl}
+      }
+
+      canvas.addEventListener("pointerdown",e=>{
+        e.preventDefault();canvas.setPointerCapture?.(e.pointerId);const p=point(e);snapshot();
+        if(tool==="rhinestone"){drawRhinestone(p);return}
+        if(tool==="decoration"){drawDecoration(p,deco.value||"star");return}
+        drawing=true;last=p;drawLine(p,{x:p.x+.1,y:p.y+.1});
+      });
+      canvas.addEventListener("pointermove",e=>{if(!drawing)return;const p=point(e);drawLine(last,p);last=p});
+      const endDraw=()=>{drawing=false;last=null};canvas.addEventListener("pointerup",endDraw);canvas.addEventListener("pointercancel",endDraw);canvas.addEventListener("pointerleave",endDraw);
+
+      document.getElementById("sketch-draw").onclick=()=>setTool("draw");
+      document.getElementById("sketch-chrome").onclick=()=>setTool("chrome");
+      document.getElementById("sketch-rhinestone").onclick=()=>setTool("rhinestone");
+      document.getElementById("sketch-eraser").onclick=()=>setTool("eraser");
+      deco.onchange=()=>{if(deco.value)setTool("decoration");else setTool("draw")};
+
+      document.getElementById("sketch-background").onclick=()=>fileInput.click();
+      fileInput.onchange=()=>{
+        const file=fileInput.files?.[0];if(!file)return;
+        if(file.size>5*1024*1024){setStatus("Image trop lourde (5 Mo max).",false);return}
+        const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{
+          snapshot();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#f7f3ec";ctx.fillRect(0,0,canvas.width,canvas.height);
+          const scale=Math.min(canvas.width/img.width,canvas.height/img.height),w=img.width*scale,h=img.height*scale;
+          ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h);baseImage=img;setStatus("Fond ajouté ✓");
+        };img.src=reader.result};reader.readAsDataURL(file);fileInput.value="";
       };
-      let state=saved&&saved.version===1?saved:{version:1,activeHand:"left",selected:"middle",eraser:false,skin:"#e8b99a",morphology:"standard",fingerWidth:"standard",nails:{left:{},right:{}}};
-      state.skin ||= "#e8b99a"; state.morphology ||= "standard"; state.fingerWidth ||= "standard";
-      for(const h of ["left","right"])for(const f of fingers){
-        state.nails[h][f] ||= {shape:"round",length:"m",strokes:[]};
-      }
-      let redo=[];
-      const handSelect=document.getElementById("designer-hand"),morphology=document.getElementById("designer-morphology"),fingerWidth=document.getElementById("designer-fingers"),shape=document.getElementById("designer-shape"),length=document.getElementById("designer-length");
-      const color=document.getElementById("designer-color"),opacity=document.getElementById("designer-opacity"),size=document.getElementById("designer-size");
-      handSelect.value=state.activeHand||"left";
 
-      function dims(n){
-        const lengthScale={xs:.72,s:.86,m:1,l:1.18,xl:1.38}[n.length]||1;
-        const widthScale={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        return {w:8.2*widthScale,h:18.0*lengthScale,lengthScale};
-      }
-      function addHandIllusion(){
-        const wrap=document.createElement("div");
-        wrap.className="technical-hand";
-
-        const skins={
-          skin1:"#f6d2bf", skin2:"#e9b794", skin3:"#cf936b",
-          skin4:"#ad6f4c", skin5:"#7c4933", skin6:"#4c2b22"
-        };
-        wrap.style.setProperty("--skin", skins[state.skin] || "#e9b794");
-
-        const morphology={fine:.92,standard:1,large:1.08}[state.morphology]||1;
-        const fw={thin:.90,standard:1,thick:1.10}[state.fingerWidth]||1;
-        const widthScale=morphology*fw;
-
-        const row=document.createElement("div");
-        row.className="template-fingertips";
-
-        ["pinky","ring","middle","index","thumb"].forEach(name=>{
-          const finger=document.createElement("div");
-          finger.className="template-fingertip";
-          finger.dataset.finger=name;
-          finger.style.transform=`scaleX(${widthScale})`;
-
-          const crease=document.createElement("span");
-          crease.className="template-crease";
-          finger.appendChild(crease);
-          row.appendChild(finger);
-        });
-
-        if(state.activeHand==="right") row.style.transform="scaleX(-1)";
-        wrap.appendChild(row);
-        stage.appendChild(wrap);
-      }
-
-      function radius(n){
-        if(n.shape==="square")return "18% 18% 35% 35%";
-        if(n.shape==="coffin")return "28% 28% 38% 38%";
-        if(n.shape==="stiletto")return "50% 50% 38% 38%";
-        if(n.shape==="almond")return "50% 50% 42% 42%";
-        return "48% 48% 42% 42%";
-      }
-      function render(){
-        stage.innerHTML="";
-        const h=state.activeHand;
-        addHandIllusion();
-        for(const f of fingers){
-          const n=state.nails[h][f],p=defaults[h][f],d=dims(n);
-          const wrap=document.createElement("div");
-          wrap.className="designer-nail"+(state.selected===f?" selected":"");wrap.style.zIndex="3";
-          wrap.title=labels[f];
-          wrap.style.left=p.x+"%";
-          const baseTop=p.y;
-          const growth=(d.lengthScale-1)*10.0;
-          wrap.style.top=(baseTop-growth)+"%";
-          wrap.style.width=d.w+"%";wrap.style.height=d.h+"%";
-          wrap.style.transform=`rotate(${p.r}deg)`;
-          wrap.style.borderRadius=radius(n);
-          if(n.shape==="stiletto")wrap.style.clipPath="polygon(50% 0,100% 38%,88% 100%,12% 100%,0 38%)";
-          else if(n.shape==="coffin")wrap.style.clipPath="polygon(20% 0,80% 0,100% 30%,88% 100%,12% 100%,0 30%)";
-          const bed=document.createElement("div");
-          bed.style.cssText="position:absolute;left:8%;right:8%;bottom:2%;height:18%;border-bottom:1px solid rgba(125,72,58,.24);border-radius:0 0 50% 50%;pointer-events:none";
-          wrap.appendChild(bed);
-          const c=document.createElement("canvas"); c.width=220;c.height=420;c.style.position="relative";c.style.zIndex="2";wrap.appendChild(c);stage.appendChild(wrap);
-          redraw(c,n);
-          c.addEventListener("pointerdown",e=>{
-            state.selected=f;
-            stage.querySelectorAll(".designer-nail").forEach(el=>el.classList.remove("selected"));
-            wrap.classList.add("selected");
-            syncControls();
-            startStroke(e,c,n);
-          });
-          c.addEventListener("pointermove",e=>moveStroke(e,c,n));
-          c.addEventListener("pointerup",endStroke);c.addEventListener("pointercancel",endStroke);c.addEventListener("pointerleave",endStroke);
-        }
-      }
-      function redraw(c,n){
-        const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.lineCap="round";ctx.lineJoin="round";
-        for(const s of n.strokes){
-          if(!s.points?.length)continue;
-          ctx.save();ctx.globalCompositeOperation=s.eraser?"destination-out":"source-over";ctx.globalAlpha=s.opacity;ctx.strokeStyle=s.color;ctx.lineWidth=s.size*4;
-          ctx.beginPath();ctx.moveTo(s.points[0][0]*c.width,s.points[0][1]*c.height);
-          for(const p of s.points.slice(1))ctx.lineTo(p[0]*c.width,p[1]*c.height);
-          ctx.stroke();ctx.restore();
-        }
-      }
-      let drawing=null,drawCanvas=null;
-      function point(e,c){const r=c.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];}
-      function startStroke(e,c,n){
-        e.preventDefault();c.setPointerCapture?.(e.pointerId);redo=[];
-        drawing={color:color.value,opacity:Number(opacity.value)/100,size:Number(size.value),eraser:!!state.eraser,points:[point(e,c)]};
-        n.strokes.push(drawing);drawCanvas=c;
-      }
-      function moveStroke(e,c,n){if(!drawing||drawCanvas!==c)return;drawing.points.push(point(e,c));redraw(c,n);}
-      function endStroke(){drawing=null;drawCanvas=null;}
-      function current(){return state.nails[state.activeHand][state.selected];}
-      function syncControls(){const n=current();shape.value=n.shape;length.value=n.length;handSelect.value=state.activeHand;morphology.value=state.morphology;fingerWidth.value=state.fingerWidth;document.getElementById("designer-eraser").classList.toggle("primary",state.eraser);document.querySelectorAll(".skin-swatch").forEach(b=>b.classList.toggle("active",b.dataset.skin===state.skin));}
-      handSelect.onchange=()=>{state.activeHand=handSelect.value;state.selected="middle";syncControls();render();};
-      morphology.onchange=()=>{state.morphology=morphology.value;render();};
-      fingerWidth.onchange=()=>{state.fingerWidth=fingerWidth.value;render();};
-      document.querySelectorAll(".skin-swatch").forEach(b=>b.onclick=()=>{state.skin=b.dataset.skin;syncControls();render();});
-      shape.onchange=()=>{current().shape=shape.value;render();};
-      length.onchange=()=>{current().length=length.value;render();};
-      document.getElementById("designer-eraser").onclick=()=>{state.eraser=!state.eraser;syncControls();};
-      document.getElementById("designer-clear").onclick=()=>{const n=current();redo.push(n.strokes.slice());n.strokes=[];render();};
-      document.getElementById("designer-undo").onclick=()=>{const n=current();if(n.strokes.length){redo.push(n.strokes.pop());render();}};
-      document.getElementById("designer-redo").onclick=()=>{const n=current();if(redo.length){const x=redo.pop();Array.isArray(x)?n.strokes.push(...x):n.strokes.push(x);render();}};
-      document.getElementById("designer-save").onclick=async()=>{
-        const b=document.getElementById("designer-save"),m=document.getElementById("designer-status");b.disabled=true;m.textContent="Enregistrement…";
-        const {error}=await supabaseClient.from("appointment_designs").upsert({appointment_id:appointmentId,sketch_data:state,updated_at:new Date().toISOString()},{onConflict:"appointment_id"});
-        b.disabled=false;m.textContent=error?"Impossible d’enregistrer.":"Croquis enregistré ✓";if(error)console.error(error);else setTimeout(()=>m.textContent="",2500);
+      document.getElementById("sketch-undo").onclick=async()=>{if(!undo.length)return;redo.push(canvas.toDataURL("image/png"));await restoreDataUrl(undo.pop())};
+      document.getElementById("sketch-redo").onclick=async()=>{if(!redo.length)return;undo.push(canvas.toDataURL("image/png"));await restoreDataUrl(redo.pop())};
+      document.getElementById("sketch-clear").onclick=()=>{
+        snapshot();
+        if(baseImage){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#f7f3ec";ctx.fillRect(0,0,canvas.width,canvas.height);
+          const scale=Math.min(canvas.width/baseImage.width,canvas.height/baseImage.height),w=baseImage.width*scale,h=baseImage.height*scale;
+          ctx.drawImage(baseImage,(canvas.width-w)/2,(canvas.height-h)/2,w,h)}
+        else blank();
       };
-      syncControls();render();
+
+      document.getElementById("sketch-save").onclick=async()=>{
+        const button=document.getElementById("sketch-save");button.disabled=true;setStatus("Enregistrement…",false);
+        try{
+          const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png",.95));if(!blob)throw new Error("Impossible de créer l’image.");
+          const path=`${appointmentId}/sketch/${crypto.randomUUID()}.png`;
+          const {error:uploadError}=await supabaseClient.storage.from("appointment-media").upload(path,blob,{contentType:"image/png",upsert:false});if(uploadError)throw uploadError;
+          const {data:oldRows,error:oldError}=await supabaseClient.from("appointment_media").select("id,storage_path").eq("appointment_id",appointmentId).eq("media_type","sketch");if(oldError)throw oldError;
+          const {error:insertError}=await supabaseClient.from("appointment_media").insert({appointment_id:appointmentId,media_type:"sketch",storage_path:path,caption:"Croquis de préparation",display_order:0,uploaded_by:"admin"});
+          if(insertError){await supabaseClient.storage.from("appointment-media").remove([path]);throw insertError}
+          const previous=(oldRows||[]).filter(x=>x.storage_path!==path);
+          if(previous.length){await supabaseClient.from("appointment_media").delete().in("id",previous.map(x=>x.id));await supabaseClient.storage.from("appointment-media").remove(previous.map(x=>x.storage_path))}
+          setStatus("Croquis enregistré ✓");
+        }catch(error){console.error(error);setStatus("Impossible d’enregistrer le croquis.",false)}
+        finally{button.disabled=false}
+      };
     }
 
     async function savePreparationNotes(appointmentId){
