@@ -822,7 +822,7 @@
               <button id="sketch-save" class="action-button primary" type="button">Enregistrer le croquis</button>
               <span id="sketch-status" class="sketch-status"></span>
             </div>
-            <div class="sketch-help">Choisis Amande, Carré ou Vue mains — Amande s’ouvre automatiquement. Tu peux aussi utiliser une photo perso, puis ajouter couleurs, chromes, strass et décos.</div>
+            <div class="sketch-help">Choisis Amande, Carré ou Vue mains — Amande s’ouvre automatiquement. Ajoute ensuite couleurs, chromes, strass et décos, ou utilise une photo perso.</div>
           </div>
         </div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
@@ -908,23 +908,38 @@
 
       function chromeGradient(a,b,w){
         const palettes={
-          silver:["#55595d","#f7f8f7","#9ea3a7","#ffffff","#65696d"],
-          gold:["#6f4d16","#fff0a8","#c9962e","#fff7c7","#8d641c"],
-          champagne:["#8d7355","#fff1d6","#cbb08d","#fff8e9","#a98b69"],
-          rose:["#85584f","#ffd6ca","#c88e82","#fff0ea","#98665d"],
-          aurora:["#9fdbe8","#f7d6ff","#fff4c7","#c8f0dd","#c9b9ff"],
-          color:[color.value,"#ffffff",color.value,"#e9dcff",color.value]
+          silver:["#5f6264","#d9dcdd","#ffffff","#aeb4b7","#f8f9f9","#6f7375"],
+          gold:["#6d4a12","#c89428","#fff1a1","#fffdf1","#d5a83b","#765217"],
+          champagne:["#8b7152","#d6b98d","#fff2d6","#fffdf6","#c9aa82","#8d7355"],
+          rose:["#85584f","#d99e91","#ffe0d7","#fff8f4","#c8897c","#8e5d54"],
+          aurora:["#9ecfe4","#e6c9ff","#fff7d4","#ffffff","#bcebdc","#d2c3ff"],
+          color:[color.value,"#d9d9d9","#ffffff",color.value,"#f5e9ff",color.value]
         };
         const arr=palettes[chromeType]||palettes.silver;
-        const g=ctx.createLinearGradient(a.x,a.y,b.x+Math.max(30,w),b.y+Math.max(30,w));
-        arr.forEach((c,i)=>g.addColorStop(i/(arr.length-1),c)); return g;
+        const dx=b.x-a.x,dy=b.y-a.y,len=Math.max(1,Math.hypot(dx,dy));
+        const nx=-dy/len,ny=dx/len;
+        const g=ctx.createLinearGradient(a.x-nx*w,a.y-ny*w,a.x+nx*w,a.y+ny*w);
+        arr.forEach((c,i)=>g.addColorStop(i/(arr.length-1),c));
+        return g;
       }
+
       function drawLine(a,b){
         const w=Number(size.value)*2.2;ctx.save();ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=w;
-        if(tool==="eraser"){ctx.globalCompositeOperation="destination-out";ctx.strokeStyle="#000"}
-        else if(tool==="chrome"){ctx.strokeStyle=chromeGradient(a,b,w);ctx.shadowColor="rgba(255,255,255,.65)";ctx.shadowBlur=w*.3}
-        else ctx.strokeStyle=color.value;
-        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();
+        if(tool==="eraser"){
+          ctx.globalCompositeOperation="destination-out";ctx.strokeStyle="#000";
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        }else if(tool==="chrome"){
+          ctx.strokeStyle=chromeGradient(a,b,w);
+          ctx.shadowColor="rgba(255,255,255,.35)";ctx.shadowBlur=w*.12;
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+          // Reflet fin continu : donne un rendu chrome/perlé sans effet "ressort".
+          ctx.shadowBlur=0;ctx.globalAlpha=.72;ctx.lineWidth=Math.max(1.5,w*.16);
+          ctx.strokeStyle="rgba(255,255,255,.95)";
+          ctx.beginPath();ctx.moveTo(a.x-w*.10,a.y-w*.10);ctx.lineTo(b.x-w*.10,b.y-w*.10);ctx.stroke();
+        }else{
+          ctx.strokeStyle=color.value;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        }
+        ctx.restore();
       }
 
       function gemColors(){
@@ -946,11 +961,42 @@
         ctx.closePath();
       }
       function drawRhinestone(p){
-        const r=Math.max(9,Number(size.value)*1.7),cs=gemColors();ctx.save();ctx.translate(p.x,p.y);
-        const g=ctx.createRadialGradient(-r*.28,-r*.32,r*.08,0,0,r*1.05);
-        g.addColorStop(0,cs[0]);g.addColorStop(.3,cs[1]);g.addColorStop(.66,cs[2]);g.addColorStop(1,cs[3]);
-        ctx.fillStyle=g;ctx.strokeStyle="rgba(72,66,62,.4)";ctx.lineWidth=2;gemPath(r,gemShape);ctx.fill();ctx.stroke();
-        ctx.fillStyle="rgba(255,255,255,.9)";ctx.beginPath();ctx.arc(-r*.28,-r*.32,Math.max(2,r*.18),0,Math.PI*2);ctx.fill();ctx.restore();
+        const r=Math.max(9,Number(size.value)*1.7),cs=gemColors();
+        ctx.save();ctx.translate(p.x,p.y);
+
+        // Ombre très légère, juste pour détacher le strass du croquis.
+        ctx.shadowColor="rgba(41,40,36,.18)";ctx.shadowBlur=r*.24;ctx.shadowOffsetY=r*.08;
+
+        const g=ctx.createRadialGradient(-r*.35,-r*.38,r*.04,0,0,r*1.08);
+        g.addColorStop(0,"#ffffff");
+        g.addColorStop(.14,cs[0]);
+        g.addColorStop(.38,cs[1]);
+        g.addColorStop(.70,cs[2]);
+        g.addColorStop(1,cs[3]);
+        ctx.fillStyle=g;ctx.strokeStyle="rgba(70,66,62,.48)";ctx.lineWidth=Math.max(1.2,r*.08);
+        gemPath(r,gemShape);ctx.fill();ctx.stroke();
+
+        // Facettes internes : on garde la forme du strass mais on casse l'effet "bille".
+        ctx.shadowColor="transparent";ctx.save();gemPath(r*.90,gemShape);ctx.clip();
+        ctx.globalAlpha=.42;ctx.lineWidth=Math.max(1,r*.055);
+        ctx.strokeStyle="#ffffff";
+        for(let i=0;i<6;i++){
+          const ang=i*Math.PI/3;
+          ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(ang)*r*.92,Math.sin(ang)*r*.92);ctx.stroke();
+        }
+        ctx.globalAlpha=.22;ctx.fillStyle="#ffffff";
+        ctx.beginPath();ctx.moveTo(-r*.72,-r*.12);ctx.lineTo(-r*.18,-r*.78);ctx.lineTo(r*.18,-r*.18);ctx.closePath();ctx.fill();
+        ctx.restore();
+
+        // Éclat principal + mini éclat secondaire.
+        ctx.globalAlpha=1;ctx.fillStyle="#ffffff";
+        ctx.beginPath();ctx.arc(-r*.34,-r*.38,Math.max(2.2,r*.16),0,Math.PI*2);ctx.fill();
+        ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(r*.28,-r*.18,Math.max(1.2,r*.07),0,Math.PI*2);ctx.fill();
+
+        // Petite étoile lumineuse.
+        ctx.translate(-r*.48,-r*.48);ctx.strokeStyle="rgba(255,255,255,.98)";ctx.lineWidth=Math.max(1,r*.055);
+        ctx.beginPath();ctx.moveTo(-r*.18,0);ctx.lineTo(r*.18,0);ctx.moveTo(0,-r*.18);ctx.lineTo(0,r*.18);ctx.stroke();
+        ctx.restore();
       }
 
       function drawDecoration(p,type){
@@ -976,7 +1022,12 @@
       function drawBackgroundImage(img){
         ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
-        const scale=Math.min(canvas.width/img.width,canvas.height/img.height);
+
+        // Les templates "ongles seuls" peuvent remplir davantage le canvas.
+        // La vue mains reste légèrement plus aérée pour ne rien couper.
+        const padding = selectedTemplate==="hands" ? 54 : 16;
+        const availableW=canvas.width-padding*2, availableH=canvas.height-padding*2;
+        const scale=Math.min(availableW/img.width,availableH/img.height);
         const w=img.width*scale,h=img.height*scale;
         ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h);
         baseImage=img;
@@ -992,8 +1043,8 @@
         const img=new Image();
         img.onload=()=>{
           if(remember)snapshot();
-          drawBackgroundImage(img);
           setTemplateButton(name);
+          drawBackgroundImage(img);
           if(remember)setStatus("Template chargé ✓");
         };
         img.src=url;
