@@ -954,12 +954,30 @@
       }
       function gemPath(r,shape){
         ctx.beginPath();
-        if(shape==="square"){ctx.rect(-r*.72,-r*.72,r*1.44,r*1.44)}
-        else if(shape==="drop"){ctx.moveTo(0,-r);ctx.bezierCurveTo(r*.95,-r*.15,r*.8,r*.75,0,r);ctx.bezierCurveTo(-r*.8,r*.75,-r*.95,-r*.15,0,-r)}
-        else if(shape==="marquise"){ctx.moveTo(0,-r*1.15);ctx.bezierCurveTo(r*.75,-r*.35,r*.75,r*.35,0,r*1.15);ctx.bezierCurveTo(-r*.75,r*.35,-r*.75,-r*.35,0,-r*1.15)}
-        else ctx.arc(0,0,r,0,Math.PI*2);
+        // Une perle reste volontairement parfaitement ronde.
+        if(gemType==="pearl"){ctx.arc(0,0,r,0,Math.PI*2);ctx.closePath();return}
+        if(shape==="square"){
+          ctx.moveTo(-r*.68,-r*.82);ctx.lineTo(r*.68,-r*.82);ctx.lineTo(r*.82,-r*.68);
+          ctx.lineTo(r*.82,r*.68);ctx.lineTo(r*.68,r*.82);ctx.lineTo(-r*.68,r*.82);
+          ctx.lineTo(-r*.82,r*.68);ctx.lineTo(-r*.82,-r*.68);
+        }else if(shape==="drop"){
+          ctx.moveTo(0,-r*1.12);ctx.lineTo(r*.60,-r*.35);ctx.lineTo(r*.72,r*.28);
+          ctx.lineTo(r*.38,r*.82);ctx.lineTo(0,r);ctx.lineTo(-r*.38,r*.82);
+          ctx.lineTo(-r*.72,r*.28);ctx.lineTo(-r*.60,-r*.35);
+        }else if(shape==="marquise"){
+          ctx.moveTo(0,-r*1.18);ctx.lineTo(r*.52,-r*.55);ctx.lineTo(r*.68,0);
+          ctx.lineTo(r*.52,r*.55);ctx.lineTo(0,r*1.18);ctx.lineTo(-r*.52,r*.55);
+          ctx.lineTo(-r*.68,0);ctx.lineTo(-r*.52,-r*.55);
+        }else{
+          // Rond taillé : contour octogonal plutôt qu'une bille parfaitement ronde.
+          for(let i=0;i<8;i++){
+            const ang=-Math.PI/2+i*Math.PI/4,x=Math.cos(ang)*r,y=Math.sin(ang)*r;
+            i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+          }
+        }
         ctx.closePath();
       }
+
       function drawRhinestone(p){
         const r=Math.max(9,Number(size.value)*1.7),cs=gemColors();
         ctx.save();ctx.translate(p.x,p.y);
@@ -993,9 +1011,13 @@
         ctx.beginPath();ctx.arc(-r*.34,-r*.38,Math.max(2.2,r*.16),0,Math.PI*2);ctx.fill();
         ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(r*.28,-r*.18,Math.max(1.2,r*.07),0,Math.PI*2);ctx.fill();
 
-        // Petite étoile lumineuse.
-        ctx.translate(-r*.48,-r*.48);ctx.strokeStyle="rgba(255,255,255,.98)";ctx.lineWidth=Math.max(1,r*.055);
-        ctx.beginPath();ctx.moveTo(-r*.18,0);ctx.lineTo(r*.18,0);ctx.moveTo(0,-r*.18);ctx.lineTo(0,r*.18);ctx.stroke();
+        // Éclat plus net pour Cristal / AB. La perle reste douce et ronde.
+        if(gemType==="crystal" || gemType==="ab"){
+          ctx.translate(-r*.48,-r*.48);ctx.strokeStyle="rgba(255,255,255,.98)";ctx.lineWidth=Math.max(1.2,r*.065);
+          ctx.beginPath();ctx.moveTo(-r*.28,0);ctx.lineTo(r*.28,0);ctx.moveTo(0,-r*.28);ctx.lineTo(0,r*.28);ctx.stroke();
+          ctx.rotate(Math.PI/4);ctx.globalAlpha=.72;
+          ctx.beginPath();ctx.moveTo(-r*.14,0);ctx.lineTo(r*.14,0);ctx.moveTo(0,-r*.14);ctx.lineTo(0,r*.14);ctx.stroke();
+        }
         ctx.restore();
       }
 
@@ -1027,7 +1049,11 @@
         // La vue mains reste légèrement plus aérée pour ne rien couper.
         const padding = selectedTemplate==="hands" ? 54 : 16;
         const availableW=canvas.width-padding*2, availableH=canvas.height-padding*2;
-        const scale=Math.min(availableW/img.width,availableH/img.height);
+        let scale=Math.min(availableW/img.width,availableH/img.height);
+        // Les planches Amande/Carré ont beaucoup de blanc dans l'image source :
+        // on les zoome pour que les ongles occupent réellement la zone de travail.
+        if(selectedTemplate==="almond") scale*=1.55;
+        if(selectedTemplate==="square") scale*=1.72;
         const w=img.width*scale,h=img.height*scale;
         ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h);
         baseImage=img;
