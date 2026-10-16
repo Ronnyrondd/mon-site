@@ -218,12 +218,12 @@
     const modal=document.getElementById("pose-modal"),body=document.getElementById("pose-modal-body"),title=document.getElementById("pose-modal-title");
     modal.classList.add("open");modal.setAttribute("aria-hidden","false");body.innerHTML='<div class="empty">Chargement de la fiche de pose…</div>';
     try{
-      const [{data:a,error:aError},{data:design,error:dError},{data:options,error:oError},{data:payments,error:pError},inspirations,results]=await Promise.all([
+      const [{data:a,error:aError},{data:design,error:dError},{data:options,error:oError},{data:payments,error:pError},inspirations,sketches,results]=await Promise.all([
         supabaseClient.from("appointments").select("id,starts_at,ends_at,status,service_name_snapshot,expected_price_cents,client_message,private_notes").eq("id",appointmentId).single(),
         supabaseClient.from("appointment_designs").select("nail_shape,nail_length,color_wishes,client_design_note,conversation_preference,music_preference,beverage_id,beverage_details,private_preparation_notes").eq("appointment_id",appointmentId).maybeSingle(),
         supabaseClient.from("appointment_options").select("option_name_snapshot,quantity").eq("appointment_id",appointmentId),
         supabaseClient.from("payments").select("amount_cents,payment_type,payment_method,paid_at").eq("appointment_id",appointmentId).order("paid_at",{ascending:false}),
-        signedMediaForAppointment(appointmentId,"inspiration"),signedMediaForAppointment(appointmentId,"result")
+        signedMediaForAppointment(appointmentId,"inspiration"),signedMediaForAppointment(appointmentId,"sketch"),signedMediaForAppointment(appointmentId,"result")
       ]);
       if(aError||dError||oError||pError)throw(aError||dError||oError||pError);
       let beverageName=null;
@@ -238,6 +238,7 @@
         <section class="pose-card"><h3>Ma pose</h3><div class="pose-line"><strong>Forme</strong> · ${escapeHtml(design?.nail_shape||"Non renseignée")}</div><div class="pose-line"><strong>Longueur</strong> · ${escapeHtml(design?.nail_length||"Non renseignée")}</div><div class="pose-line"><strong>Couleurs</strong> · ${escapeHtml(design?.color_wishes||"Non renseigné")}</div>${design?.client_design_note?`<div class="pose-note">${escapeHtml(design.client_design_note)}</div>`:""}</section>
         <section class="pose-card"><h3>Mon moment</h3><div class="pose-line"><strong>Ambiance</strong> · ${escapeHtml(friendlyPreference(design?.conversation_preference,conversationLabels)||"Non renseigné")}</div><div class="pose-line"><strong>Musique</strong> · ${escapeHtml(friendlyPreference(design?.music_preference,musicLabels)||"Non renseigné")}</div><div class="pose-line"><strong>Boisson</strong> · ${escapeHtml([beverageName,design?.beverage_details].filter(Boolean).join(" · ")||"Non renseignée")}</div></section>
         <section class="pose-card wide"><h3>Inspirations envoyées</h3>${poseGallery(inspirations,"Inspiration")}</section>
+        <section class="pose-card wide"><h3>✏️ Mon croquis</h3>${poseGallery(sketches,"Croquis de préparation")}</section>
         <section class="pose-card wide"><h3>Résultat de la pose</h3>${poseGallery(results,"Pose réalisée")}</section>
         <section class="pose-card"><h3>Rendez-vous</h3><div class="pose-line"><strong>${cap(longDateFmt.format(new Date(a.starts_at)))}</strong> à ${timeFmt.format(new Date(a.starts_at))}</div><div class="pose-line">${escapeHtml(a.service_name_snapshot)}</div><div class="pose-line">${optionsHtml}</div><div class="pose-line"><strong>Durée</strong> · ${duration} min</div><div class="pose-line"><strong>Statut</strong> · ${escapeHtml(statusLabels[a.status]||a.status)}</div></section>
         <section class="pose-card"><h3>Paiement</h3><div class="pose-line"><strong>Prévu</strong> · ${euro.format(Number(a.expected_price_cents||0)/100)}</div><div class="pose-line"><strong>Encaissé</strong> · ${euro.format(netPaid/100)}</div><div class="pose-line"><strong>Moyen</strong> · ${escapeHtml(finalPayment?.payment_method?(paymentMethodLabels[finalPayment.payment_method]||finalPayment.payment_method):"—")}</div></section>
