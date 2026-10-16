@@ -1052,7 +1052,7 @@
         let scale=Math.min(availableW/img.width,availableH/img.height);
         // Les planches Amande/Carré ont beaucoup de blanc dans l'image source :
         // on les zoome pour que les ongles occupent réellement la zone de travail.
-        if(selectedTemplate==="almond") scale*=1.55;
+        if(selectedTemplate==="almond") scale*=1.45;
         if(selectedTemplate==="square") scale*=1.72;
         const w=img.width*scale,h=img.height*scale;
         ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h);
