@@ -409,15 +409,30 @@
       return true;
     }
 
-    function rangeForView(){
-      if(currentView==="week"){
-        const start=startOfWeek(currentDate), end=addDays(start,7);
-        return {start,end};
-      }
-      const monthStart=startOfMonth(currentDate);
-      const gridStart=startOfWeek(monthStart);
-      return {start:gridStart,end:addDays(gridStart,42)};
-    }
+   function rangeForView(){
+  /*
+    Les dates utilisées pour construire l'affichage restent à midi,
+    mais la requête Supabase doit couvrir les journées entières.
+  */
+  if(currentView==="week"){
+    const displayStart=startOfWeek(currentDate);
+    const displayEnd=addDays(displayStart,7);
+
+    return {
+      start:brusselsLocalToDate(localKey(displayStart),"00:00"),
+      end:brusselsLocalToDate(localKey(displayEnd),"00:00")
+    };
+  }
+
+  const monthStart=startOfMonth(currentDate);
+  const gridStart=startOfWeek(monthStart);
+  const gridEnd=addDays(gridStart,42);
+
+  return {
+    start:brusselsLocalToDate(localKey(gridStart),"00:00"),
+    end:brusselsLocalToDate(localKey(gridEnd),"00:00")
+  };
+}
 
     async function loadAppointments(){
       const {start,end}=rangeForView();
