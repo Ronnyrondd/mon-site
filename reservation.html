@@ -14,11 +14,11 @@
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Jost,sans-serif}.wrap{width:min(920px,calc(100% - 32px));margin:auto}.top{padding:26px 0 14px}.back{color:var(--soft);text-decoration:none;font-size:14px}.hero{text-align:center;padding:22px 0 26px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:var(--sage2);font-weight:600}.hero h1{font-family:Fraunces,serif;font-weight:500;font-size:clamp(36px,7vw,58px);margin:8px 0}.hero p{color:var(--soft);margin:auto;max-width:560px}.steps{display:flex;justify-content:center;gap:7px;margin:20px 0 30px}.dot{height:6px;width:34px;border-radius:9px;background:#ddd6ca}.dot.on{background:var(--sage)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,36px);box-shadow:var(--shadow);margin-bottom:35px}.panel h2{font-family:Fraunces,serif;font-size:29px;font-weight:500;margin:0 0 6px}.sub{color:var(--soft);font-size:14px;margin:0 0 22px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.choice{appearance:none;text-align:left;background:white;border:1px solid var(--line);border-radius:16px;padding:17px;cursor:pointer;color:inherit;font:inherit;transition:.15s}.choice:hover,.choice.selected{border-color:var(--sage);background:#f4f5ed;transform:translateY(-1px)}.choice strong{display:block;font-size:16px}.meta{display:flex;gap:10px;color:var(--soft);font-size:13px;margin-top:6px}.price{color:var(--sage2);font-weight:600}
 .optionRow{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--line);padding:14px 0}.optionRow:last-child{border:0}.optionRow label{cursor:pointer;flex:1}.optionRow small{display:block;color:var(--soft)}input[type=radio],input[type=checkbox]{accent-color:var(--sage);width:18px;height:18px}.qty{display:flex;align-items:center;gap:10px}.qty button{width:31px;height:31px;border-radius:50%;border:1px solid var(--line);background:white;cursor:pointer}.qty span{min-width:16px;text-align:center}
-.datebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}input[type=date]{font:inherit;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:white;color:var(--ink)}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:20px}.slot{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;cursor:pointer;font:inherit}.slot:hover,.slot.selected{background:var(--sage);border-color:var(--sage);color:white}.empty{color:var(--soft);padding:18px 0}
+.calendar-shell{max-width:680px;margin:4px auto 0}.calendar-head{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin-bottom:18px}.calendar-title{text-align:center;font-family:Fraunces,serif;font-size:24px;font-weight:500;text-transform:capitalize}.calendar-nav{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:white;color:var(--ink);font:24px/1 Jost;cursor:pointer}.calendar-nav:disabled{opacity:.25;cursor:not-allowed}.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.calendar-weekdays span{text-align:center;font-size:10px;letter-spacing:.12em;font-weight:600;color:var(--soft);padding-bottom:5px}.day{position:relative;min-height:72px;border:1px solid transparent;border-radius:15px;background:transparent;color:var(--ink);font:inherit;cursor:pointer;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;transition:.15s}.day:hover:not(:disabled){background:#f4f5ed;border-color:rgba(116,128,88,.25)}.day .num{font-weight:500;line-height:1.15}.day .daynote{font-size:9px;line-height:1.05;text-align:center;color:var(--soft)}.day.available{background:#fbfcf7;border-color:rgba(116,128,88,.18)}.day.selected{background:var(--sage);border-color:var(--sage);color:white;box-shadow:0 8px 18px -12px rgba(43,36,31,.6)}.day.selected .daynote{color:white}.day.special:not(.selected){background:#f1f3e7;border-color:rgba(86,98,47,.3)}.day .badge{font-size:9px;font-weight:600;color:var(--sage2);background:var(--pale);border-radius:999px;padding:3px 6px;white-space:nowrap}.day.selected .badge{background:rgba(255,255,255,.18);color:white}.day.closed,.day.outside{opacity:.28;cursor:default}.day.full{opacity:.55;cursor:default;background:#f4f1eb}.day.full .daynote{font-size:8px}.day.loading{opacity:.42;cursor:wait}.day.blank{visibility:hidden;pointer-events:none}.calendar-legend{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:15px 0 2px;color:var(--soft);font-size:11px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--sage)}.legend-dot.full{background:#d8d2c7}.legend-dot.special{background:var(--pale);border:1px solid var(--sage)}.selected-day-info{margin:18px 0 0;background:#f4f5ed;border:1px solid rgba(116,128,88,.18);border-radius:15px;padding:13px 15px;color:var(--sage2);font-size:13px}.selected-day-info strong{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}.slots-title{font-family:Fraunces,serif;font-size:20px;font-weight:500;margin:22px 0 0}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.slot{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;cursor:pointer;font:inherit}.slot:hover,.slot.selected{background:var(--sage);border-color:var(--sage);color:white}.empty{color:var(--soft);padding:18px 0}
 .summary{position:sticky;bottom:14px;background:var(--ink);color:white;border-radius:18px;padding:15px 18px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 12px 35px rgba(0,0,0,.18)}.summary small{display:block;opacity:.72}.summary strong{font-family:Fraunces,serif;font-size:20px}.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.notice{background:var(--pale);border-radius:14px;padding:13px 15px;font-size:13px;color:var(--sage2);margin-top:18px}
 
 .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.formgrid label{font-size:13px;color:var(--soft)}.formgrid input{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:white;color:var(--ink);font:inherit}.consent{display:flex;gap:9px;align-items:flex-start;margin-top:20px;font-size:13px;color:var(--soft)}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.secondary{border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:12px 19px;font:500 14px Jost;cursor:pointer}.review{background:#f6f3ec;border-radius:16px;padding:18px}.reviewline{display:flex;justify-content:space-between;gap:20px;padding:7px 0}.reviewline span:first-child{color:var(--soft)}.reviewline.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-weight:600}.error{margin-top:15px;padding:12px 14px;border-radius:12px;background:#f8e8e8;color:#8a3030;font-size:13px}.success{text-align:center;padding-top:45px;padding-bottom:45px}.successmark{margin:0 auto 18px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:26px}.success h2{font-size:38px;margin-top:8px}.linkbtn{display:inline-block;text-decoration:none;margin-top:10px}.calendar-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}.calendar-actions .secondary{text-decoration:none;display:inline-block}
-@media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}}
+@media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}.calendar-weekdays,.calendar-grid{gap:4px}.day{min-height:62px;border-radius:12px;padding:7px 2px 5px}.day .daynote{font-size:7px}.day .badge{font-size:8px;padding:2px 4px}.calendar-title{font-size:21px}.calendar-legend{justify-content:flex-start;gap:10px}}
 </style>
 </head>
 <body>
@@ -43,7 +43,22 @@
 
   <section id="datePanel" class="panel hidden">
     <h2>3. Choisis ton créneau</h2><p class="sub">Les horaires proposés tiennent compte de la durée totale de ton rendez-vous.</p>
-    <div class="datebar"><label for="date">Date</label><input id="date" type="date"></div>
+    <div class="calendar-shell">
+      <div class="calendar-head">
+        <button id="prevMonth" class="calendar-nav" type="button" aria-label="Mois précédent">‹</button>
+        <div id="calendarTitle" class="calendar-title">—</div>
+        <button id="nextMonth" class="calendar-nav" type="button" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="calendar-weekdays" aria-hidden="true"><span>LU</span><span>MA</span><span>ME</span><span>JE</span><span>VE</span><span>SA</span><span>DI</span></div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+      <div class="calendar-legend">
+        <span><i class="legend-dot"></i>Disponible</span>
+        <span><i class="legend-dot full"></i>Plus de place</span>
+        <span><i class="legend-dot special"></i>Jour spécial</span>
+      </div>
+    </div>
+    <div id="selectedDayInfo" class="selected-day-info hidden"></div>
+    <div id="slotsTitle" class="slots-title hidden">Choisis ton heure</div>
     <div id="slots" class="slots"></div>
     <div class="notice">Ton créneau reste disponible tant que la réservation n'est pas confirmée.</div>
   </section>
@@ -97,7 +112,7 @@
 const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";
 const SUPABASE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const state={service:null,options:[],serviceQty:1,slot:null};
+const state={service:null,options:[],serviceQty:1,slot:null,selectedDate:null,dayInfo:{},calendarMonth:null,calendarRequest:0};
 const euro=c=>(c/100).toLocaleString("fr-BE",{style:"currency",currency:"EUR"});
 const mins=m=>m<60?`${m} min`:`${Math.floor(m/60)}h${m%60?String(m%60).padStart(2,"0"):""}`;
 const localDate=d=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`};
@@ -114,9 +129,10 @@ function total(){
 }
 function renderSummary(){
  if(!state.service)return;
- const t=total();document.querySelector("#summary").classList.remove("hidden");
+ const t=total(),finalPrice=state.slot?.total_price_cents ?? t.price;
+ document.querySelector("#summary").classList.remove("hidden");
  document.querySelector("#summaryName").textContent=state.service.name;
- document.querySelector("#summaryTotal").textContent=`${euro(t.price)} · ${mins(t.duration)}`;
+ document.querySelector("#summaryTotal").textContent=`${euro(finalPrice)} · ${mins(t.duration)}`;
  document.querySelector("#summarySlot").textContent=state.slot?new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at)):"Choisis une date et une heure";
  document.querySelector("#continueBtn").disabled=!state.slot;
 }
@@ -131,7 +147,7 @@ async function selectService(s,b){
  document.querySelectorAll("#services .choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");
  state.service=s;state.options=[];state.serviceQty=1;state.slot=null;
  const {data,error}=await db.rpc("get_public_service_options",{p_service_id:s.id});
- renderOptions(error?[]:data);document.querySelector("#optionsPanel").classList.remove("hidden");document.querySelector("#datePanel").classList.remove("hidden");renderSummary();await loadSlots();
+ renderOptions(error?[]:data);document.querySelector("#optionsPanel").classList.remove("hidden");document.querySelector("#datePanel").classList.remove("hidden");renderSummary();await refreshCalendar();
 }
 function renderOptions(opts){
  const el=document.querySelector("#options");el.innerHTML="";
@@ -156,16 +172,90 @@ function renderOptions(opts){
  if(!el.children.length)el.innerHTML='<div class="empty">Aucune option supplémentaire pour cette prestation.</div>';
 }
 function changeServiceQty(n){state.serviceQty=Math.max(1,Math.min(5,state.serviceQty+n));document.querySelector("#qval").textContent=state.serviceQty;changed()}
-function changed(){state.slot=null;renderSummary();loadSlots()}
-async function loadSlots(){
- if(!state.service)return;const date=document.querySelector("#date").value;if(!date)return;
- const el=document.querySelector("#slots");el.innerHTML='<div class="empty">Recherche des créneaux…</div>';
- const {data,error}=await db.rpc("get_public_available_slots",{p_service_id:state.service.id,p_date:date,p_options:rpcOptions()});
- if(error){console.error(error);el.innerHTML='<div class="empty">Impossible de charger les créneaux.</div>';return}
- if(!data?.length){el.innerHTML='<div class="empty">Aucun créneau disponible ce jour-là.</div>';return}
- el.innerHTML="";data.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.slot=slot;renderSummary()};el.appendChild(b)});
+function changed(){state.slot=null;state.selectedDate=null;state.dayInfo={};renderSummary();refreshCalendar()}
+
+const today=new Date();
+const minDate=localDate(today);
+const maxDateObj=new Date(today);maxDateObj.setDate(maxDateObj.getDate()+31);
+const maxDate=localDate(maxDateObj);
+state.calendarMonth=new Date(today.getFullYear(),today.getMonth(),1);
+
+function dateFromKey(key){const [y,m,d]=key.split("-").map(Number);return new Date(y,m-1,d,12)}
+function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}
+function dayLabel(key){return new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",timeZone:"Europe/Brussels"}).format(dateFromKey(key))}
+function pctLabel(v){const n=Number(v||0);return Number.isInteger(n)?String(n):String(n).replace(".",",")}
+
+async function fetchDayInfo(key){
+ const [slotsRes,openRes,surchargeRes]=await Promise.all([
+   db.rpc("get_public_available_slots",{p_service_id:state.service.id,p_date:key,p_options:rpcOptions()}),
+   db.rpc("get_public_day_opening_status",{p_date:key}),
+   db.rpc("get_public_day_surcharge",{p_date:key})
+ ]);
+ if(slotsRes.error)throw slotsRes.error;
+ if(openRes.error)throw openRes.error;
+ if(surchargeRes.error)throw surchargeRes.error;
+ const open=!!openRes.data?.[0]?.is_open;
+ const surcharge=Number(surchargeRes.data?.[0]?.surcharge_percent||0);
+ return {open,slots:slotsRes.data||[],surcharge,label:surchargeRes.data?.[0]?.special_label||null};
 }
-const di=document.querySelector("#date"),today=new Date();di.min=localDate(today);const max=new Date(today);max.setDate(max.getDate()+31);di.max=localDate(max);di.value=localDate(today);di.onchange=()=>{state.slot=null;renderSummary();loadSlots()};
+
+async function refreshCalendar(){
+ if(!state.service)return;
+ state.slot=null;renderSummary();
+ const request=++state.calendarRequest;
+ renderCalendarSkeleton();
+ const y=state.calendarMonth.getFullYear(),m=state.calendarMonth.getMonth();
+ const days=new Date(y,m+1,0).getDate();
+ const keys=[];
+ for(let d=1;d<=days;d++){const key=localDate(new Date(y,m,d));if(key>=minDate&&key<=maxDate)keys.push(key)}
+ await Promise.all(keys.map(async key=>{
+   try{state.dayInfo[key]=await fetchDayInfo(key)}catch(e){console.error(e);state.dayInfo[key]={open:false,slots:[],surcharge:0,label:null,error:true}}
+ }));
+ if(request!==state.calendarRequest)return;
+ renderCalendar();
+}
+
+function renderCalendarSkeleton(){renderCalendar(true)}
+function renderCalendar(loading=false){
+ const title=document.querySelector("#calendarTitle"),grid=document.querySelector("#calendarGrid");
+ const y=state.calendarMonth.getFullYear(),m=state.calendarMonth.getMonth();
+ title.textContent=new Intl.DateTimeFormat("fr-BE",{month:"long",year:"numeric"}).format(state.calendarMonth);
+ grid.innerHTML="";
+ const first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate();
+ for(let i=0;i<offset;i++){const blank=document.createElement("div");blank.className="day blank";grid.appendChild(blank)}
+ for(let d=1;d<=days;d++){
+   const key=localDate(new Date(y,m,d)),b=document.createElement("button");b.type="button";b.className="day";b.innerHTML=`<span class="num">${d}</span>`;
+   if(key<minDate||key>maxDate){b.classList.add("outside");b.disabled=true;grid.appendChild(b);continue}
+   if(loading||!state.dayInfo[key]){b.classList.add("loading");b.disabled=true;grid.appendChild(b);continue}
+   const info=state.dayInfo[key];
+   if(!info.open){b.classList.add("closed");b.disabled=true;b.innerHTML+=`<span class="daynote">Fermé</span>`}
+   else if(!info.slots.length){b.classList.add("full");b.disabled=true;b.innerHTML+=`<span class="daynote">Plus de place</span>`}
+   else{b.classList.add("available");if(info.surcharge>0){b.classList.add("special");b.innerHTML+=`<span class="badge">+${pctLabel(info.surcharge)} %</span>`}b.onclick=()=>selectCalendarDay(key,b)}
+   if(state.selectedDate===key)b.classList.add("selected");
+   grid.appendChild(b);
+ }
+ const prev=new Date(y,m-1,1),next=new Date(y,m+1,1);
+ document.querySelector("#prevMonth").disabled=monthKey(prev)<monthKey(dateFromKey(minDate));
+ document.querySelector("#nextMonth").disabled=monthKey(next)>monthKey(dateFromKey(maxDate));
+}
+
+function selectCalendarDay(key){
+ state.selectedDate=key;state.slot=null;renderSummary();renderCalendar();
+ const info=state.dayInfo[key],box=document.querySelector("#selectedDayInfo");
+ box.classList.remove("hidden");
+ const special=info.surcharge>0?`${info.label||"Ouverture exceptionnelle"} · +${pctLabel(info.surcharge)} %`:"Créneaux disponibles";
+ box.innerHTML=`<strong>${dayLabel(key)}</strong>${special}`;
+ renderSlots(info.slots);
+}
+
+function renderSlots(slots){
+ const el=document.querySelector("#slots"),ttl=document.querySelector("#slotsTitle");ttl.classList.remove("hidden");
+ if(!slots?.length){el.innerHTML='<div class="empty">Aucun créneau disponible ce jour-là.</div>';return}
+ el.innerHTML="";slots.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.slot=slot;renderSummary()};el.appendChild(b)});
+}
+
+document.querySelector("#prevMonth").onclick=()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);state.selectedDate=null;state.slot=null;document.querySelector("#selectedDayInfo").classList.add("hidden");document.querySelector("#slotsTitle").classList.add("hidden");document.querySelector("#slots").innerHTML="";refreshCalendar()};
+document.querySelector("#nextMonth").onclick=()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()+1,1);state.selectedDate=null;state.slot=null;document.querySelector("#selectedDayInfo").classList.add("hidden");document.querySelector("#slotsTitle").classList.add("hidden");document.querySelector("#slots").innerHTML="";refreshCalendar()};
 
 function showError(id,msg){const e=document.querySelector(id);e.textContent=msg;e.classList.remove("hidden")}
 function clearError(id){const e=document.querySelector(id);e.textContent="";e.classList.add("hidden")}
@@ -184,14 +274,15 @@ document.querySelector("#reviewBtn").onclick=()=>{
  if(!first||!last||!email||!phone){showError("#formError","Prénom, nom, e-mail et téléphone sont obligatoires.");return}
  if(!document.querySelector("#email").checkValidity()){showError("#formError","Vérifie l'adresse e-mail.");return}
  if(!document.querySelector("#consent").checked){showError("#formError","Le consentement est nécessaire pour enregistrer le rendez-vous.");return}
- const t=total();
+ const t=total(),finalPrice=state.slot?.total_price_cents ?? t.price,surchargeAmount=Math.max(0,finalPrice-t.price),day=state.dayInfo[state.selectedDate]||{};
  const opts=state.options.length?state.options.map(o=>`${o.name}${(o.quantity||1)>1?` × ${o.quantity}`:""}`).join(", "):"Aucune";
  document.querySelector("#reviewBox").innerHTML=`
    <div class="reviewline"><span>Prestation</span><strong>${state.service.name}${state.serviceQty>1?` × ${state.serviceQty}`:""}</strong></div>
    <div class="reviewline"><span>Options</span><strong>${opts}</strong></div>
    <div class="reviewline"><span>Date</span><strong>${fmtSlot()}</strong></div>
    <div class="reviewline"><span>Durée</span><strong>${mins(t.duration)}</strong></div>
-   <div class="reviewline total"><span>Total prévu</span><strong>${euro(t.price)}</strong></div>`;
+   ${surchargeAmount>0?`<div class="reviewline"><span>Sous-total</span><strong>${euro(t.price)}</strong></div><div class="reviewline"><span>Majoration ${day.label||"jour spécial"} +${pctLabel(day.surcharge)} %</span><strong>+ ${euro(surchargeAmount)}</strong></div>`:""}
+   <div class="reviewline total"><span>Total prévu</span><strong>${euro(finalPrice)}</strong></div>`;
  document.querySelector("#reviewPanel").classList.remove("hidden");
  document.querySelector("#reviewPanel").scrollIntoView({behavior:"smooth",block:"start"});
 };
@@ -262,7 +353,7 @@ document.querySelector("#confirmBtn").onclick=async()=>{
  document.querySelector("#reviewPanel").classList.add("hidden");
  document.querySelector("#contactPanel").classList.add("hidden");
  document.querySelector("#summary").classList.add("hidden");
- document.querySelector("#successText").textContent=`${state.service.name} — ${fmtSlot()} — ${euro(row?.expected_price_cents ?? total().price)}`;
+ document.querySelector("#successText").textContent=`${state.service.name} — ${fmtSlot()} — ${euro(row?.expected_price_cents ?? state.slot?.total_price_cents ?? total().price)}`;
  document.querySelector("#successPanel").classList.remove("hidden");
  document.querySelector("#successPanel").scrollIntoView({behavior:"smooth",block:"center"});
 };
