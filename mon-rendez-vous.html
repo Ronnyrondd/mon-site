@@ -62,7 +62,43 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 <div id="saveMsg" class="msg hidden"></div><div class="actions"><button id="save" class="btn">Enregistrer mes préférences</button></div>
 </section>
 
-<section class="card"><h2>📅 Gérer mon rendez-vous</h2><p class="sub">Besoin de changer quelque chose ?</p><div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button><div id="reschedulePanel" class="reschedule-panel hidden"><label class="field" style="margin-top:0">Nouvelle date<input id="rescheduleDate" type="date"></label><div id="slotStatus" class="sub" style="margin-top:14px">Choisis d’abord une date.</div><div id="slotGrid" class="slot-grid"></div><div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div><div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div></div></div><div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn">Annuler mon rendez-vous</button></div></div><div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div><div id="alreadyCancelled" class="msg hidden">Ce rendez-vous est déjà annulé.</div></section>
+<section class="card"><h2>📅 Gérer mon rendez-vous</h2><p class="sub">Besoin de changer quelque chose ?</p><div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button><div id="reschedulePanel" class="reschedule-panel hidden"><label class="field" style="margin-top:0">Nouvelle date<input id="rescheduleDate" type="date"></label><div id="slotStatus" class="sub" style="margin-top:14px">Choisis d’abord une date.</div><div id="slotGrid" class="slot-grid"></div><div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div><div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div></div></div><div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn">Annuler mon rendez-vous</button></div></div><div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div><div id="alreadyCancelled" class="msg hidden">
+  Ce rendez-vous est déjà annulé.
+</div>
+
+<div id="withdrawalBlock" class="danger hidden">
+  <strong>Droit de rétractation</strong>
+
+  <p class="sub">
+    Ta réservation ayant été effectuée en ligne, tu peux exercer ton droit
+    de rétractation pendant le délai légal applicable.
+  </p>
+
+  <p id="withdrawalDeadline" class="sub"></p>
+
+  <p class="sub">
+    Tu n'as pas besoin de donner de motif.
+  </p>
+
+  <label class="field">
+    Message (facultatif)
+    <input id="withdrawalReason" placeholder="Facultatif">
+  </label>
+
+  <div id="withdrawalMsg" class="msg hidden"></div>
+
+  <div class="actions">
+    <button id="withdraw" class="btn" type="button">
+      Exercer mon droit de rétractation
+    </button>
+  </div>
+</div>
+
+<div id="alreadyWithdrawn" class="msg hidden">
+  Ton droit de rétractation a déjà été exercé pour ce rendez-vous.
+</div>
+
+</section>
 </div></main>
 <script>
 const db=supabase.createClient("https://zlmwytycgopowalfrjwf.supabase.co","sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG");
