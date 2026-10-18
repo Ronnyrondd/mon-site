@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
 <title>Réserver — Thab's Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -303,37 +304,17 @@ function fmtSlot(){
   async function updateEarlyPerformance(){
   const block=document.querySelector("#earlyPerformanceBlock");
   const checkbox=document.querySelector("#earlyPerformance");
-
-  if(!state.slot){
-    block.classList.add("hidden");
-    checkbox.checked=false;
-    return;
-  }
-
-  const {data,error}=await db.rpc("requires_early_performance",{
-    p_starts_at:state.slot.starts_at
-  });
-
-  if(error){
-    console.error(error);
-
-    // En cas de doute, on affiche la case :
-    // le serveur fera de toute façon la validation finale.
-    block.classList.remove("hidden");
-    return;
-  }
-
-  if(data===true){
-    block.classList.remove("hidden");
-  }else{
-    block.classList.add("hidden");
-    checkbox.checked=false;
-  }
+  if(!state.slot){block.classList.add("hidden");checkbox.checked=false;return false;}
+  const {data,error}=await db.rpc("requires_early_performance",{p_starts_at:state.slot.starts_at});
+  if(error){console.error(error);block.classList.remove("hidden");return true;}
+  if(data===true){block.classList.remove("hidden");return true;}
+  block.classList.add("hidden");checkbox.checked=false;return false;
 }
-document.querySelector("#continueBtn").onclick=()=>{
+
+document.querySelector("#continueBtn").onclick=async()=>{
   if(!state.slot)return;
 
-  updateEarlyPerformance();
+  await updateEarlyPerformance();
 
   document.querySelector("#contactPanel").classList.remove("hidden");
   document.querySelector("#contactPanel").scrollIntoView({behavior:"smooth",block:"start"});
