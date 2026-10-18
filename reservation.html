@@ -118,7 +118,7 @@
     <div id="bookingError" class="error hidden"></div>
     <div class="actions">
       <button id="editBtn" class="secondary">Modifier</button>
-      <button id="confirmBtn" class="btn">Confirmer mon rendez-vous</button>
+      <button id="confirmBtn" class="btn">Confirmer avec obligation de paiement</button>
     </div>
   </section>
 
@@ -433,7 +433,7 @@ p_early_performance_requested:
    console.error(error);
    const unavailable=(error.message||"").includes("slot_unavailable");
    showError("#bookingError",unavailable?"Oups, ce créneau vient d'être pris ou n'est plus disponible. Retourne au choix du créneau pour en sélectionner un autre.":"La réservation n'a pas pu être enregistrée. Vérifie tes informations ou réessaie dans un instant.");
-   btn.disabled=false;btn.textContent="Confirmer mon rendez-vous";return;
+   btn.disabled=false;btn.textContent="Confirmer avec obligation de paiement";return;
  }
  const row=data?.[0];
  document.querySelector("#reviewPanel").classList.add("hidden");
