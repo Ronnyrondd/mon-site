@@ -282,7 +282,14 @@ function selectCalendarDay(key){
 function renderSlots(slots){
  const el=document.querySelector("#slots"),ttl=document.querySelector("#slotsTitle");ttl.classList.remove("hidden");
  if(!slots?.length){el.innerHTML='<div class="empty">Aucun créneau disponible ce jour-là.</div>';return}
- el.innerHTML="";slots.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.slot=slot;renderSummary()};el.appendChild(b)});
+ el.innerHTML="";slots.forEach(slot=>{const b=document.createElement("button");b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{
+  document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));
+  b.classList.add("selected");
+  state.slot=slot;
+  renderSummary();
+  updateEarlyPerformance();
+};
+el.appendChild(b)});
 }
 
 document.querySelector("#prevMonth").onclick=()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);state.selectedDate=null;state.slot=null;document.querySelector("#selectedDayInfo").classList.add("hidden");document.querySelector("#slotsTitle").classList.add("hidden");document.querySelector("#slots").innerHTML="";refreshCalendar()};
