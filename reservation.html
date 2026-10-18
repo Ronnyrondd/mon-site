@@ -68,14 +68,36 @@
     <h2>4. Tes coordonnées</h2>
     <p class="sub">Ces informations me permettent de retrouver ton rendez-vous et de te contacter si nécessaire.</p>
     <div class="formgrid">
-      <label>Prénom *<input id="firstName" autocomplete="given-name" required></label>
-      <label>Nom *<input id="lastName" autocomplete="family-name" required></label>
-      <label>E-mail *<input id="email" type="email" autocomplete="email" required></label>
-      <label>Téléphone *<input id="phone" type="tel" autocomplete="tel" required></label>
-      <label>Instagram <input id="instagram" placeholder="@..."></label>
-      <label>Date de naissance <input id="birthDate" type="date"></label>
-    </div>
-    <label class="consent"><input id="consent" type="checkbox"> <span>J'accepte que mes données soient utilisées pour gérer mon rendez-vous. *</span></label>
+  <label>Prénom *<input id="firstName" autocomplete="given-name" required></label>
+  <label>Nom *<input id="lastName" autocomplete="family-name" required></label>
+  <label>E-mail *<input id="email" type="email" autocomplete="email" required></label>
+  <label>Téléphone *<input id="phone" type="tel" autocomplete="tel" required></label>
+  <label>Instagram <input id="instagram" placeholder="@..."></label>
+</div>
+
+<label class="consent">
+  <input id="ageConfirm" type="checkbox">
+  <span>Je confirme avoir 18 ans ou plus. *</span>
+</label>
+
+<label class="consent">
+  <input id="termsAccept" type="checkbox">
+  <span>
+    J'ai lu et j'accepte les
+    <a href="./conditions-generales.html" target="_blank" rel="noopener">
+      Conditions générales de réservation et de prestation
+    </a>. *
+  </span>
+</label>
+
+<p class="sub" style="margin-top:18px;margin-bottom:0;">
+  Les informations fournies sont utilisées pour gérer ton rendez-vous.
+  Tu peux consulter la
+  <a href="./politique-confidentialite.html" target="_blank" rel="noopener">
+    Politique de confidentialité
+  </a>
+  pour savoir comment tes données sont traitées.
+</p>
     <div id="formError" class="error hidden"></div>
     <div class="actions"><button id="reviewBtn" class="btn">Voir le récapitulatif</button></div>
   </section>
