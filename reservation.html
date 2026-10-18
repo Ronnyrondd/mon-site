@@ -295,7 +295,15 @@ document.querySelector("#reviewBtn").onclick=()=>{
  email=document.querySelector("#email").value.trim(),phone=document.querySelector("#phone").value.trim();
  if(!first||!last||!email||!phone){showError("#formError","Prénom, nom, e-mail et téléphone sont obligatoires.");return}
  if(!document.querySelector("#email").checkValidity()){showError("#formError","Vérifie l'adresse e-mail.");return}
- if(!document.querySelector("#consent").checked){showError("#formError","Le consentement est nécessaire pour enregistrer le rendez-vous.");return}
+ if(!document.querySelector("#ageConfirm").checked){
+  showError("#formError","Tu dois confirmer avoir 18 ans ou plus pour réserver.");
+  return;
+}
+
+if(!document.querySelector("#termsAccept").checked){
+  showError("#formError","Tu dois accepter les Conditions générales pour réserver.");
+  return;
+}
  const t=total(),finalPrice=state.slot?.total_price_cents ?? t.price,surchargeAmount=Math.max(0,finalPrice-t.price),day=state.dayInfo[state.selectedDate]||{};
  const opts=state.options.length?state.options.map(o=>`${o.name}${(o.quantity||1)>1?` × ${o.quantity}`:""}`).join(", "):"Aucune";
  document.querySelector("#reviewBox").innerHTML=`
