@@ -89,6 +89,15 @@
     </a>. *
   </span>
 </label>
+    <label id="earlyPerformanceBlock" class="consent hidden">
+  <input id="earlyPerformance" type="checkbox">
+  <span>
+    Je demande expressément que la prestation soit réalisée avant la fin
+    du délai légal de rétractation de 14 jours et je reconnais qu'une fois
+    la prestation entièrement exécutée, je ne pourrai plus exercer mon
+    droit de rétractation pour cette prestation. *
+  </span>
+</label>
 
 <p class="sub" style="margin-top:18px;margin-bottom:0;">
   Les informations fournies sont utilisées pour gérer ton rendez-vous.
@@ -284,10 +293,34 @@ function clearError(id){const e=document.querySelector(id);e.textContent="";e.cl
 function fmtSlot(){
  return new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at));
 }
+  function updateEarlyPerformance(){
+  const block=document.querySelector("#earlyPerformanceBlock");
+  const checkbox=document.querySelector("#earlyPerformance");
+
+  if(!state.slot){
+    block.classList.add("hidden");
+    checkbox.checked=false;
+    return;
+  }
+
+  const appointmentDate=new Date(state.slot.starts_at);
+  const withdrawalEnd=new Date();
+  withdrawalEnd.setDate(withdrawalEnd.getDate()+14);
+
+  if(appointmentDate<withdrawalEnd){
+    block.classList.remove("hidden");
+  }else{
+    block.classList.add("hidden");
+    checkbox.checked=false;
+  }
+}
 document.querySelector("#continueBtn").onclick=()=>{
- if(!state.slot)return;
- document.querySelector("#contactPanel").classList.remove("hidden");
- document.querySelector("#contactPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  if(!state.slot)return;
+
+  updateEarlyPerformance();
+
+  document.querySelector("#contactPanel").classList.remove("hidden");
+  document.querySelector("#contactPanel").scrollIntoView({behavior:"smooth",block:"start"});
 };
 document.querySelector("#reviewBtn").onclick=()=>{
  clearError("#formError");
