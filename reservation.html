@@ -337,6 +337,16 @@ if(!document.querySelector("#termsAccept").checked){
   showError("#formError","Tu dois accepter les Conditions générales pour réserver.");
   return;
 }
+  const earlyPerformanceBlock=document.querySelector("#earlyPerformanceBlock");
+const earlyPerformance=document.querySelector("#earlyPerformance");
+
+if(!earlyPerformanceBlock.classList.contains("hidden") && !earlyPerformance.checked){
+  showError(
+    "#formError",
+    "Pour ce rendez-vous, tu dois demander expressément que la prestation puisse être réalisée avant la fin du délai légal de rétractation."
+  );
+  return;
+}
  const t=total(),finalPrice=state.slot?.total_price_cents ?? t.price,surchargeAmount=Math.max(0,finalPrice-t.price),day=state.dayInfo[state.selectedDate]||{};
  const opts=state.options.length?state.options.map(o=>`${o.name}${(o.quantity||1)>1?` × ${o.quantity}`:""}`).join(", "):"Aucune";
  document.querySelector("#reviewBox").innerHTML=`
