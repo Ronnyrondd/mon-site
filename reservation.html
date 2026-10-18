@@ -369,8 +369,8 @@ document.querySelector("#confirmBtn").onclick=async()=>{
    p_email:document.querySelector("#email").value.trim(),
    p_phone:document.querySelector("#phone").value.trim(),
    p_instagram:document.querySelector("#instagram").value.trim()||null,
-   p_birth_date:document.querySelector("#birthDate").value||null,
-   p_consent:document.querySelector("#consent").checked
+p_birth_date:null,
+p_consent:document.querySelector("#termsAccept").checked
  };
  const {data,error}=await db.rpc("create_public_booking",args);
  if(error){
