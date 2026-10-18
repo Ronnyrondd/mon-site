@@ -51,6 +51,12 @@
     .pose-body{padding:25px 26px 30px}.pose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pose-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:white}.pose-card.wide{grid-column:1/-1}
     .pose-card h3{margin:0 0 12px;color:var(--sage-dark);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.pose-line{margin:7px 0;font-size:12px;line-height:1.55}.pose-line strong{font-weight:600}
     .pose-note{padding:12px;border-radius:12px;background:var(--cream);font-size:11px;line-height:1.6;white-space:pre-wrap}.pose-gallery{display:flex;gap:10px;flex-wrap:wrap}.pose-gallery button{width:92px;height:92px;padding:0;border:0;border-radius:13px;overflow:hidden;background:var(--cream)}.pose-gallery img{width:100%;height:100%;object-fit:cover}.pose-empty{color:var(--muted);font-size:11px;line-height:1.6}
+
+    .danger-zone{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+    .danger-zone-title{margin:0 0 8px;color:#8a4f47;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+    .danger-zone-text{max-width:560px;margin:0 0 14px;color:var(--muted);font-size:11px;line-height:1.6}
+    .delete-client-button{padding:10px 15px;border:1px solid rgba(138,79,71,.25);border-radius:100px;background:transparent;color:#8a4f47;font-size:11px;font-weight:600}
+    .delete-client-button:hover{background:#f5e9e6}.delete-client-button:disabled{opacity:.5;cursor:not-allowed}
     @media(max-width:650px){.pose-grid{grid-template-columns:1fr}.pose-card.wide{grid-column:auto}.pose-modal{padding:10px}.pose-sheet{max-height:94vh}.pose-body,.pose-sheet-head{padding-left:18px;padding-right:18px}}
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
@@ -329,11 +335,41 @@
           }).join(""):'<div class="empty">Aucun rendez-vous enregistré.</div>'}
         </div>
       </div>
+
+      <div class="danger-zone">
+        <h3 class="danger-zone-title">Suppression du dossier</h3>
+        <p class="danger-zone-text">Supprime définitivement cette cliente, ses rendez-vous et les données associées. Cette action est irréversible.</p>
+        <button id="delete-client" class="delete-client-button" type="button">Supprimer cette cliente</button>
+      </div>
     </div>`;
 
     document.getElementById("save-notes").addEventListener("click",()=>saveNotes(c));
+    document.getElementById("delete-client").addEventListener("click",()=>deleteClient(c,appts));
     historyRows.filter(a=>a.status==="completed").forEach(a=>{const button=document.querySelector(`[data-add-result="${a.appointment_id}"]`),input=document.getElementById(`result-input-${a.appointment_id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",()=>uploadResultPhotos(a.appointment_id,input))}renderResultMedia(a.appointment_id)});
     profile.querySelectorAll("[data-pose-id]").forEach(row=>row.addEventListener("click",e=>{if(e.target.closest("button,input"))return;openPoseDossier(row.dataset.poseId)}));
+  }
+
+  async function deleteClient(c,appointments){
+    const name=clientName(c);
+    try{
+      const {data:canDelete,error:checkError}=await supabaseClient.rpc("admin_can_delete_client",{p_client_id:c.id});
+      if(checkError)throw checkError;
+      if(canDelete!==true){alert(`${name} possède un historique de paiement.\n\nSon dossier ne peut pas être supprimé comme une cliente test.`);return}
+    }catch(error){console.error("Client deletion check error:",error);alert("Impossible de vérifier si cette cliente peut être supprimée.\n\nAucune donnée n'a été supprimée.");return}
+
+    if(!confirm(`Supprimer définitivement ${name} ?\n\nSes rendez-vous, préférences, inspirations, croquis, photos et autres données associées seront supprimés.\n\nCette action est irréversible.`))return;
+    const typed=prompt(`Dernière vérification.\n\nÉcris SUPPRIMER pour supprimer définitivement le dossier de ${name}.`);
+    if(typed!=="SUPPRIMER"){if(typed!==null)alert("Suppression annulée : le mot SUPPRIMER n'a pas été saisi correctement.");return}
+
+    const button=document.getElementById("delete-client");if(button){button.disabled=true;button.textContent="Suppression…"}
+    try{
+      const appointmentIds=(appointments||[]).map(a=>a.id).filter(Boolean);let media=[];
+      if(appointmentIds.length){const {data,error}=await supabaseClient.from("appointment_media").select("storage_path").in("appointment_id",appointmentIds);if(error)throw error;media=data||[]}
+      const paths=[...new Set(media.map(item=>item.storage_path).filter(Boolean))];
+      if(paths.length){const {error:storageError}=await supabaseClient.storage.from(MEDIA_BUCKET).remove(paths);if(storageError)throw storageError}
+      const {data,error}=await supabaseClient.rpc("admin_delete_client",{p_client_id:c.id});if(error)throw error;if(data!==true)throw new Error("La suppression de la cliente n'a pas pu être confirmée.");
+      clients=clients.filter(client=>client.id!==c.id);selectedClientId=null;renderClientList();document.getElementById("profile").innerHTML='<div class="empty">Cliente supprimée définitivement ✓</div>';
+    }catch(error){console.error("Delete client error:",error);const message=String(error?.message||"");if(message.toLowerCase().includes("historique de paiement")){alert("La suppression a été bloquée car cette cliente possède un historique financier.")}else{alert("Impossible de terminer la suppression de cette cliente.")}if(button){button.disabled=false;button.textContent="Supprimer cette cliente"}}
   }
 
   async function saveNotes(c){
