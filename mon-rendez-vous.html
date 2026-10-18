@@ -224,8 +224,12 @@ else{
         month:"long",
         year:"numeric",
         timeZone:"Europe/Brussels"
-      }).format(new Date(appt.withdrawal_deadline)) +
-      ".";
+      }).format(
+  new Date(
+    new Date(appt.withdrawal_deadline).getTime() - 1000
+  )
+) +
+" inclus.";
   }
 }
  document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
