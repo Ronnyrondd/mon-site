@@ -199,7 +199,35 @@ async function init(){
  document.querySelector("#shape").value=appt.nail_shape||"";document.querySelector("#length").value=appt.nail_length||"";document.querySelector("#colors").value=appt.color_wishes||"";document.querySelector("#designNote").value=appt.client_design_note||"";document.querySelector("#beverageDetails").value=appt.beverage_details||"";
  (bev||[]).forEach(b=>{const o=document.createElement("option");o.value=b.id;o.textContent=b.name+(b.description?` — ${b.description}`:"");document.querySelector("#beverage").appendChild(o)});document.querySelector("#beverage").value=appt.beverage_id||"";
  if(appt.conversation_preference)select("conversation",appt.conversation_preference);if(appt.music_preference)select("music",appt.music_preference);
- if(["cancelled_by_client","cancelled_by_admin"].includes(appt.status))document.querySelector("#alreadyCancelled").classList.remove("hidden");else if(appt.cancellation_allowed){document.querySelector("#rescheduleAllowed").classList.remove("hidden");document.querySelector("#cancelAllowed").classList.remove("hidden")}else document.querySelector("#cancelBlocked").classList.remove("hidden");
+ if(appt.status==="withdrawn"){
+  document.querySelector("#alreadyWithdrawn").classList.remove("hidden");
+}
+else if(["cancelled_by_client","cancelled_by_admin"].includes(appt.status)){
+  document.querySelector("#alreadyCancelled").classList.remove("hidden");
+}
+else{
+  if(appt.cancellation_allowed){
+    document.querySelector("#rescheduleAllowed").classList.remove("hidden");
+    document.querySelector("#cancelAllowed").classList.remove("hidden");
+  }else{
+    document.querySelector("#cancelBlocked").classList.remove("hidden");
+  }
+
+  if(appt.withdrawal_allowed){
+    document.querySelector("#withdrawalBlock").classList.remove("hidden");
+
+    document.querySelector("#withdrawalDeadline").textContent =
+      "Tu peux exercer ce droit jusqu'au " +
+      new Intl.DateTimeFormat("fr-BE",{
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric",
+        timeZone:"Europe/Brussels"
+      }).format(new Date(appt.withdrawal_deadline)) +
+      ".";
+  }
+}
  document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
  await loadMedia();
 }
@@ -257,5 +285,43 @@ document.querySelector("#cancel").onclick=async()=>{if(!confirm("Confirmer l'ann
  const {data,error}=await db.rpc("cancel_private_appointment",{p_token:token,p_reason:document.querySelector("#reason").value||null});
  if(error||!data){console.error(error);alert("L'annulation n'a pas pu être effectuée. Le délai de 24 h est peut-être dépassé.");btn.disabled=false;return}
  document.querySelector("#cancelAllowed").classList.add("hidden");document.querySelector("#alreadyCancelled").classList.remove("hidden");};
+  document.querySelector("#withdraw").onclick=async()=>{
+  if(!confirm(
+    "Confirmer l'exercice de ton droit de rétractation ?\n\n" +
+    "Cette action annulera ton rendez-vous."
+  ))return;
+
+  const btn=document.querySelector("#withdraw");
+  const msg=document.querySelector("#withdrawalMsg");
+
+  btn.disabled=true;
+  msg.classList.remove("hidden");
+  msg.textContent="Rétractation en cours…";
+
+  const {data,error}=await db.rpc(
+    "withdraw_private_appointment",
+    {
+      p_token:token,
+      p_reason:document.querySelector("#withdrawalReason").value.trim()||null
+    }
+  );
+
+  if(error||!data){
+    console.error(error);
+    msg.textContent=
+      "La rétractation n'a pas pu être enregistrée. Le délai légal est peut-être expiré ou le rendez-vous n'est plus éligible.";
+    btn.disabled=false;
+    return;
+  }
+
+  appt.status="withdrawn";
+
+  document.querySelector("#withdrawalBlock").classList.add("hidden");
+  document.querySelector("#rescheduleAllowed").classList.add("hidden");
+  document.querySelector("#cancelAllowed").classList.add("hidden");
+  document.querySelector("#cancelBlocked").classList.add("hidden");
+
+  document.querySelector("#alreadyWithdrawn").classList.remove("hidden");
+};
 init();
 </script></body></html>
