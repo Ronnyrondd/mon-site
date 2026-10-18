@@ -1,62 +1,266 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentions légales — Thab's Lab</title>
-<meta name="robots" content="noindex, follow">
-<link rel="canonical" href="https://thabslab.be/mentions-legales.html">
-<link rel="icon" type="image/png" href="images/favicon-flower.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --cream:#FAF7F0; --ink:#2B241F; --ink-soft:#5B5148;
-    --sage-deep:#56622F; --line:rgba(43,36,31,0.14);
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; background:var(--cream); color:var(--ink);
-    font-family:'Jost', sans-serif; line-height:1.7; padding:80px 24px 100px;
-  }
-  .wrap{max-width:640px; margin:0 auto;}
-  a{color:var(--sage-deep);}
-  a.back{display:inline-block; margin-bottom:40px; font-size:14px; text-decoration:none;}
-  h1{font-family:'Fraunces', serif; font-weight:500; font-size:clamp(28px,4vw,38px); margin-bottom:8px;}
-  .updated{font-size:13px; color:var(--ink-soft); margin-bottom:40px;}
-  h2{font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:19px; margin:36px 0 12px;}
-  p{font-size:15px; color:var(--ink-soft); margin:0 0 6px;}
-  dl{margin:0;}
-  dt{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-top:14px;}
-  dd{margin:2px 0 0; font-size:15px; color:var(--ink);}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mentions légales | Thab's Lab</title>
+  <meta name="description" content="Mentions légales du site Thab's Lab.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #FAF7F0;
+      --white: #FFFEFB;
+      --ink: #2B241F;
+      --soft: #655B52;
+      --sage: #748058;
+      --pale: #EEF0E5;
+      --line: rgba(43, 36, 31, .14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Jost", sans-serif;
+      font-weight: 400;
+      line-height: 1.75;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .wrap {
+      width: min(820px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 70px 0 90px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 50px;
+      color: var(--soft);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      color: var(--sage);
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      color: var(--sage);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1, h2 {
+      font-family: "Fraunces", serif;
+      font-weight: 500;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(42px, 7vw, 66px);
+      line-height: 1.05;
+    }
+
+    .updated {
+      margin: 0;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    .intro {
+      margin-bottom: 55px;
+    }
+
+    .legal-card {
+      padding: 38px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px -38px rgba(43, 36, 31, .4);
+    }
+
+    section + section {
+      margin-top: 42px;
+      padding-top: 38px;
+      border-top: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 15px;
+      font-size: 27px;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--soft);
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .identity {
+      padding: 20px 22px;
+      margin-top: 18px;
+      background: var(--pale);
+      border-radius: 16px;
+      color: var(--ink);
+    }
+
+    .identity strong {
+      font-weight: 600;
+    }
+
+    .legal-link {
+      color: var(--sage);
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    footer {
+      margin-top: 45px;
+      text-align: center;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .wrap {
+        width: min(100% - 28px, 820px);
+        padding: 38px 0 60px;
+      }
+
+      .back {
+        margin-bottom: 35px;
+      }
+
+      .legal-card {
+        padding: 25px 21px;
+        border-radius: 20px;
+      }
+
+      section + section {
+        margin-top: 34px;
+        padding-top: 30px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <a class="back" href="./">← Retour au site</a>
-  <h1>Mentions légales</h1>
-  <p class="updated">Dernière mise à jour : août 2026</p>
 
-  <h2>Éditrice du site</h2>
-  <dl>
-    <dt>Nom</dt><dd>Thabata Tihon</dd>
-    <dt>Nom commercial</dt><dd>Thab's Lab</dd>
-    <dt>Forme juridique</dt><dd>Personne physique — activité indépendante</dd>
-    <dt>Localité</dt><dd>Huy, Belgique</dd>
-    <dt>Numéro d'entreprise (BCE)</dt><dd>1039.078.153</dd>
-    <dt>Numéro de TVA</dt><dd>BE 1039.078.153</dd>
-    <dt>Contact</dt><dd><a href="mailto:contact@thabslab.be">contact@thabslab.be</a></dd>
-  </dl>
+  <main class="wrap">
 
-  <h2>Hébergement</h2>
-  <p>Ce site est hébergé par GitHub, Inc. (GitHub Pages).</p>
+    <a class="back" href="./index.html">← Retour au site</a>
 
-  <h2>Propriété intellectuelle</h2>
-  <p>L'ensemble des textes, photographies et éléments visuels de ce site sont la propriété de Thab's Lab, sauf mention contraire. Toute reproduction sans autorisation préalable est interdite.</p>
+    <header class="intro">
+      <div class="eyebrow">Thab's Lab · Informations légales</div>
+      <h1>Mentions légales</h1>
+      <p class="updated">Dernière mise à jour : octobre 2026</p>
+    </header>
 
-  <h2>Cookies et données personnelles</h2>
-  <p>Ce site n'utilise aucun cookie de suivi ni outil d'analyse. Les seules données transmises le sont si vous choisissez volontairement de contacter Thab's Lab par e-mail ou via la plateforme de réservation Iara, qui applique sa propre politique de confidentialité.</p>
-</div>
+    <div class="legal-card">
+
+      <section>
+        <h2>Éditrice du site</h2>
+
+        <p>
+          Le présent site est édité par :
+        </p>
+
+        <div class="identity">
+          <strong>Thab's Lab</strong><br>
+          Entreprise individuelle — personne physique<br>
+          Exploitante : Thabata Tihon<br>
+          Adresse de l'entreprise : Chaussée de Dinant 48, 4500 Huy<br>
+          Numéro d'entreprise (BCE) : 1039078153<br>
+          Numéro de TVA : BE1039078153<br>
+          E-mail :
+          <a href="mailto:contact@thabslab.be">contact@thabslab.be</a><br>
+          Téléphone : [NUMÉRO DE TÉLÉPHONE]
+        </div>
+      </section>
+
+      <section>
+        <h2>Hébergement</h2>
+
+        <p>
+          Le site est hébergé par GitHub, Inc. via le service GitHub Pages.
+        </p>
+
+        <p>
+          Les services techniques utilisés pour la gestion des rendez-vous
+          et de certaines données associées sont décrits dans la
+          Politique de confidentialité.
+        </p>
+      </section>
+
+      <section>
+        <h2>Propriété intellectuelle</h2>
+
+        <p>
+          Sauf mention contraire, les textes, photographies, éléments
+          graphiques, créations et contenus présents sur ce site sont
+          la propriété de Thab's Lab ou sont utilisés avec l'autorisation
+          de leurs titulaires.
+        </p>
+
+        <p>
+          Toute reproduction, représentation, modification ou utilisation
+          sans autorisation préalable est interdite, sous réserve des
+          exceptions prévues par la loi.
+        </p>
+      </section>
+
+      <section>
+        <h2>Données personnelles</h2>
+
+        <p>
+          Les informations relatives au traitement des données personnelles
+          sont disponibles dans la
+          <a class="legal-link" href="./politique-confidentialite.html">
+            Politique de confidentialité
+          </a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Conditions applicables aux rendez-vous</h2>
+
+        <p>
+          Les réservations et prestations sont soumises aux
+          <a class="legal-link" href="./conditions-generales.html">
+            Conditions générales de réservation et de prestation
+          </a>,
+          accessibles avant la confirmation d'un rendez-vous.
+        </p>
+      </section>
+
+    </div>
+
+    <footer>
+      © 2026 Thab's Lab · Tous droits réservés
+    </footer>
+
+  </main>
+
 </body>
 </html>
