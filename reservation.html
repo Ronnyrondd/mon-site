@@ -420,7 +420,13 @@ document.querySelector("#confirmBtn").onclick=async()=>{
    p_phone:document.querySelector("#phone").value.trim(),
    p_instagram:document.querySelector("#instagram").value.trim()||null,
 p_birth_date:null,
-p_consent:document.querySelector("#termsAccept").checked
+p_consent:false,
+p_age_confirmed:document.querySelector("#ageConfirm").checked,
+p_terms_accepted:document.querySelector("#termsAccept").checked,
+p_terms_version:"2026-10",
+p_early_performance_requested:
+  !document.querySelector("#earlyPerformanceBlock").classList.contains("hidden")
+  && document.querySelector("#earlyPerformance").checked
  };
  const {data,error}=await db.rpc("create_public_booking",args);
  if(error){
