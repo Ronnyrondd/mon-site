@@ -70,6 +70,7 @@
 </div>
 <div id="photo-modal" class="photo-modal" aria-hidden="true"><button id="photo-modal-close" class="photo-modal-close" type="button">×</button><img id="photo-modal-image" alt="Photo de la pose"></div>
 <div id="client-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Nouveau dossier</div><h2>Ajouter une cliente</h2></div><button id="client-modal-close" class="modal-close" type="button">×</button></div><form id="client-form" class="modal-body"><div class="form-grid"><label class="field">Prénom<input id="new-first-name" required></label><label class="field">Nom<input id="new-last-name" required></label><label class="field">E-mail<input id="new-email" type="email" required></label><label class="field">Téléphone<input id="new-phone" required></label><label class="field">Instagram<input id="new-instagram" placeholder="Facultatif"></label><label class="field">Cliente depuis<input id="new-client-since" type="date"></label><label class="field full">Comment elle m'a connue<input id="new-discovery-source" placeholder="Iara, Instagram, bouche-à-oreille…"></label><label class="field full">Note privée<textarea id="new-private-notes" placeholder="Facultatif"></textarea></label></div><div class="form-actions"><span id="client-message" class="message"></span><button id="client-cancel" class="ghost-button" type="button">Annuler</button><button id="client-save" class="small-button" type="submit">Créer la cliente</button></div></form></div></div>
+<div id="edit-client-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Fiche cliente</div><h2>Modifier la cliente</h2></div><button id="edit-client-modal-close" class="modal-close" type="button">×</button></div><form id="edit-client-form" class="modal-body"><div class="form-grid"><label class="field">Prénom<input id="edit-first-name" required></label><label class="field">Nom<input id="edit-last-name" required></label><label class="field">E-mail<input id="edit-email" type="email" required></label><label class="field">Téléphone<input id="edit-phone" required></label><label class="field">Instagram<input id="edit-instagram" placeholder="Facultatif"></label><label class="field">Date de naissance<input id="edit-birth-date" type="date"></label><label class="field">Cliente depuis<input id="edit-client-since" type="date"></label><label class="field full">Comment elle m'a connue<input id="edit-discovery-source" placeholder="Iara, Instagram, bouche-à-oreille…"></label></div><div class="form-actions"><span id="edit-client-message" class="message"></span><button id="edit-client-cancel" class="ghost-button" type="button">Annuler</button><button id="edit-client-save" class="small-button" type="submit">Enregistrer</button></div></form></div></div>
 <div id="history-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Historique</div><h2>Ajouter une ancienne visite</h2></div><button id="history-modal-close" class="modal-close" type="button">×</button></div><form id="history-form" class="modal-body"><div class="form-grid"><label class="field">Date de la visite<input id="history-date" type="date" required></label><label class="field">Prestation<input id="history-service" required placeholder="Gainage, retouche…"></label><label class="field">Montant payé (€)<input id="history-amount" type="number" min="0" step="0.01" placeholder="Facultatif"></label><label class="field">Source<select id="history-source"><option value="iara">Iara</option><option value="manual">Ajout manuel</option></select></label><label class="field">Forme<input id="history-shape" placeholder="Amande, carré…"></label><label class="field">Longueur<input id="history-length" placeholder="Courte, moyenne, longue…"></label><label class="field full">Couleur / design<input id="history-color" placeholder="Nude, french, nail art…"></label><label class="field full">Notes<textarea id="history-notes" placeholder="Tenue, remarques, détails utiles…"></textarea></label><label class="field full">Photos de la pose<input id="history-photos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple><span class="history-upload-hint">Jusqu’à 5 photos · 5 Mo maximum par photo. Elles seront conservées dans le dossier de cette ancienne visite.</span></label></div><div class="form-actions"><span id="history-message" class="message"></span><button id="history-cancel" class="ghost-button" type="button">Annuler</button><button id="history-save" class="small-button" type="submit">Ajouter à l'historique</button></div></form></div></div>
 
 <div id="project-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Carnet cliente</div><h2 id="project-modal-title">Projet nail art</h2></div><button id="project-modal-close" class="modal-close" type="button">×</button></div><form id="project-form" class="modal-body"><input id="project-id" type="hidden"><div class="form-grid"><label class="field full">Nom du projet<input id="project-title"></label><label class="field">Date prévue<input id="project-date" type="date"></label><label class="field">Statut<select id="project-status"><option value="idea">Idée</option><option value="planned">Prévu</option><option value="completed">Réalisé</option><option value="cancelled">Annulé</option><option value="archived">Archivé</option></select></label><label class="field">Forme<input id="project-shape"></label><label class="field">Longueur<input id="project-length"></label><label class="field">Couleurs<input id="project-colors"></label><label class="field">Prix estimé (€)<input id="project-price" type="number" min="0" step="0.01"></label><label class="field full">Détails<textarea id="project-details"></textarea></label><label class="field full">Photos d’inspiration<input id="project-inspirations" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple><span class="project-upload-hint">Jusqu’à 5 photos · 5 Mo maximum par photo. Tu peux aussi en ajouter plus tard depuis la fiche du projet.</span></label></div><div class="form-actions"><span id="project-message" class="message"></span><button id="project-cancel" class="ghost-button" type="button">Annuler</button><button id="project-save" class="small-button" type="submit">Enregistrer</button></div></form></div></div>
@@ -326,8 +327,8 @@
     const profile=document.getElementById("profile");
     profile.innerHTML='<div class="empty">Chargement de la fiche…</div>';
 
-    const [{data:history,error:historyError},{data:appointments,error:appointmentError},{data:manualHistory,error:manualHistoryError}]=await Promise.all([
-      supabaseClient.rpc("admin_get_client_history",{p_client_id:id}),
+    // Charge d’abord les données qui existent aussi pour une cliente sans rendez-vous.
+    const [{data:appointments,error:appointmentError},{data:manualHistory,error:manualHistoryError}]=await Promise.all([
       supabaseClient.from("appointments")
         .select("id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot")
         .eq("client_id",id).order("starts_at",{ascending:false}),
@@ -336,12 +337,24 @@
         .eq("client_id",id).order("occurred_on",{ascending:false})
     ]);
 
-    if(historyError||appointmentError||manualHistoryError){
-      console.error(historyError||appointmentError||manualHistoryError);
+    if(appointmentError||manualHistoryError){
+      console.error(appointmentError||manualHistoryError);
       profile.innerHTML='<div class="empty">Impossible de charger toute la fiche cliente.</div>';return;
     }
 
-    const appts=appointments||[], historyRows=history||[], manualRows=manualHistory||[], now=new Date();
+    const appts=appointments||[], manualRows=manualHistory||[];
+    // Le RPC d’historique financier n’est utile que s’il existe des rendez-vous.
+    // Cela permet aux dossiers créés manuellement (0 rendez-vous) de s’ouvrir normalement.
+    let historyRows=[];
+    if(appts.length){
+      const {data:history,error:historyError}=await supabaseClient.rpc("admin_get_client_history",{p_client_id:id});
+      if(historyError){
+        console.error(historyError);
+        profile.innerHTML='<div class="empty">Impossible de charger l’historique de cette cliente.</div>';return;
+      }
+      historyRows=history||[];
+    }
+    const now=new Date();
     const [{data:preferences,error:prefError},{data:memory,error:memoryError},{data:projects,error:projectsError}]=await Promise.all([supabaseClient.from("client_preferences").select("*").eq("client_id",id).maybeSingle(),supabaseClient.from("client_memories").select("*").eq("client_id",id).maybeSingle(),supabaseClient.from("client_nail_art_projects").select("*").eq("client_id",id).order("created_at",{ascending:false})]);
     if(prefError||memoryError||projectsError){console.error(prefError||memoryError||projectsError);profile.innerHTML='<div class="empty">Impossible de charger le carnet cliente.</div>';return}
     const pref=preferences||{}, mem=memory||{}, projectRows=projects||[];
@@ -356,7 +369,7 @@
     profile.innerHTML=`<div class="profile">
       <div class="profile-head">
         <div>
-          <h2>${escapeHtml(clientName(c))}</h2>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h2>${escapeHtml(clientName(c))}</h2><button id="edit-client" class="outline-button" type="button">Modifier la cliente</button></div>
           <div class="profile-contact">
             ${c.phone?`📞 ${escapeHtml(c.phone)}<br>`:""}
             ${c.email?`✉ ${escapeHtml(c.email)}<br>`:""}
@@ -421,6 +434,7 @@
     </div>`;
 
     profile.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{profile.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x.dataset.tab===b.dataset.tab));profile.querySelectorAll("[data-panel]").forEach(x=>x.classList.toggle("active",x.dataset.panel===b.dataset.tab))}));
+    document.getElementById("edit-client").addEventListener("click",()=>openEditClientModal(c));
     document.getElementById("save-preferences").addEventListener("click",()=>saveClientPreferences(c.id));
     document.getElementById("save-memory").addEventListener("click",()=>saveClientMemory(c.id));
     document.getElementById("new-project").addEventListener("click",()=>openProjectModal());
@@ -445,6 +459,44 @@
   function closeModal(id){const m=document.getElementById(id);m.classList.remove("open");m.setAttribute("aria-hidden","true")}
   function openNewClientModal(){document.getElementById("client-form").reset();document.getElementById("new-client-since").value=brusselsDateKey();document.getElementById("client-message").textContent="";openModal("client-modal");document.getElementById("new-first-name").focus()}
   function openHistoryModal(c){document.getElementById("history-form").reset();document.getElementById("history-date").value=brusselsDateKey();document.getElementById("history-source").value=c.source==="iara"?"iara":"manual";document.getElementById("history-message").textContent="";openModal("history-modal")}
+
+  function openEditClientModal(c){
+    document.getElementById("edit-first-name").value=c.first_name||"";
+    document.getElementById("edit-last-name").value=c.last_name||"";
+    document.getElementById("edit-email").value=c.email||"";
+    document.getElementById("edit-phone").value=c.phone||"";
+    document.getElementById("edit-instagram").value=c.instagram||"";
+    document.getElementById("edit-birth-date").value=c.birth_date||"";
+    document.getElementById("edit-client-since").value=c.client_since||"";
+    document.getElementById("edit-discovery-source").value=c.discovery_source||"";
+    document.getElementById("edit-client-message").textContent="";
+    openModal("edit-client-modal");
+    document.getElementById("edit-first-name").focus();
+  }
+
+  async function updateClient(e){
+    e.preventDefault();
+    if(!selectedClientId)return;
+    const c=clients.find(x=>x.id===selectedClientId);if(!c)return;
+    const btn=document.getElementById("edit-client-save"),msg=document.getElementById("edit-client-message");
+    btn.disabled=true;btn.textContent="Enregistrement…";msg.className="message";msg.textContent="";
+    const changes={
+      first_name:document.getElementById("edit-first-name").value.trim(),
+      last_name:document.getElementById("edit-last-name").value.trim(),
+      email:document.getElementById("edit-email").value.trim(),
+      phone:document.getElementById("edit-phone").value.trim(),
+      instagram:document.getElementById("edit-instagram").value.trim()||null,
+      birth_date:document.getElementById("edit-birth-date").value||null,
+      client_since:document.getElementById("edit-client-since").value||null,
+      discovery_source:document.getElementById("edit-discovery-source").value.trim()||null
+    };
+    if(!changes.first_name||!changes.last_name||!changes.email||!changes.phone){btn.disabled=false;btn.textContent="Enregistrer";msg.className="message error";msg.textContent="Prénom, nom, e-mail et téléphone sont obligatoires.";return}
+    const {data,error}=await supabaseClient.from("clients").update(changes).eq("id",selectedClientId).select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source").single();
+    btn.disabled=false;btn.textContent="Enregistrer";
+    if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de modifier cette cliente.";return}
+    const index=clients.findIndex(x=>x.id===selectedClientId);if(index>=0)clients[index]=data;
+    renderClientList();closeModal("edit-client-modal");await openClient(selectedClientId,"overview");
+  }
 
   async function createClient(e){
     e.preventDefault();const btn=document.getElementById("client-save"),msg=document.getElementById("client-message");btn.disabled=true;btn.textContent="Création…";msg.className="message";msg.textContent="";
@@ -486,6 +538,9 @@
   document.getElementById("client-modal-close").addEventListener("click",()=>closeModal("client-modal"));
   document.getElementById("client-cancel").addEventListener("click",()=>closeModal("client-modal"));
   document.getElementById("client-form").addEventListener("submit",createClient);
+  document.getElementById("edit-client-modal-close").addEventListener("click",()=>closeModal("edit-client-modal"));
+  document.getElementById("edit-client-cancel").addEventListener("click",()=>closeModal("edit-client-modal"));
+  document.getElementById("edit-client-form").addEventListener("submit",updateClient);
   document.getElementById("history-modal-close").addEventListener("click",()=>closeModal("history-modal"));
   document.getElementById("history-cancel").addEventListener("click",()=>closeModal("history-modal"));
   document.getElementById("history-form").addEventListener("submit",addHistoryEntry);
@@ -494,6 +549,7 @@
   document.getElementById("project-form").addEventListener("submit",saveNailProject);
   document.getElementById("project-modal").addEventListener("click",e=>{if(e.target.id==="project-modal")closeModal("project-modal")});
   document.getElementById("client-modal").addEventListener("click",e=>{if(e.target.id==="client-modal")closeModal("client-modal")});
+  document.getElementById("edit-client-modal").addEventListener("click",e=>{if(e.target.id==="edit-client-modal")closeModal("edit-client-modal")});
   document.getElementById("history-modal").addEventListener("click",e=>{if(e.target.id==="history-modal")closeModal("history-modal")});
   document.getElementById("search").addEventListener("input",renderClientList);
   document.getElementById("pose-modal-close").addEventListener("click",closePoseDossier);
