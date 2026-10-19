@@ -350,6 +350,7 @@
       .sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at))[0]||null;
     const total=historyRows.reduce((sum,a)=>sum+Number(a.paid_amount_cents||0),0);
     const birthday=c.birth_date ? new Date(`${c.birth_date}T12:00:00`) : null;
+    const clientSinceDate=c.client_since ? new Date(`${c.client_since}T12:00:00`) : new Date(c.created_at);
     const statusLabel={pending:"En attente",confirmed:"Confirmé",completed:"Terminé",cancelled_by_client:"Annulé par la cliente",cancelled_by_admin:"Annulé",late_cancellation:"Annulation tardive",no_show:"Absence"};
 
     profile.innerHTML=`<div class="profile">
@@ -366,7 +367,7 @@
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="stat-label">Cliente depuis</div><div class="stat-value">${dateFmt.format(new Date(`${c.client_since||c.created_at}T12:00:00`))}</div></div>
+        <div class="stat"><div class="stat-label">Cliente depuis</div><div class="stat-value">${dateFmt.format(clientSinceDate)}</div></div>
         <div class="stat"><div class="stat-label">Visites terminées</div><div class="stat-value">${visits}</div></div>
         <div class="stat"><div class="stat-label">Total encaissé</div><div class="stat-value">${euro.format(total/100)}</div></div>
       </div>
