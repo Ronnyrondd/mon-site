@@ -51,16 +51,11 @@
     .pose-body{padding:25px 26px 30px}.pose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pose-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:white}.pose-card.wide{grid-column:1/-1}
     .pose-card h3{margin:0 0 12px;color:var(--sage-dark);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.pose-line{margin:7px 0;font-size:12px;line-height:1.55}.pose-line strong{font-weight:600}
     .pose-note{padding:12px;border-radius:12px;background:var(--cream);font-size:11px;line-height:1.6;white-space:pre-wrap}.pose-gallery{display:flex;gap:10px;flex-wrap:wrap}.pose-gallery button{width:92px;height:92px;padding:0;border:0;border-radius:13px;overflow:hidden;background:var(--cream)}.pose-gallery img{width:100%;height:100%;object-fit:cover}.pose-empty{color:var(--muted);font-size:11px;line-height:1.6}
-
-    .danger-zone{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
-    .danger-zone-title{margin:0 0 8px;color:#8a4f47;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
-    .danger-zone-text{max-width:560px;margin:0 0 14px;color:var(--muted);font-size:11px;line-height:1.6}
-    .delete-client-button{padding:10px 15px;border:1px solid rgba(138,79,71,.25);border-radius:100px;background:transparent;color:#8a4f47;font-size:11px;font-weight:600}
-    .delete-client-button:hover{background:#f5e9e6}.delete-client-button:disabled{opacity:.5;cursor:not-allowed}
     @media(max-width:650px){.pose-grid{grid-template-columns:1fr}.pose-card.wide{grid-column:auto}.pose-modal{padding:10px}.pose-sheet{max-height:94vh}.pose-body,.pose-sheet-head{padding-left:18px;padding-right:18px}}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.secondary-button{padding:13px 18px;border:1px solid var(--line);border-radius:100px;background:var(--white);color:var(--ink);font-size:12px;font-weight:600}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-head .section-title{margin:0}.outline-button{padding:8px 12px;border:1px solid var(--line);border-radius:100px;background:white;color:var(--ink);font-size:10px;font-weight:600}.manual-row{background:rgba(247,243,236,.55)}.source-badge{display:inline-flex;margin-top:5px;padding:4px 7px;border-radius:100px;background:var(--rose-light);color:var(--muted);font-size:9px}.manual-details{grid-column:2/-1;color:var(--muted);font-size:10px;line-height:1.55}.modal{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(20,20,18,.55)}.modal.open{display:flex}.modal-card{width:min(650px,100%);max-height:92vh;overflow:auto;border-radius:24px;background:var(--white);box-shadow:0 25px 80px rgba(0,0,0,.2)}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px 26px;border-bottom:1px solid var(--line)}.modal-head h2{margin:2px 0 0;font-family:"Playfair Display",serif;font-size:28px;font-weight:500}.modal-close{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:white;font-size:22px}.modal-body{padding:24px 26px 28px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:10px;font-weight:600}.field.full{grid-column:1/-1}.field input,.field textarea,.field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--sage)}.form-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px}.ghost-button{padding:10px 14px;border:1px solid var(--line);border-radius:100px;background:white;color:var(--ink);font-size:11px;font-weight:600}.message{margin-right:auto;color:var(--muted);font-size:10px}.message.error{color:#8a4f47}.message.success{color:var(--sage-dark)}.danger-zone{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}.danger-zone-title{margin:0 0 8px;color:#8a4f47;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.danger-zone-text{max-width:560px;margin:0 0 14px;color:var(--muted);font-size:11px;line-height:1.6}.delete-client-button{padding:10px 15px;border:1px solid rgba(138,79,71,.25);border-radius:100px;background:transparent;color:#8a4f47;font-size:11px;font-weight:600}.delete-client-button:hover{background:#f5e9e6}.delete-client-button:disabled{opacity:.5;cursor:not-allowed}
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
-    @media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
+    @media(max-width:760px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.top-actions{justify-content:flex-start}.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
   </style>
 </head>
 <body>
@@ -72,6 +67,8 @@
   </div>
 </div>
 <div id="photo-modal" class="photo-modal" aria-hidden="true"><button id="photo-modal-close" class="photo-modal-close" type="button">×</button><img id="photo-modal-image" alt="Photo de la pose"></div>
+<div id="client-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Nouveau dossier</div><h2>Ajouter une cliente</h2></div><button id="client-modal-close" class="modal-close" type="button">×</button></div><form id="client-form" class="modal-body"><div class="form-grid"><label class="field">Prénom<input id="new-first-name" required></label><label class="field">Nom<input id="new-last-name" required></label><label class="field">E-mail<input id="new-email" type="email" required></label><label class="field">Téléphone<input id="new-phone" required></label><label class="field">Instagram<input id="new-instagram" placeholder="Facultatif"></label><label class="field">Cliente depuis<input id="new-client-since" type="date"></label><label class="field full">Comment elle m'a connue<input id="new-discovery-source" placeholder="Iara, Instagram, bouche-à-oreille…"></label><label class="field full">Note privée<textarea id="new-private-notes" placeholder="Facultatif"></textarea></label></div><div class="form-actions"><span id="client-message" class="message"></span><button id="client-cancel" class="ghost-button" type="button">Annuler</button><button id="client-save" class="small-button" type="submit">Créer la cliente</button></div></form></div></div>
+<div id="history-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Historique</div><h2>Ajouter une ancienne visite</h2></div><button id="history-modal-close" class="modal-close" type="button">×</button></div><form id="history-form" class="modal-body"><div class="form-grid"><label class="field">Date de la visite<input id="history-date" type="date" required></label><label class="field">Prestation<input id="history-service" required placeholder="Gainage, retouche…"></label><label class="field">Montant payé (€)<input id="history-amount" type="number" min="0" step="0.01" placeholder="Facultatif"></label><label class="field">Source<select id="history-source"><option value="iara">Iara</option><option value="manual">Ajout manuel</option></select></label><label class="field">Forme<input id="history-shape" placeholder="Amande, carré…"></label><label class="field">Longueur<input id="history-length" placeholder="Courte, moyenne, longue…"></label><label class="field full">Couleur / design<input id="history-color" placeholder="Nude, french, nail art…"></label><label class="field full">Notes<textarea id="history-notes" placeholder="Tenue, remarques, détails utiles…"></textarea></label></div><div class="form-actions"><span id="history-message" class="message"></span><button id="history-cancel" class="ghost-button" type="button">Annuler</button><button id="history-save" class="small-button" type="submit">Ajouter à l'historique</button></div></form></div></div>
 <div class="app">
   <aside class="sidebar">
     <div class="brand">Thab's Lab</div>
@@ -89,7 +86,7 @@
   <main class="content">
     <header class="topbar">
       <div><div class="eyebrow">Clientes</div><h1>Mon fichier clientes</h1><div class="date">Coordonnées, historique et suivi en un seul endroit.</div></div>
-      <a class="primary-button" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a>
+      <div class="top-actions"><button id="new-client" class="secondary-button" type="button">+ Nouvelle cliente</button><a class="primary-button" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a></div>
     </header>
 
     <div class="search-wrap"><input id="search" class="search" type="search" placeholder="Rechercher par nom, prénom, téléphone ou e-mail…"></div>
@@ -185,7 +182,7 @@
 
   async function loadClients(){
     const {data,error}=await supabaseClient.from("clients")
-      .select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at")
+      .select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source")
       .order("first_name",{ascending:true}).order("last_name",{ascending:true});
     if(error){console.error(error);document.getElementById("client-list").innerHTML='<div class="empty">Impossible de charger les clientes.</div>';return}
     clients=data||[];
@@ -261,20 +258,23 @@
     const profile=document.getElementById("profile");
     profile.innerHTML='<div class="empty">Chargement de la fiche…</div>';
 
-    const [{data:history,error:historyError},{data:appointments,error:appointmentError}]=await Promise.all([
+    const [{data:history,error:historyError},{data:appointments,error:appointmentError},{data:manualHistory,error:manualHistoryError}]=await Promise.all([
       supabaseClient.rpc("admin_get_client_history",{p_client_id:id}),
       supabaseClient.from("appointments")
         .select("id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot")
-        .eq("client_id",id).order("starts_at",{ascending:false})
+        .eq("client_id",id).order("starts_at",{ascending:false}),
+      supabaseClient.from("client_history_entries")
+        .select("id,entry_type,occurred_on,service_name,amount_cents,nail_shape,nail_length,color_design,notes,source,created_at")
+        .eq("client_id",id).order("occurred_on",{ascending:false})
     ]);
 
-    if(historyError||appointmentError){
-      console.error(historyError||appointmentError);
+    if(historyError||appointmentError||manualHistoryError){
+      console.error(historyError||appointmentError||manualHistoryError);
       profile.innerHTML='<div class="empty">Impossible de charger toute la fiche cliente.</div>';return;
     }
 
-    const appts=appointments||[], historyRows=history||[], now=new Date();
-    const visits=historyRows.filter(a=>a.status==="completed").length;
+    const appts=appointments||[], historyRows=history||[], manualRows=manualHistory||[], now=new Date();
+    const visits=historyRows.filter(a=>a.status==="completed").length+manualRows.filter(a=>a.entry_type==="past_appointment").length;
     const next=[...appts].filter(a=>new Date(a.starts_at)>=now&&["pending","confirmed"].includes(a.status))
       .sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at))[0]||null;
     const total=historyRows.reduce((sum,a)=>sum+Number(a.paid_amount_cents||0),0);
@@ -289,13 +289,13 @@
             ${c.phone?`📞 ${escapeHtml(c.phone)}<br>`:""}
             ${c.email?`✉ ${escapeHtml(c.email)}<br>`:""}
             ${c.instagram?`Instagram · ${escapeHtml(c.instagram)}<br>`:""}
-            ${birthday?`Anniversaire · ${dateFmt.format(birthday)}`:""}
+            ${birthday?`Anniversaire · ${dateFmt.format(birthday)}<br>`:""}${c.discovery_source?`Découverte · ${escapeHtml(c.discovery_source)}<br>`:""}${c.source==="iara"?`Source · Iara`:""}
           </div>
         </div>
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="stat-label">Cliente depuis</div><div class="stat-value">${dateFmt.format(new Date(c.created_at))}</div></div>
+        <div class="stat"><div class="stat-label">Cliente depuis</div><div class="stat-value">${dateFmt.format(new Date(`${c.client_since||c.created_at}T12:00:00`))}</div></div>
         <div class="stat"><div class="stat-label">Visites terminées</div><div class="stat-value">${visits}</div></div>
         <div class="stat"><div class="stat-label">Total encaissé</div><div class="stat-value">${euro.format(total/100)}</div></div>
       </div>
@@ -312,8 +312,9 @@
       </div>
 
       <div class="section">
-        <h3 class="section-title">Historique</h3>
+        <div class="section-head"><h3 class="section-title">Historique</h3><button id="add-history" class="outline-button" type="button">+ Ancienne visite</button></div>
         <div class="history">
+          ${manualRows.map(a=>`<div class="history-row manual-row"><div>${dateFmt.format(new Date(`${a.occurred_on}T12:00:00`))}</div><div><div class="history-service">${escapeHtml(a.service_name||"Note")}</div><div class="history-status">Ancien historique</div><span class="source-badge">${a.source==="iara"?"Importé d’Iara":"Ajout manuel"}</span></div><div class="history-money"><div class="history-price">${a.amount_cents==null?"—":euro.format(Number(a.amount_cents)/100)}</div></div>${[a.nail_shape,a.nail_length,a.color_design,a.notes].some(Boolean)?`<div class="manual-details">${a.nail_shape?`Forme · ${escapeHtml(a.nail_shape)}<br>`:""}${a.nail_length?`Longueur · ${escapeHtml(a.nail_length)}<br>`:""}${a.color_design?`Couleur / design · ${escapeHtml(a.color_design)}<br>`:""}${a.notes?`Note · ${escapeHtml(a.notes)}`:""}</div>`:""}</div>`).join("")}
           ${historyRows.length?historyRows.map(a=>{
             const paid=Number(a.paid_amount_cents||0);
             const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
@@ -332,44 +333,46 @@
               </div>
               ${a.status==="completed"?`<div class="result-tools"><div class="result-actions"><button class="photo-button" type="button" data-add-result="${a.appointment_id}">+ Ajouter des photos</button><input id="result-input-${a.appointment_id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="result-message-${a.appointment_id}" class="result-message">${photoCount?`${photoCount} photo${photoCount>1?"s":""}`:""}</span></div><div id="result-media-${a.appointment_id}" class="result-gallery"></div></div>`:(photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:"")}
             </div>`;
-          }).join(""):'<div class="empty">Aucun rendez-vous enregistré.</div>'}
+          }).join(""):(manualRows.length?'':'<div class="empty">Aucun rendez-vous enregistré.</div>')}
         </div>
       </div>
-
-      <div class="danger-zone">
-        <h3 class="danger-zone-title">Suppression du dossier</h3>
-        <p class="danger-zone-text">Supprime définitivement cette cliente, ses rendez-vous et les données associées. Cette action est irréversible.</p>
-        <button id="delete-client" class="delete-client-button" type="button">Supprimer cette cliente</button>
-      </div>
+      <div class="danger-zone"><h3 class="danger-zone-title">Suppression du dossier</h3><p class="danger-zone-text">Supprime définitivement cette cliente et les données associées. Cette action est irréversible et sera bloquée si un historique financier doit être conservé.</p><button id="delete-client" class="delete-client-button" type="button">Supprimer cette cliente</button></div>
     </div>`;
 
     document.getElementById("save-notes").addEventListener("click",()=>saveNotes(c));
+    document.getElementById("add-history").addEventListener("click",()=>openHistoryModal(c));
     document.getElementById("delete-client").addEventListener("click",()=>deleteClient(c,appts));
     historyRows.filter(a=>a.status==="completed").forEach(a=>{const button=document.querySelector(`[data-add-result="${a.appointment_id}"]`),input=document.getElementById(`result-input-${a.appointment_id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",()=>uploadResultPhotos(a.appointment_id,input))}renderResultMedia(a.appointment_id)});
     profile.querySelectorAll("[data-pose-id]").forEach(row=>row.addEventListener("click",e=>{if(e.target.closest("button,input"))return;openPoseDossier(row.dataset.poseId)}));
   }
 
+  function brusselsDateKey(){return new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
+  function openModal(id){const m=document.getElementById(id);m.classList.add("open");m.setAttribute("aria-hidden","false")}
+  function closeModal(id){const m=document.getElementById(id);m.classList.remove("open");m.setAttribute("aria-hidden","true")}
+  function openNewClientModal(){document.getElementById("client-form").reset();document.getElementById("new-client-since").value=brusselsDateKey();document.getElementById("client-message").textContent="";openModal("client-modal");document.getElementById("new-first-name").focus()}
+  function openHistoryModal(c){document.getElementById("history-form").reset();document.getElementById("history-date").value=brusselsDateKey();document.getElementById("history-source").value=c.source==="iara"?"iara":"manual";document.getElementById("history-message").textContent="";openModal("history-modal")}
+
+  async function createClient(e){
+    e.preventDefault();const btn=document.getElementById("client-save"),msg=document.getElementById("client-message");btn.disabled=true;btn.textContent="Création…";msg.className="message";msg.textContent="";
+    const args={p_first_name:document.getElementById("new-first-name").value.trim(),p_last_name:document.getElementById("new-last-name").value.trim(),p_email:document.getElementById("new-email").value.trim(),p_phone:document.getElementById("new-phone").value.trim(),p_instagram:document.getElementById("new-instagram").value.trim()||null,p_client_since:document.getElementById("new-client-since").value||null,p_discovery_source:document.getElementById("new-discovery-source").value.trim()||null,p_private_notes:document.getElementById("new-private-notes").value.trim()||null,p_source:"manual"};
+    const {data,error}=await supabaseClient.rpc("admin_create_client",args);btn.disabled=false;btn.textContent="Créer la cliente";
+    if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de créer cette cliente.";return}
+    msg.className="message success";msg.textContent="Cliente créée ✓";await loadClients();closeModal("client-modal");await openClient(data);
+  }
+
+  async function addHistoryEntry(e){
+    e.preventDefault();if(!selectedClientId)return;const btn=document.getElementById("history-save"),msg=document.getElementById("history-message");btn.disabled=true;btn.textContent="Ajout…";msg.className="message";msg.textContent="";
+    const amountValue=document.getElementById("history-amount").value;const args={p_client_id:selectedClientId,p_entry_type:"past_appointment",p_occurred_on:document.getElementById("history-date").value,p_service_name:document.getElementById("history-service").value.trim(),p_amount_cents:amountValue===""?null:Math.round(Number(amountValue)*100),p_nail_shape:document.getElementById("history-shape").value.trim()||null,p_nail_length:document.getElementById("history-length").value.trim()||null,p_color_design:document.getElementById("history-color").value.trim()||null,p_notes:document.getElementById("history-notes").value.trim()||null,p_source:document.getElementById("history-source").value};
+    const {error}=await supabaseClient.rpc("admin_add_client_history_entry",args);btn.disabled=false;btn.textContent="Ajouter à l'historique";
+    if(error){console.error(error);msg.className="message error";msg.textContent="Impossible d'ajouter cette visite.";return}
+    closeModal("history-modal");await openClient(selectedClientId);
+  }
+
   async function deleteClient(c,appointments){
-    const name=clientName(c);
-    try{
-      const {data:canDelete,error:checkError}=await supabaseClient.rpc("admin_can_delete_client",{p_client_id:c.id});
-      if(checkError)throw checkError;
-      if(canDelete!==true){alert(`${name} possède un historique de paiement.\n\nSon dossier ne peut pas être supprimé comme une cliente test.`);return}
-    }catch(error){console.error("Client deletion check error:",error);alert("Impossible de vérifier si cette cliente peut être supprimée.\n\nAucune donnée n'a été supprimée.");return}
-
-    if(!confirm(`Supprimer définitivement ${name} ?\n\nSes rendez-vous, préférences, inspirations, croquis, photos et autres données associées seront supprimés.\n\nCette action est irréversible.`))return;
-    const typed=prompt(`Dernière vérification.\n\nÉcris SUPPRIMER pour supprimer définitivement le dossier de ${name}.`);
-    if(typed!=="SUPPRIMER"){if(typed!==null)alert("Suppression annulée : le mot SUPPRIMER n'a pas été saisi correctement.");return}
-
-    const button=document.getElementById("delete-client");if(button){button.disabled=true;button.textContent="Suppression…"}
-    try{
-      const appointmentIds=(appointments||[]).map(a=>a.id).filter(Boolean);let media=[];
-      if(appointmentIds.length){const {data,error}=await supabaseClient.from("appointment_media").select("storage_path").in("appointment_id",appointmentIds);if(error)throw error;media=data||[]}
-      const paths=[...new Set(media.map(item=>item.storage_path).filter(Boolean))];
-      if(paths.length){const {error:storageError}=await supabaseClient.storage.from(MEDIA_BUCKET).remove(paths);if(storageError)throw storageError}
-      const {data,error}=await supabaseClient.rpc("admin_delete_client",{p_client_id:c.id});if(error)throw error;if(data!==true)throw new Error("La suppression de la cliente n'a pas pu être confirmée.");
-      clients=clients.filter(client=>client.id!==c.id);selectedClientId=null;renderClientList();document.getElementById("profile").innerHTML='<div class="empty">Cliente supprimée définitivement ✓</div>';
-    }catch(error){console.error("Delete client error:",error);const message=String(error?.message||"");if(message.toLowerCase().includes("historique de paiement")){alert("La suppression a été bloquée car cette cliente possède un historique financier.")}else{alert("Impossible de terminer la suppression de cette cliente.")}if(button){button.disabled=false;button.textContent="Supprimer cette cliente"}}
+    const name=clientName(c);try{const {data:canDelete,error}=await supabaseClient.rpc("admin_can_delete_client",{p_client_id:c.id});if(error)throw error;if(canDelete!==true){alert(`${name} possède un historique de paiement. Son dossier ne peut pas être supprimé.`);return}}catch(error){console.error(error);alert("Impossible de vérifier si cette cliente peut être supprimée.");return}
+    if(!confirm(`Supprimer définitivement ${name} ?\n\nCette action est irréversible.`))return;const typed=prompt(`Écris SUPPRIMER pour supprimer définitivement le dossier de ${name}.`);if(typed!=="SUPPRIMER")return;
+    const button=document.getElementById("delete-client");button.disabled=true;button.textContent="Suppression…";
+    try{const appointmentIds=(appointments||[]).map(a=>a.id).filter(Boolean);let media=[];if(appointmentIds.length){const {data,error}=await supabaseClient.from("appointment_media").select("storage_path").in("appointment_id",appointmentIds);if(error)throw error;media=data||[]}const paths=[...new Set(media.map(x=>x.storage_path).filter(Boolean))];if(paths.length){const {error}=await supabaseClient.storage.from(MEDIA_BUCKET).remove(paths);if(error)throw error}const {data,error}=await supabaseClient.rpc("admin_delete_client",{p_client_id:c.id});if(error)throw error;if(data!==true)throw new Error("Suppression non confirmée");clients=clients.filter(x=>x.id!==c.id);selectedClientId=null;renderClientList();document.getElementById("profile").innerHTML='<div class="empty">Cliente supprimée définitivement ✓</div>'}catch(error){console.error(error);alert("Impossible de terminer la suppression de cette cliente.");button.disabled=false;button.textContent="Supprimer cette cliente"}
   }
 
   async function saveNotes(c){
@@ -382,6 +385,15 @@
     c.private_notes=value||null; msg.textContent="Enregistré ✓";
   }
 
+  document.getElementById("new-client").addEventListener("click",openNewClientModal);
+  document.getElementById("client-modal-close").addEventListener("click",()=>closeModal("client-modal"));
+  document.getElementById("client-cancel").addEventListener("click",()=>closeModal("client-modal"));
+  document.getElementById("client-form").addEventListener("submit",createClient);
+  document.getElementById("history-modal-close").addEventListener("click",()=>closeModal("history-modal"));
+  document.getElementById("history-cancel").addEventListener("click",()=>closeModal("history-modal"));
+  document.getElementById("history-form").addEventListener("submit",addHistoryEntry);
+  document.getElementById("client-modal").addEventListener("click",e=>{if(e.target.id==="client-modal")closeModal("client-modal")});
+  document.getElementById("history-modal").addEventListener("click",e=>{if(e.target.id==="history-modal")closeModal("history-modal")});
   document.getElementById("search").addEventListener("input",renderClientList);
   document.getElementById("pose-modal-close").addEventListener("click",closePoseDossier);
   document.getElementById("pose-modal").addEventListener("click",e=>{if(e.target.id==="pose-modal")closePoseDossier()});
@@ -390,7 +402,7 @@
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePhoto();closePoseDossier()}});
   document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
-  async function init(){if(!await protectPage())return;await loadClients()}
+  async function init(){if(!await protectPage())return;await loadClients();const requested=new URLSearchParams(location.search).get("client");if(requested&&clients.some(c=>c.id===requested))await openClient(requested)}
   init();
 </script>
 </body>
