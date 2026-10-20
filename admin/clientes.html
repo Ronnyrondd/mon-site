@@ -396,27 +396,37 @@
       <div class="section">
         <div class="section-head"><h3 class="section-title">Historique</h3><button id="add-history" class="outline-button" type="button">+ Prestation passée</button></div>
         <div class="history">
-          ${manualRows.map(a=>`<div class="history-row manual-row"><div>${dateFmt.format(new Date(`${a.occurred_on}T12:00:00`))}</div><div><div class="history-service">${escapeHtml(a.service_name||"Note")}</div><div class="history-status">Prestation enregistrée avant le nouvel agenda</div><span class="source-badge">${a.source==="iara"?"Iara":"Ajoutée par moi"}</span></div><div class="history-money"><div class="history-price">${a.amount_cents==null?"—":euro.format(Number(a.amount_cents)/100)}</div><button class="outline-button" type="button" data-edit-history="${a.id}" style="margin-top:8px">Modifier</button></div>${[a.nail_shape,a.nail_length,a.color_design,a.notes].some(Boolean)?`<div class="manual-details">${a.nail_shape?`Forme · ${escapeHtml(a.nail_shape)}<br>`:""}${a.nail_length?`Longueur · ${escapeHtml(a.nail_length)}<br>`:""}${a.color_design?`Couleur / design · ${escapeHtml(a.color_design)}<br>`:""}${a.notes?`Note · ${escapeHtml(a.notes)}`:""}</div>`:""}<div class="manual-media"><div class="result-actions"><button class="photo-button" type="button" data-add-history-photo="${a.id}">+ Ajouter des photos</button><input id="history-photo-input-${a.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="history-photo-message-${a.id}" class="result-message"></span></div><div id="history-media-${a.id}" class="result-gallery"></div></div></div>`).join("")}
-          ${historyRows.length?historyRows.map(a=>{
-            const paid=Number(a.paid_amount_cents||0);
-            const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
-            const photoCount=Number(a.result_photo_count||0);
-            return `<div class="history-row pose-open" data-pose-id="${a.appointment_id}">
-              <div>${dateFmt.format(new Date(a.starts_at))}<br>${timeFmt.format(new Date(a.starts_at))}</div>
-              <div>
-                <div class="history-service">${escapeHtml(a.service_name)}</div>
-                <div class="history-status">${escapeHtml(statusLabel[a.status]||a.status)}</div>
-                ${method?`<div class="history-meta">${escapeHtml(method)}</div>`:""}
-                ${a.private_notes?`<div class="history-meta">Note · ${escapeHtml(a.private_notes)}</div>`:""}
-              </div>
-              <div class="history-money">
-                <div class="history-price">${euro.format(paid/100)}</div>
-                ${Number(a.expected_price_cents||0)!==paid?`<div class="history-expected">Prévu ${euro.format((a.expected_price_cents||0)/100)}</div>`:""}
-                ${a.status==="completed"&&["iara","instagram","phone","other"].includes(a.source)?`<button class="outline-button" type="button" data-edit-appointment="${a.appointment_id}" style="margin-top:8px">Modifier</button>`:""}
-              </div>
-              ${a.status==="completed"?`<div class="result-tools"><div class="result-actions"><button class="photo-button" type="button" data-add-result="${a.appointment_id}">+ Ajouter des photos</button><input id="result-input-${a.appointment_id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="result-message-${a.appointment_id}" class="result-message">${photoCount?`${photoCount} photo${photoCount>1?"s":""}`:""}</span></div><div id="result-media-${a.appointment_id}" class="result-gallery"></div></div>`:(photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:"")}
-            </div>`;
-          }).join(""):(manualRows.length?'':'<div class="empty">Aucun rendez-vous enregistré.</div>')}
+          ${(()=>{
+            const timeline=[
+              ...manualRows.map(a=>({kind:"manual",sortDate:new Date(`${a.occurred_on}T12:00:00`),data:a})),
+              ...historyRows.map(a=>({kind:"appointment",sortDate:new Date(a.starts_at),data:a}))
+            ].sort((x,y)=>y.sortDate-x.sortDate);
+            if(!timeline.length)return '<div class="empty">Aucune prestation enregistrée.</div>';
+            return timeline.map(item=>{
+              const a=item.data;
+              if(item.kind==="manual"){
+                return `<div class="history-row manual-row"><div>${dateFmt.format(new Date(`${a.occurred_on}T12:00:00`))}</div><div><div class="history-service">${escapeHtml(a.service_name||"Prestation")}</div><div class="history-status">Prestation enregistrée avant le nouvel agenda</div>${a.source==="iara"?'<span class="source-badge">Iara</span>':''}</div><div class="history-money"><div class="history-price">${a.amount_cents==null?"—":euro.format(Number(a.amount_cents)/100)}</div><button class="outline-button" type="button" data-edit-history="${a.id}" style="margin-top:8px">Modifier</button></div>${[a.nail_shape,a.nail_length,a.color_design,a.notes].some(Boolean)?`<div class="manual-details">${a.nail_shape?`Forme · ${escapeHtml(a.nail_shape)}<br>`:""}${a.nail_length?`Longueur · ${escapeHtml(a.nail_length)}<br>`:""}${a.color_design?`Couleur / design · ${escapeHtml(a.color_design)}<br>`:""}${a.notes?`Note · ${escapeHtml(a.notes)}`:""}</div>`:""}<div class="manual-media"><div class="result-actions"><button class="photo-button" type="button" data-add-history-photo="${a.id}">+ Ajouter des photos</button><input id="history-photo-input-${a.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="history-photo-message-${a.id}" class="result-message"></span></div><div id="history-media-${a.id}" class="result-gallery"></div></div></div>`;
+              }
+              const paid=Number(a.paid_amount_cents||0);
+              const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
+              const photoCount=Number(a.result_photo_count||0);
+              return `<div class="history-row pose-open" data-pose-id="${a.appointment_id}">
+                <div>${dateFmt.format(new Date(a.starts_at))}<br>${timeFmt.format(new Date(a.starts_at))}</div>
+                <div>
+                  <div class="history-service">${escapeHtml(a.service_name)}</div>
+                  <div class="history-status">${escapeHtml(statusLabel[a.status]||a.status)}</div>
+                  ${method?`<div class="history-meta">${escapeHtml(method)}</div>`:""}
+                  ${a.private_notes?`<div class="history-meta">Note · ${escapeHtml(a.private_notes)}</div>`:""}
+                </div>
+                <div class="history-money">
+                  <div class="history-price">${euro.format(paid/100)}</div>
+                  ${Number(a.expected_price_cents||0)!==paid?`<div class="history-expected">Prévu ${euro.format((a.expected_price_cents||0)/100)}</div>`:""}
+                  ${a.status==="completed"?`<button class="outline-button" type="button" data-edit-appointment="${a.appointment_id}" style="margin-top:8px">Modifier</button>`:""}
+                </div>
+                ${a.status==="completed"?`<div class="result-tools"><div class="result-actions"><button class="photo-button" type="button" data-add-result="${a.appointment_id}">+ Ajouter des photos</button><input id="result-input-${a.appointment_id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="result-message-${a.appointment_id}" class="result-message">${photoCount?`${photoCount} photo${photoCount>1?"s":""}`:""}</span></div><div id="result-media-${a.appointment_id}" class="result-gallery"></div></div>`:(photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:"")}
+              </div>`;
+            }).join("");
+          })()}
         </div>
       </div>
       </div>
