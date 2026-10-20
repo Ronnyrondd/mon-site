@@ -735,6 +735,23 @@
      CLIENTE EXISTANTE / NOUVELLE
      ========================================================= */
 
+  const existingClientButton = document.getElementById("existing-client-button");
+  const newClientButton = document.getElementById("new-client-button");
+  const existingClientBox = document.getElementById("existing-client");
+  const newClientBox = document.getElementById("new-client");
+
+  function setClientMode(useNewClient) {
+    newClientMode = useNewClient;
+    existingClientButton.classList.toggle("active", !useNewClient);
+    newClientButton.classList.toggle("active", useNewClient);
+    existingClientBox.classList.toggle("hidden", useNewClient);
+    newClientBox.classList.toggle("hidden", !useNewClient);
+    clearMessage();
+  }
+
+  existingClientButton.addEventListener("click", () => setClientMode(false));
+  newClientButton.addEventListener("click", () => setClientMode(true));
+
   document
   .getElementById("service")
   .addEventListener("change", () => {
