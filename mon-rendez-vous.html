@@ -11,7 +11,7 @@ h1,h2{font-family:Fraunces,serif;font-weight:500}.hero{text-align:center;padding
 .appt{background:var(--ink);color:white}.appt .sub{color:#d7d0c8}.big{font:500 25px Fraunces;margin:12px 0}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:rgba(255,255,255,.12);padding:7px 10px;border-radius:999px;font-size:13px}
 .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.choice{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 34px 14px 14px;background:white;cursor:pointer;text-align:left;font:inherit;transition:.15s}.choice:hover{border-color:rgba(116,128,88,.45);background:#fbfcf7}.choice.on{border-color:var(--sage);background:var(--pale)}.choice.on::after{content:"✓";position:absolute;right:13px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:12px;font-weight:700}.choice-title{display:block;font-weight:600;color:var(--ink)}.choice-note{display:block;margin-top:3px;font-size:11px;color:var(--soft);line-height:1.35}.beverage-note{margin:18px 0 7px;padding:12px 14px;border-radius:13px;background:var(--pale);color:var(--sage2);font-size:13px}
 label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input,textarea,select{width:100%;font:inherit;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:white;margin-top:6px;color:var(--ink)}textarea{min-height:90px;resize:vertical}
-.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}
+.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}.legal-info{margin-top:26px;padding:16px 18px;border-radius:16px;background:#f7f4ed;border:1px solid var(--line)}.legal-info summary{cursor:pointer;font-weight:600;color:var(--soft);list-style:none}.legal-info summary::-webkit-details-marker{display:none}.legal-info summary::after{content:"＋";float:right;color:var(--sage)}.legal-info[open] summary::after{content:"−"}.legal-info .legal-body{padding-top:10px}.legal-info .btn{background:transparent;color:var(--soft);border:1px solid var(--line)}
 .inspiration{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
 .inspiration-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .inspiration-count{font-size:12px;color:var(--soft);white-space:nowrap}
@@ -54,7 +54,7 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 
 <section id="momentCard" class="card"><h2>Mon moment</h2><p class="sub">Comment as-tu envie de profiter de ton rendez-vous ? Tu peux aussi ne rien choisir.</p>
 <p><strong>Ambiance</strong></p><div class="choices" id="conversation">
-<button class="choice" data-v="quiet"><span class="choice-title">Moment calme</span><span class="choice-note">Un rendez-vous tranquille, sans obligation de discuter.</span></button><button class="choice" data-v="chat"><span class="choice-title">On papote !</span><span class="choice-note">Tu as envie de discuter pendant ton rendez-vous.</span></button><button class="choice" data-v="no_preference"><span class="choice-title">Comme ça vient</span><span class="choice-note">Pas de préférence particulière.</span></button></div>
+<button class="choice" data-v="quiet"><span class="choice-title">Moment calme</span><span class="choice-note">Un moment tranquille, pour profiter de ta pause.</span></button><button class="choice" data-v="chat"><span class="choice-title">On papote !</span><span class="choice-note">Avec plaisir, on papote pendant le rendez-vous.</span></button><button class="choice" data-v="no_preference"><span class="choice-title">Comme ça vient</span><span class="choice-note">On voit selon l’envie du moment.</span></button></div>
 <p style="margin-top:22px"><strong>Musique</strong></p><div class="choices" id="music">
 <button class="choice" data-v="music"><span class="choice-title">Avec musique</span></button><button class="choice" data-v="no_music"><span class="choice-title">Sans musique</span></button><button class="choice" data-v="no_preference"><span class="choice-title">Peu importe</span></button></div>
 <div class="beverage-note"><strong>Boisson offerte</strong><br>Une boisson t’est offerte pendant ton rendez-vous. Tu peux la choisir maintenant ou décider sur place.</div><label class="field">Ma boisson<select id="beverage"><option value="">Je choisirai sur place / pas cette fois</option></select></label>
@@ -62,37 +62,20 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 <div id="saveMsg" class="msg hidden"></div><div class="actions"><button id="save" class="btn">Enregistrer mes préférences</button></div>
 </section>
 
-<section class="card"><h2>📅 Gérer mon rendez-vous</h2><p class="sub">Besoin de changer quelque chose ?</p><div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button><div id="reschedulePanel" class="reschedule-panel hidden"><label class="field" style="margin-top:0">Nouvelle date<input id="rescheduleDate" type="date"></label><div id="slotStatus" class="sub" style="margin-top:14px">Choisis d’abord une date.</div><div id="slotGrid" class="slot-grid"></div><div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div><div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div></div></div><div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn">Annuler mon rendez-vous</button></div></div><div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div><div id="alreadyCancelled" class="msg hidden">
+<section class="card"><h2>Gérer mon rendez-vous</h2><p class="sub">Un changement ou un imprévu ? Tu peux gérer ton rendez-vous ici.</p><div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button><div id="reschedulePanel" class="reschedule-panel hidden"><label class="field" style="margin-top:0">Nouvelle date<input id="rescheduleDate" type="date"></label><div id="slotStatus" class="sub" style="margin-top:14px">Choisis d’abord une date.</div><div id="slotGrid" class="slot-grid"></div><div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div><div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div></div></div><div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn">Annuler mon rendez-vous</button></div></div><div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div><div id="alreadyCancelled" class="msg hidden">
   Ce rendez-vous est déjà annulé.
 </div>
 
-<div id="withdrawalBlock" class="danger hidden">
-  <strong>Droit de rétractation</strong>
-
-  <p class="sub">
-    Ta réservation ayant été effectuée en ligne, tu peux exercer ton droit
-    de rétractation pendant le délai légal applicable.
-  </p>
-
-  <p id="withdrawalDeadline" class="sub"></p>
-
-  <p class="sub">
-    Tu n'as pas besoin de donner de motif.
-  </p>
-
-  <label class="field">
-    Message (facultatif)
-    <input id="withdrawalReason" placeholder="Facultatif">
-  </label>
-
-  <div id="withdrawalMsg" class="msg hidden"></div>
-
-  <div class="actions">
-    <button id="withdraw" class="btn" type="button">
-      Exercer mon droit de rétractation
-    </button>
+<details id="withdrawalBlock" class="legal-info hidden">
+  <summary>Informations légales · droit de rétractation</summary>
+  <div class="legal-body">
+    <p class="sub">Comme cette réservation a été faite en ligne, le droit de rétractation reste disponible pendant le délai légal.</p>
+    <p id="withdrawalDeadline" class="sub"></p>
+    <label class="field">Message (facultatif)<input id="withdrawalReason" placeholder="Tu peux laisser ce champ vide"></label>
+    <div id="withdrawalMsg" class="msg hidden"></div>
+    <div class="actions"><button id="withdraw" class="btn" type="button">Exercer mon droit de rétractation</button></div>
   </div>
-</div>
+</details>
 
 <div id="alreadyWithdrawn" class="msg hidden">
   Ton droit de rétractation a déjà été exercé pour ce rendez-vous.
