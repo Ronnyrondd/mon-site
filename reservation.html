@@ -187,9 +187,17 @@ function renderOptions(opts){
  }
  const nail=opts.filter(o=>o.category!=="réparation"), repairs=opts.filter(o=>o.category==="réparation");
  if(nail.length){
-   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Choisis le niveau qui ressemble le plus à ton envie.</small><div class=\"nail-help\">Simple : quelques lignes, points ou petits motifs · Intermédiaire : design plus travaillé, plusieurs détails ou plusieurs ongles · Avancé : création complexe, très détaillée ou plus longue à réaliser.<br>Tu hésites ? Choisis celui qui te semble le plus proche, j’ajusterai si nécessaire.</div></label>";el.appendChild(title);
+   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Choisis selon les exemples ci-dessous. Si tu as une inspiration précise, tu pourras me l’envoyer après la réservation.</small><div class=\"nail-help\"><strong>Full nail art / projet très détaillé :</strong> sur devis. Contacte-moi avec ton inspiration pour que je puisse prévoir le temps nécessaire.</div></label>";el.appendChild(title);
    [{id:null,name:"Sans nail art",price_cents:0,duration_minutes:0},...nail].forEach((o,i)=>{
-     const r=document.createElement("div");r.className="optionRow";r.innerHTML=`<label for="na${i}"><strong>${o.name}</strong><small>${o.id?`+ ${euro(o.price_cents)} · + ${mins(o.duration_minutes)}`:""}</small></label><input id="na${i}" type="radio" name="nailart" ${i===0?"checked":""}>`;
+     const r=document.createElement("div");
+     const nailName=String(o.name||"").toLowerCase();
+     let example="";
+     if(o.id){
+       if(nailName.includes("simple")) example="Petits pois, blooming gel, chrome entier…";
+       else if(nailName.includes("interm") || nailName.includes("moyen")) example="Lignes, French, marbré, babyboomer…";
+       else if(nailName.includes("avanc")) example="Dessins chrome, lignes multiples, lignes de strass, détails travaillés…";
+     }
+     r.className="optionRow";r.innerHTML=`<label for="na${i}"><strong>${o.name}</strong><small>${o.id?`+ ${euro(o.price_cents)} · + ${mins(o.duration_minutes)}${example?`<br>${example}`:""}`:""}</small></label><input id="na${i}" type="radio" name="nailart" ${i===0?"checked":""}>`;
      r.querySelector("input").onchange=()=>{state.options=state.options.filter(x=>x.category==="réparation");if(o.id)state.options.push({...o,quantity:1});changed()};el.appendChild(r);
    });
  }
