@@ -1595,8 +1595,24 @@
     document.getElementById("week-view").addEventListener("click",()=>{currentView="week";localStorage.setItem("adminAgendaView","week");loadAppointments()});
     document.getElementById("month-view").addEventListener("click",()=>{currentView="month";localStorage.setItem("adminAgendaView","month");loadAppointments()});
     document.getElementById("today").addEventListener("click",()=>{currentDate=new Date();loadAppointments()});
-    document.getElementById("previous").addEventListener("click",()=>{currentDate=currentView==="week"?addDays(currentDate,-7):new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1,12);loadAppointments()});
-    document.getElementById("next").addEventListener("click",()=>{currentDate=currentView==="week"?addDays(currentDate,7):new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1,12);loadAppointments()});
+    document.getElementById("previous").addEventListener("click",()=>{
+      if(currentView==="week"){
+        const visibleWeekStart=startOfWeek(currentDate);
+        currentDate=addDays(visibleWeekStart,-7);
+      }else{
+        currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1,12);
+      }
+      loadAppointments();
+    });
+    document.getElementById("next").addEventListener("click",()=>{
+      if(currentView==="week"){
+        const visibleWeekStart=startOfWeek(currentDate);
+        currentDate=addDays(visibleWeekStart,7);
+      }else{
+        currentDate=new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1,12);
+      }
+      loadAppointments();
+    });
     document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
     async function init(){
