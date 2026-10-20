@@ -299,6 +299,19 @@
 
     /* Consommation stock à la clôture */
     .stock-complete-box{margin-top:16px;padding:16px;border:1px solid #d9ddd2;border-radius:16px;background:#f8f8f4}
+    .stock-section-label{margin:14px 0 7px;font-size:11px;font-weight:700;color:#6f7868;text-transform:uppercase;letter-spacing:.06em}
+    .stock-optional-row{display:grid;grid-template-columns:24px minmax(0,1fr) 120px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #e5e7e0}
+    .stock-optional-row input[type="checkbox"]{width:17px;height:17px}
+    .stock-search-wrap{position:relative;margin-top:12px}
+    .stock-search-input{width:100%;padding:11px 13px;border:1px solid #d9ddd2;border-radius:12px;background:white}
+    .stock-search-results{display:none;margin-top:6px;border:1px solid #d9ddd2;border-radius:12px;background:white;overflow:hidden}
+    .stock-search-results.open{display:block}
+    .stock-search-result{width:100%;display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border:0;border-bottom:1px solid #eceee9;background:white;text-align:left}
+    .stock-search-result:last-child{border-bottom:0}.stock-search-result:hover{background:#f6f7f3}
+    .stock-added-list{margin-top:9px}.stock-added-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 34px;gap:8px;align-items:center;padding:8px 0}
+    .stock-added-row input{width:100%;padding:9px;border:1px solid #d9ddd2;border-radius:10px}
+    .stock-remove{width:32px;height:32px;border:1px solid #d9ddd2;border-radius:50%;background:white}
+
     .stock-complete-title{margin:0 0 6px;font-size:15px;color:#403a34}
     .stock-complete-help{font-size:13px;line-height:1.5;color:#746d65;margin-bottom:12px}
     .stock-complete-list{display:grid;gap:9px}
@@ -712,6 +725,7 @@
       if(isCompleted){
         actions=`
           <button class="action-button" type="button" data-action="payment">Modifier le paiement</button>
+          <button class="action-button" type="button" data-action="add-stock">+ Ajouter une utilisation stock</button>
           <button class="action-button danger" type="button" data-action="no-show">Marquer comme non réalisé</button>`;
       }else if(isNoShow){
         actions=`<button class="action-button primary" type="button" data-action="restore">Rétablir le rendez-vous</button>`;
@@ -740,6 +754,7 @@
       document.querySelector('[data-action="complete"]')?.addEventListener("click",()=>showCompleteForm(a));
       document.querySelector('[data-action="cancel"]')?.addEventListener("click",()=>showCancelForm(a));
       document.querySelector('[data-action="payment"]')?.addEventListener("click",()=>showPaymentCorrectionForm(a));
+      document.querySelector('[data-action="add-stock"]')?.addEventListener("click",()=>showPostCompletionStockForm(a));
       document.querySelector('[data-action="no-show"]')?.addEventListener("click",()=>showNoShowForm(a));
       document.querySelector('[data-action="restore"]')?.addEventListener("click",()=>showRestoreForm(a));
       document.querySelector('[data-action="delete-error"]')?.addEventListener("click",()=>deleteAppointmentError(a));
@@ -1306,7 +1321,65 @@
       await loadAppointments();
     }
 
+    let completionExtraStock=[];
+
+    function stockUnitLabel(unit){
+      return ({piece:"pièce",ml:"ml",g:"g",pair:"paire",sheet:"feuille",box:"boîte",other:"unité"})[unit]||unit||"unité";
+    }
+
+    async function loadActiveInventory(){
+      const {data,error}=await supabaseClient
+        .from("inventory_items")
+        .select("id,name,brand,color_name,unit,current_quantity,is_active")
+        .eq("is_active",true)
+        .order("name");
+      if(error)throw error;
+      return data||[];
+    }
+
+    function inventorySearchLabel(item){
+      return [item.name,item.brand,item.color_name].filter(Boolean).join(" · ");
+    }
+
+    function renderExtraStockList(items,targetId){
+      const target=document.getElementById(targetId);
+      if(!target)return;
+      target.innerHTML=completionExtraStock.map((row,idx)=>{
+        const item=items.find(x=>x.id===row.item_id);
+        if(!item)return "";
+        return `<div class="stock-added-row">
+          <div><div class="stock-complete-name">${escapeHtml(inventorySearchLabel(item))}</div><div class="stock-complete-meta">Disponible : ${Number(item.current_quantity||0).toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(stockUnitLabel(item.unit))}</div></div>
+          <input class="complete-stock-input extra-stock-input" type="number" min="0" step="0.001" value="${row.quantity_used}" data-stock-item="${escapeHtml(item.id)}" aria-label="Quantité utilisée">
+          <button class="stock-remove" type="button" data-extra-remove="${idx}" title="Retirer">×</button>
+        </div>`;
+      }).join("");
+      target.querySelectorAll("[data-extra-remove]").forEach(btn=>btn.addEventListener("click",()=>{
+        completionExtraStock.splice(Number(btn.dataset.extraRemove),1);
+        renderExtraStockList(items,targetId);
+      }));
+    }
+
+    function setupInventorySearch(items,inputId,resultsId,addedId){
+      const input=document.getElementById(inputId),results=document.getElementById(resultsId);
+      if(!input||!results)return;
+      const render=()=>{
+        const q=input.value.trim().toLocaleLowerCase("fr");
+        if(!q){results.classList.remove("open");results.innerHTML="";return}
+        const matches=items.filter(item=>inventorySearchLabel(item).toLocaleLowerCase("fr").includes(q)).slice(0,8);
+        results.innerHTML=matches.length?matches.map(item=>`<button class="stock-search-result" type="button" data-search-stock="${escapeHtml(item.id)}"><span>${escapeHtml(inventorySearchLabel(item))}</span><span>${Number(item.current_quantity||0).toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(stockUnitLabel(item.unit))}</span></button>`).join(""):'<div class="stock-complete-empty">Aucun produit trouvé.</div>';
+        results.classList.add("open");
+        results.querySelectorAll("[data-search-stock]").forEach(btn=>btn.addEventListener("click",()=>{
+          const id=btn.dataset.searchStock;
+          if(!completionExtraStock.some(x=>x.item_id===id))completionExtraStock.push({item_id:id,quantity_used:1});
+          input.value="";results.classList.remove("open");results.innerHTML="";
+          renderExtraStockList(items,addedId);
+        }));
+      };
+      input.addEventListener("input",render);
+    }
+
     async function showCompleteForm(a){
+      completionExtraStock=[];
       const area=document.getElementById("appointment-action-area");
       area.innerHTML=`
         <div class="form-box">
@@ -1319,19 +1392,20 @@
             <div class="form-field">
               <label>Moyen de paiement</label>
               <select id="payment-method">
-                <option value="card">Carte</option>
-                <option value="qr">QR</option>
-                <option value="cash">Espèces</option>
-                <option value="bank_transfer">Virement</option>
-                <option value="other">Autre</option>
+                <option value="card">Carte</option><option value="qr">QR</option><option value="cash">Espèces</option><option value="bank_transfer">Virement</option><option value="other">Autre</option>
               </select>
             </div>
           </div>
 
           <div class="stock-complete-box">
             <h4 class="stock-complete-title">Consommation de stock</h4>
-            <div class="stock-complete-help">Les quantités prévues pour cette prestation sont préremplies. Tu peux les corriger avant de terminer le rendez-vous.</div>
+            <div class="stock-complete-help">Les produits automatiques sont préremplis. Coche seulement les produits ponctuels réellement utilisés, ou recherche un autre article du stock.</div>
             <div id="complete-stock-list"><div class="stock-complete-empty">Chargement du stock prévu…</div></div>
+            <div class="stock-search-wrap">
+              <input id="complete-stock-search" class="stock-search-input" type="search" placeholder="🔎 Rechercher dans mon stock…" autocomplete="off">
+              <div id="complete-stock-search-results" class="stock-search-results"></div>
+            </div>
+            <div id="complete-extra-stock" class="stock-added-list"></div>
           </div>
 
           <div id="complete-message" class="form-message">Le montant est prérempli avec le prix prévu, mais tu peux le corriger.</div>
@@ -1340,44 +1414,41 @@
 
       const stockTarget=document.getElementById("complete-stock-list");
       try{
-        const {data:usage,error:usageError}=await supabaseClient
-          .from("service_inventory_usage")
-          .select(`quantity_used, inventory_items(id,name,unit,current_quantity,is_active)`)
-          .eq("service_id",a.service_id);
+        const [{data:usage,error:usageError},inventory]=await Promise.all([
+          supabaseClient.from("service_inventory_usage")
+            .select(`quantity_used,usage_mode,inventory_items(id,name,unit,current_quantity,is_active)`)
+            .eq("service_id",a.service_id),
+          loadActiveInventory()
+        ]);
+        if(usageError)throw usageError;
 
-        if(usageError) throw usageError;
+        const rows=(usage||[]).filter(row=>row.inventory_items?.id && row.inventory_items?.is_active!==false).map(row=>({
+          item_id:row.inventory_items.id,name:row.inventory_items.name||"Article",unit:row.inventory_items.unit||"unité",
+          current_quantity:Number(row.inventory_items.current_quantity||0),quantity_used:Number(row.quantity_used||0),
+          usage_mode:row.usage_mode==="occasional"?"occasional":"automatic"
+        }));
+        const automatic=rows.filter(x=>x.usage_mode==="automatic");
+        const occasional=rows.filter(x=>x.usage_mode==="occasional");
 
-        const rows=(usage||[])
-          .filter(row=>row.inventory_items?.id && row.inventory_items?.is_active!==false)
-          .map(row=>({
-            item_id:row.inventory_items.id,
-            name:row.inventory_items.name||"Article",
-            unit:row.inventory_items.unit||"unité",
-            current_quantity:Number(row.inventory_items.current_quantity||0),
-            quantity_used:Number(row.quantity_used||0)
-          }));
+        let html="";
+        if(automatic.length){
+          html+=`<div class="stock-section-label">Automatique</div><div class="stock-complete-list">${automatic.map(row=>`
+            <div class="stock-complete-row"><div><div class="stock-complete-name">${escapeHtml(row.name)}</div><div class="stock-complete-meta">Disponible : ${row.current_quantity.toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(stockUnitLabel(row.unit))}</div></div>
+            <div class="stock-complete-qty"><input class="complete-stock-input" type="number" min="0" step="0.001" value="${row.quantity_used}" data-stock-item="${escapeHtml(row.item_id)}"><span class="stock-complete-unit">${escapeHtml(stockUnitLabel(row.unit))}</span></div></div>`).join("")}</div>`;
+        }else html+='<div class="stock-complete-empty">Aucune consommation automatique configurée.</div>';
 
-        if(!rows.length){
-          stockTarget.innerHTML='<div class="stock-complete-empty">Aucune consommation automatique n’est encore configurée pour cette prestation.</div>';
-        }else{
-          stockTarget.innerHTML=`<div class="stock-complete-list">${rows.map(row=>`
-            <div class="stock-complete-row">
-              <div>
-                <div class="stock-complete-name">${escapeHtml(row.name)}</div>
-                <div class="stock-complete-meta">Disponible : ${row.current_quantity.toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(row.unit)}</div>
-              </div>
-              <div class="stock-complete-qty">
-                <input class="complete-stock-input" type="number" min="0" step="0.001" value="${row.quantity_used}" data-stock-item="${escapeHtml(row.item_id)}">
-                <span class="stock-complete-unit">${escapeHtml(row.unit)}</span>
-              </div>
-            </div>`).join("")}</div>`;
+        if(occasional.length){
+          html+=`<div class="stock-section-label">Ponctuel — coche si utilisé</div>${occasional.map(row=>`
+            <label class="stock-optional-row"><input class="occasional-stock-check" type="checkbox" data-stock-item="${escapeHtml(row.item_id)}"><div><div class="stock-complete-name">${escapeHtml(row.name)}</div><div class="stock-complete-meta">Disponible : ${row.current_quantity.toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(stockUnitLabel(row.unit))}</div></div>
+            <div class="stock-complete-qty"><input class="occasional-stock-qty" type="number" min="0.001" step="0.001" value="${row.quantity_used}" data-stock-qty-for="${escapeHtml(row.item_id)}"><span class="stock-complete-unit">${escapeHtml(stockUnitLabel(row.unit))}</span></div></label>`).join("")}`;
         }
+        stockTarget.innerHTML=html;
+        setupInventorySearch(inventory,"complete-stock-search","complete-stock-search-results","complete-extra-stock");
       }catch(error){
         console.error(error);
         stockTarget.innerHTML='<div class="stock-complete-empty error-message">Impossible de charger la consommation prévue. Le rendez-vous ne sera pas clôturé tant que cette vérification n’est pas disponible.</div>';
         document.getElementById("confirm-complete").disabled=true;
       }
-
       document.getElementById("confirm-complete").addEventListener("click",()=>completeAppointment(a));
     }
 
@@ -1386,56 +1457,72 @@
       const message=document.getElementById("complete-message");
       const amount=Number(document.getElementById("paid-amount").value.replace(",","."));
       const method=document.getElementById("payment-method").value;
+      if(!Number.isFinite(amount)||amount<0){message.textContent="Entre un montant valide.";message.className="form-message error-message";return}
 
-      if(!Number.isFinite(amount) || amount<0){
-        message.textContent="Entre un montant valide.";
-        message.className="form-message error-message";
-        return;
-      }
-
-      const stockUsage=[];
+      const stockMap=new Map();
       for(const input of document.querySelectorAll(".complete-stock-input")){
         const quantity=Number(String(input.value).replace(",","."));
-        if(!Number.isFinite(quantity) || quantity<0){
-          message.textContent="Vérifie les quantités de stock utilisées.";
-          message.className="form-message error-message";
-          input.focus();
-          return;
-        }
-        if(quantity>0){
-          stockUsage.push({item_id:input.dataset.stockItem,quantity_used:quantity});
-        }
+        if(!Number.isFinite(quantity)||quantity<0){message.textContent="Vérifie les quantités de stock utilisées.";message.className="form-message error-message";input.focus();return}
+        if(quantity>0)stockMap.set(input.dataset.stockItem,(stockMap.get(input.dataset.stockItem)||0)+quantity);
       }
+      for(const check of document.querySelectorAll(".occasional-stock-check:checked")){
+        const qtyInput=document.querySelector(`[data-stock-qty-for="${CSS.escape(check.dataset.stockItem)}"]`);
+        const quantity=Number(String(qtyInput?.value||"").replace(",","."));
+        if(!Number.isFinite(quantity)||quantity<=0){message.textContent="Vérifie la quantité du produit ponctuel.";message.className="form-message error-message";qtyInput?.focus();return}
+        stockMap.set(check.dataset.stockItem,(stockMap.get(check.dataset.stockItem)||0)+quantity);
+      }
+      const stockUsage=[...stockMap.entries()].map(([item_id,quantity_used])=>({item_id,quantity_used}));
 
-      button.disabled=true;
-      message.textContent="Enregistrement du paiement et du stock…";
-      message.className="form-message";
+      button.disabled=true;message.textContent="Enregistrement du paiement et du stock…";message.className="form-message";
+      const {data,error}=await supabaseClient.rpc("admin_complete_appointment_with_stock",{p_appointment_id:a.id,p_amount_cents:Math.round(amount*100),p_payment_method:method,p_stock_usage:stockUsage});
+      if(error){console.error(error);button.disabled=false;message.textContent=error.message||"Le rendez-vous n’a pas pu être terminé.";message.className="form-message error-message";return}
+      if(!data?.success){button.disabled=false;message.textContent="Le rendez-vous n’a pas pu être terminé.";message.className="form-message error-message";return}
+      closeModal();await loadAppointments();
+    }
 
-      const {data,error}=await supabaseClient.rpc("admin_complete_appointment_with_stock",{
-        p_appointment_id:a.id,
-        p_amount_cents:Math.round(amount*100),
-        p_payment_method:method,
-        p_stock_usage:stockUsage
-      });
-
-      if(error){
+    async function showPostCompletionStockForm(a){
+      completionExtraStock=[];
+      const area=document.getElementById("appointment-action-area");
+      area.innerHTML=`<div class="form-box">
+        <h3 class="form-title">Ajouter une utilisation stock</h3>
+        <div class="form-message">Pour un produit oublié après la prestation : recherche-le, indique la quantité réellement utilisée puis enregistre.</div>
+        <div class="stock-search-wrap"><input id="post-stock-search" class="stock-search-input" type="search" placeholder="🔎 Rechercher dans mon stock…" autocomplete="off"><div id="post-stock-results" class="stock-search-results"></div></div>
+        <div id="post-stock-added" class="stock-added-list"></div>
+        <div id="post-stock-message" class="form-message"></div>
+        <button id="save-post-stock" class="action-button primary" type="button">Enregistrer l’utilisation</button>
+      </div>`;
+      try{
+        const inventory=await loadActiveInventory();
+        setupInventorySearch(inventory,"post-stock-search","post-stock-results","post-stock-added");
+        document.getElementById("save-post-stock").addEventListener("click",async()=>{
+          const button=document.getElementById("save-post-stock"),message=document.getElementById("post-stock-message");
+          const inputs=[...document.querySelectorAll("#post-stock-added .extra-stock-input")];
+          if(!inputs.length){message.textContent="Ajoute au moins un produit.";message.className="form-message error-message";return}
+          const usages=[];
+          for(const input of inputs){
+            const quantity=Number(String(input.value).replace(",","."));
+            if(!Number.isFinite(quantity)||quantity<=0){message.textContent="Vérifie les quantités utilisées.";message.className="form-message error-message";input.focus();return}
+            usages.push({item_id:input.dataset.stockItem,quantity_used:quantity});
+          }
+          button.disabled=true;message.textContent="Enregistrement…";message.className="form-message";
+          try{
+            for(const usage of usages){
+              const {data,error}=await supabaseClient.rpc("admin_add_appointment_stock_usage",{p_appointment_id:a.id,p_item_id:usage.item_id,p_quantity_used:usage.quantity_used});
+              if(error)throw error;
+              if(!data?.success)throw new Error("Réponse inattendue lors de l’ajout du stock.");
+            }
+            message.textContent="Utilisation ajoutée au rendez-vous.";message.className="form-message";
+            setTimeout(()=>openAppointment(a),450);
+          }catch(error){
+            console.error(error);button.disabled=false;message.textContent=error.message||"Impossible d’ajouter cette utilisation.";message.className="form-message error-message";
+          }
+        });
+      }catch(error){
         console.error(error);
-        button.disabled=false;
-        message.textContent=error.message || "Le rendez-vous n’a pas pu être terminé.";
-        message.className="form-message error-message";
-        return;
+        document.getElementById("post-stock-message").textContent="Impossible de charger le stock.";
+        document.getElementById("post-stock-message").className="form-message error-message";
+        document.getElementById("save-post-stock").disabled=true;
       }
-
-      if(!data?.success){
-        console.error("Réponse inattendue de admin_complete_appointment_with_stock",data);
-        button.disabled=false;
-        message.textContent="Le rendez-vous n’a pas pu être terminé.";
-        message.className="form-message error-message";
-        return;
-      }
-
-      closeModal();
-      await loadAppointments();
     }
 
     function showPaymentCorrectionForm(a){
