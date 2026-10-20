@@ -218,6 +218,12 @@ else{
 }
  document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
  if(!terminalStatus)await loadMedia();
+ if(!terminalStatus && new URLSearchParams(location.search).get("calendar")==="1"){
+   const cleanUrl=new URL(location.href);
+   cleanUrl.searchParams.delete("calendar");
+   history.replaceState(null,"",cleanUrl.toString());
+   setTimeout(downloadCalendarEvent,250);
+ }
 }
 
 function fmtRDV(v){return new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(v))}
