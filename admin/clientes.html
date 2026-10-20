@@ -405,7 +405,7 @@
             return timeline.map(item=>{
               const a=item.data;
               if(item.kind==="manual"){
-                return `<div class="history-row manual-row"><div>${dateFmt.format(new Date(`${a.occurred_on}T12:00:00`))}</div><div><div class="history-service">${escapeHtml(a.service_name||"Prestation")}</div><div class="history-status">Prestation enregistrée avant le nouvel agenda</div>${a.source==="iara"?'<span class="source-badge">Iara</span>':''}</div><div class="history-money"><div class="history-price">${a.amount_cents==null?"—":euro.format(Number(a.amount_cents)/100)}</div><button class="outline-button" type="button" data-edit-history="${a.id}" style="margin-top:8px">Modifier</button></div>${[a.nail_shape,a.nail_length,a.color_design,a.notes].some(Boolean)?`<div class="manual-details">${a.nail_shape?`Forme · ${escapeHtml(a.nail_shape)}<br>`:""}${a.nail_length?`Longueur · ${escapeHtml(a.nail_length)}<br>`:""}${a.color_design?`Couleur / design · ${escapeHtml(a.color_design)}<br>`:""}${a.notes?`Note · ${escapeHtml(a.notes)}`:""}</div>`:""}<div class="manual-media"><div class="result-actions"><button class="photo-button" type="button" data-add-history-photo="${a.id}">+ Ajouter des photos</button><input id="history-photo-input-${a.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="history-photo-message-${a.id}" class="result-message"></span></div><div id="history-media-${a.id}" class="result-gallery"></div></div></div>`;
+                return `<div class="history-row manual-row"><div>${dateFmt.format(new Date(`${a.occurred_on}T12:00:00`))}</div><div><div class="history-service">${escapeHtml(a.service_name||"Prestation")}</div><div class="history-status">Prestation enregistrée avant le nouvel agenda</div>${a.source==="iara"?'<span class="source-badge">Iara</span>':''}</div><div class="history-money"><div class="history-price">${a.amount_cents==null?"—":euro.format(Number(a.amount_cents)/100)}</div><button class="outline-button" type="button" data-edit-history="${a.id}" style="margin-top:8px">Modifier</button><button class="outline-button" type="button" data-delete-history="${a.id}" style="margin-top:6px;color:#8a4f47">Supprimer</button></div>${[a.nail_shape,a.nail_length,a.color_design,a.notes].some(Boolean)?`<div class="manual-details">${a.nail_shape?`Forme · ${escapeHtml(a.nail_shape)}<br>`:""}${a.nail_length?`Longueur · ${escapeHtml(a.nail_length)}<br>`:""}${a.color_design?`Couleur / design · ${escapeHtml(a.color_design)}<br>`:""}${a.notes?`Note · ${escapeHtml(a.notes)}`:""}</div>`:""}<div class="manual-media"><div class="result-actions"><button class="photo-button" type="button" data-add-history-photo="${a.id}">+ Ajouter des photos</button><input id="history-photo-input-${a.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="history-photo-message-${a.id}" class="result-message"></span></div><div id="history-media-${a.id}" class="result-gallery"></div></div></div>`;
               }
               const paid=Number(a.paid_amount_cents||0);
               const method=a.payment_method ? (paymentMethodLabels[a.payment_method]||a.payment_method) : "";
@@ -421,7 +421,7 @@
                 <div class="history-money">
                   <div class="history-price">${euro.format(paid/100)}</div>
                   ${Number(a.expected_price_cents||0)!==paid?`<div class="history-expected">Prévu ${euro.format((a.expected_price_cents||0)/100)}</div>`:""}
-                  ${a.status==="completed"?`<button class="outline-button" type="button" data-edit-appointment="${a.appointment_id}" style="margin-top:8px">Modifier</button>`:""}
+                  ${a.status==="completed"?`<button class="outline-button" type="button" data-edit-appointment="${a.appointment_id}" style="margin-top:8px">Modifier</button><button class="outline-button" type="button" data-delete-appointment="${a.appointment_id}" style="margin-top:6px;color:#8a4f47">Supprimer</button>`:""}
                 </div>
                 ${a.status==="completed"?`<div class="result-tools"><div class="result-actions"><button class="photo-button" type="button" data-add-result="${a.appointment_id}">+ Ajouter des photos</button><input id="result-input-${a.appointment_id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="result-message-${a.appointment_id}" class="result-message">${photoCount?`${photoCount} photo${photoCount>1?"s":""}`:""}</span></div><div id="result-media-${a.appointment_id}" class="result-gallery"></div></div>`:(photoCount?`<div class="history-photos"><span class="photo-summary">📷 ${photoCount} photo${photoCount>1?"s":""} de la pose</span></div>`:"")}
               </div>`;
@@ -447,10 +447,38 @@
     historyRows.filter(a=>a.status==="completed").forEach(a=>{const button=document.querySelector(`[data-add-result="${a.appointment_id}"]`),input=document.getElementById(`result-input-${a.appointment_id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",()=>uploadResultPhotos(a.appointment_id,input))}renderResultMedia(a.appointment_id)});
     manualRows.forEach(a=>{const edit=profile.querySelector(`[data-edit-history="${a.id}"]`);if(edit)edit.addEventListener("click",()=>openHistoryModal(c,a));});
     historyRows.filter(a=>a.status==="completed").forEach(a=>{const edit=profile.querySelector(`[data-edit-appointment="${a.appointment_id}"]`);if(edit)edit.addEventListener("click",()=>openHistoryModal(c,null,a));});
+    manualRows.forEach(a=>{const del=profile.querySelector(`[data-delete-history="${a.id}"]`);if(del)del.addEventListener("click",()=>deletePastHistoryEntry(a));});
+    historyRows.filter(a=>a.status==="completed").forEach(a=>{const del=profile.querySelector(`[data-delete-appointment="${a.appointment_id}"]`);if(del)del.addEventListener("click",()=>deleteAppointmentError(a));});
     manualRows.forEach(a=>{const button=document.querySelector(`[data-add-history-photo="${a.id}"]`),input=document.getElementById(`history-photo-input-${a.id}`),msg=document.getElementById(`history-photo-message-${a.id}`);if(button&&input){button.addEventListener("click",()=>input.click());input.addEventListener("change",async()=>{button.disabled=true;try{await uploadHistoryPhotos(a.id,input.files);if(msg)msg.textContent="Photos ajoutées ✓";await renderHistoryMedia(a.id)}catch(e){console.error(e);if(msg)msg.textContent=e?.message||"Erreur lors de l’ajout."}finally{input.value="";button.disabled=false}})}renderHistoryMedia(a.id)});
     profile.querySelectorAll("[data-pose-id]").forEach(row=>row.addEventListener("click",e=>{if(e.target.closest("button,input"))return;openPoseDossier(row.dataset.poseId)}));
   }
 
+
+  async function removeReturnedStoragePaths(paths){
+    const clean=Array.isArray(paths)?paths.filter(Boolean):[];
+    if(!clean.length)return;
+    const {error}=await supabaseClient.storage.from(MEDIA_BUCKET).remove(clean);
+    if(error)console.warn("Nettoyage Storage incomplet",error);
+  }
+  async function deletePastHistoryEntry(entry){
+    if(!confirm(`Supprimer définitivement cette prestation ?\n\n${entry.service_name||"Prestation"} · ${entry.occurred_on||""}\n\nElle disparaîtra de l’historique. Cette action est réservée aux erreurs d’encodage et est définitive.`))return;
+    try{
+      const {data,error}=await supabaseClient.rpc("admin_delete_client_history_entry",{p_entry_id:entry.id});
+      if(error)throw error;
+      await removeReturnedStoragePaths(data?.storage_paths);
+      await openClient(selectedClientId,"history");
+    }catch(error){console.error(error);alert(error?.message||"Impossible de supprimer cette prestation.")}
+  }
+  async function deleteAppointmentError(appt){
+    const paid=euro.format(Number(appt.paid_amount_cents||0)/100);
+    if(!confirm(`Supprimer définitivement cette prestation ?\n\n${appt.service_name||"Prestation"} · ${paid}\n\nElle sera retirée de l’historique, de l’Agenda et des Finances. Si du stock avait été déduit, il sera restitué.\n\nÀ utiliser uniquement pour une erreur d’encodage.`))return;
+    try{
+      const {data,error}=await supabaseClient.rpc("admin_delete_appointment_error",{p_appointment_id:appt.appointment_id});
+      if(error)throw error;
+      await removeReturnedStoragePaths(data?.storage_paths);
+      await openClient(selectedClientId,"history");
+    }catch(error){console.error(error);alert(error?.message||"Impossible de supprimer cette prestation.")}
+  }
 
   async function saveClientPreferences(id){const m=document.getElementById("pref-message");m.textContent="Enregistrement…";const row={client_id:id,general_preferences:document.getElementById("pref-general").value.trim()||null,usual_shape:document.getElementById("pref-shape").value.trim()||null,usual_length:document.getElementById("pref-length").value.trim()||null,favorite_colors:document.getElementById("pref-colors").value.trim()||null,favorite_finishes:document.getElementById("pref-finishes").value.trim()||null,favorite_nail_art:document.getElementById("pref-art").value.trim()||null,dislikes:document.getElementById("pref-dislikes").value.trim()||null,preferred_products_techniques:document.getElementById("pref-favor").value.trim()||null,avoided_products_techniques:document.getElementById("pref-avoid").value.trim()||null,natural_nail_type_1:document.getElementById("pref-natural1").value.trim()||null,natural_nail_type_2:document.getElementById("pref-natural2").value.trim()||null};const {error}=await supabaseClient.from("client_preferences").upsert(row,{onConflict:"client_id"});m.textContent=error?"Erreur":"Enregistré ✓";if(error)console.error(error)}
   async function saveClientMemory(id){const m=document.getElementById("mem-message");m.textContent="Enregistrement…";const row={client_id:id,favorite_drinks:document.getElementById("mem-drinks").value.trim()||null,favorite_snacks:document.getElementById("mem-snacks").value.trim()||null,preferred_ambiance:document.getElementById("mem-ambiance").value.trim()||null,personal_notes:document.getElementById("mem-personal").value.trim()||null,next_time_note:document.getElementById("mem-next").value.trim()||null};const {error}=await supabaseClient.from("client_memories").upsert(row,{onConflict:"client_id"});m.textContent=error?"Erreur":"Enregistré ✓";if(error)console.error(error)}
