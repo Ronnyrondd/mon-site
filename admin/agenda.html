@@ -295,6 +295,22 @@
       .nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}
       .content{padding:30px 20px 60px}.topbar{flex-direction:column}.period-title{min-width:150px}.toolbar{align-items:flex-start}
     }
+  
+
+    /* Consommation stock à la clôture */
+    .stock-complete-box{margin-top:16px;padding:16px;border:1px solid #d9ddd2;border-radius:16px;background:#f8f8f4}
+    .stock-complete-title{margin:0 0 6px;font-size:15px;color:#403a34}
+    .stock-complete-help{font-size:13px;line-height:1.5;color:#746d65;margin-bottom:12px}
+    .stock-complete-list{display:grid;gap:9px}
+    .stock-complete-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #e7e3dc}
+    .stock-complete-name{font-size:14px;font-weight:700;color:#403a34}
+    .stock-complete-meta{font-size:12px;color:#817a72;margin-top:3px}
+    .stock-complete-qty{display:flex;align-items:center;gap:7px}
+    .stock-complete-qty input{width:78px;margin:0}
+    .stock-complete-unit{font-size:12px;color:#746d65;white-space:nowrap}
+    .stock-complete-empty{font-size:13px;color:#817a72;padding:10px 0}
+    @media(max-width:640px){.stock-complete-row{grid-template-columns:1fr}.stock-complete-qty input{width:110px}}
+
   </style>
 </head>
 <body>
@@ -1272,7 +1288,7 @@
       await loadAppointments();
     }
 
-    function showCompleteForm(a){
+    async function showCompleteForm(a){
       const area=document.getElementById("appointment-action-area");
       area.innerHTML=`
         <div class="form-box">
@@ -1293,9 +1309,57 @@
               </select>
             </div>
           </div>
+
+          <div class="stock-complete-box">
+            <h4 class="stock-complete-title">Consommation de stock</h4>
+            <div class="stock-complete-help">Les quantités prévues pour cette prestation sont préremplies. Tu peux les corriger avant de terminer le rendez-vous.</div>
+            <div id="complete-stock-list"><div class="stock-complete-empty">Chargement du stock prévu…</div></div>
+          </div>
+
           <div id="complete-message" class="form-message">Le montant est prérempli avec le prix prévu, mais tu peux le corriger.</div>
           <button id="confirm-complete" class="action-button primary" type="button">Valider le paiement et terminer</button>
         </div>`;
+
+      const stockTarget=document.getElementById("complete-stock-list");
+      try{
+        const {data:usage,error:usageError}=await supabaseClient
+          .from("service_inventory_usage")
+          .select(`quantity_used, inventory_items(id,name,unit,current_quantity,is_active)`)
+          .eq("service_id",a.service_id);
+
+        if(usageError) throw usageError;
+
+        const rows=(usage||[])
+          .filter(row=>row.inventory_items?.id && row.inventory_items?.is_active!==false)
+          .map(row=>({
+            item_id:row.inventory_items.id,
+            name:row.inventory_items.name||"Article",
+            unit:row.inventory_items.unit||"unité",
+            current_quantity:Number(row.inventory_items.current_quantity||0),
+            quantity_used:Number(row.quantity_used||0)
+          }));
+
+        if(!rows.length){
+          stockTarget.innerHTML='<div class="stock-complete-empty">Aucune consommation automatique n’est encore configurée pour cette prestation.</div>';
+        }else{
+          stockTarget.innerHTML=`<div class="stock-complete-list">${rows.map(row=>`
+            <div class="stock-complete-row">
+              <div>
+                <div class="stock-complete-name">${escapeHtml(row.name)}</div>
+                <div class="stock-complete-meta">Disponible : ${row.current_quantity.toLocaleString("fr-BE",{maximumFractionDigits:3})} ${escapeHtml(row.unit)}</div>
+              </div>
+              <div class="stock-complete-qty">
+                <input class="complete-stock-input" type="number" min="0" step="0.001" value="${row.quantity_used}" data-stock-item="${escapeHtml(row.item_id)}">
+                <span class="stock-complete-unit">${escapeHtml(row.unit)}</span>
+              </div>
+            </div>`).join("")}</div>`;
+        }
+      }catch(error){
+        console.error(error);
+        stockTarget.innerHTML='<div class="stock-complete-empty error-message">Impossible de charger la consommation prévue. Le rendez-vous ne sera pas clôturé tant que cette vérification n’est pas disponible.</div>';
+        document.getElementById("confirm-complete").disabled=true;
+      }
+
       document.getElementById("confirm-complete").addEventListener("click",()=>completeAppointment(a));
     }
 
@@ -1311,14 +1375,29 @@
         return;
       }
 
+      const stockUsage=[];
+      for(const input of document.querySelectorAll(".complete-stock-input")){
+        const quantity=Number(String(input.value).replace(",","."));
+        if(!Number.isFinite(quantity) || quantity<0){
+          message.textContent="Vérifie les quantités de stock utilisées.";
+          message.className="form-message error-message";
+          input.focus();
+          return;
+        }
+        if(quantity>0){
+          stockUsage.push({item_id:input.dataset.stockItem,quantity_used:quantity});
+        }
+      }
+
       button.disabled=true;
-      message.textContent="Enregistrement…";
+      message.textContent="Enregistrement du paiement et du stock…";
       message.className="form-message";
 
-      const {data,error}=await supabaseClient.rpc("admin_complete_appointment",{
+      const {data,error}=await supabaseClient.rpc("admin_complete_appointment_with_stock",{
         p_appointment_id:a.id,
         p_amount_cents:Math.round(amount*100),
-        p_payment_method:method
+        p_payment_method:method,
+        p_stock_usage:stockUsage
       });
 
       if(error){
@@ -1330,7 +1409,7 @@
       }
 
       if(!data?.success){
-        console.error("Réponse inattendue de admin_complete_appointment",data);
+        console.error("Réponse inattendue de admin_complete_appointment_with_stock",data);
         button.disabled=false;
         message.textContent="Le rendez-vous n’a pas pu être terminé.";
         message.className="form-message error-message";
