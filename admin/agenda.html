@@ -733,7 +733,7 @@
         ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
         <div id="appointment-preparation" class="prep-box"><h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-loading">Chargement des préférences…</div></div>
         <div id="appointment-action-area"></div>
-        <div class="modal-actions">${actions}</div>
+        <div class="modal-actions">${actions}<button class="action-button danger" type="button" data-action="delete-error">Supprimer définitivement</button></div>
       `;
 
       document.querySelector('[data-action="edit"]')?.addEventListener("click",()=>showEditForm(a));
@@ -742,9 +742,27 @@
       document.querySelector('[data-action="payment"]')?.addEventListener("click",()=>showPaymentCorrectionForm(a));
       document.querySelector('[data-action="no-show"]')?.addEventListener("click",()=>showNoShowForm(a));
       document.querySelector('[data-action="restore"]')?.addEventListener("click",()=>showRestoreForm(a));
+      document.querySelector('[data-action="delete-error"]')?.addEventListener("click",()=>deleteAppointmentError(a));
 
       document.getElementById("modal-backdrop").classList.add("open");
       loadAppointmentPreparation(a);
+    }
+
+    async function deleteAppointmentError(a){
+      const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
+      const when=`${capitalize(fullDate.format(new Date(a.starts_at)))} à ${timeFormat.format(new Date(a.starts_at))}`;
+      const warning=a.status==="completed"
+        ? "Le paiement sera retiré des Finances et, si du stock avait été déduit, il sera restitué."
+        : "Le rendez-vous disparaîtra de l’Agenda et de la fiche cliente.";
+      if(!confirm(`Supprimer définitivement ce rendez-vous ?\n\n${client} · ${a.service_name_snapshot}\n${when}\n\n${warning}\n\nÀ utiliser uniquement pour corriger une erreur d’encodage. Pour un vrai rendez-vous qui n’aura pas lieu, utilise Annuler.`))return;
+      try{
+        const {data,error}=await supabaseClient.rpc("admin_delete_appointment_error",{p_appointment_id:a.id});
+        if(error)throw error;
+        const paths=Array.isArray(data?.storage_paths)?data.storage_paths.filter(Boolean):[];
+        if(paths.length){const {error:storageError}=await supabaseClient.storage.from("appointment-media").remove(paths);if(storageError)console.warn("Nettoyage Storage incomplet",storageError)}
+        document.getElementById("modal-backdrop").classList.remove("open");
+        await loadAppointments();
+      }catch(error){console.error(error);alert(error?.message||"Impossible de supprimer ce rendez-vous.")}
     }
 
     function preferenceLabel(value,type){
