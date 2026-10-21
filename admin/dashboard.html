@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#76806d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Thab's Lab Pro">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <title>Tableau de bord | Thab's Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +37,13 @@
 <div id="client-modal" class="modal-backdrop" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="client-modal-title"><div class="modal-head"><h2 id="client-modal-title">Nouvelle cliente</h2><button class="close" id="close-client" aria-label="Fermer">×</button></div><form id="client-form" class="form"><div class="form-grid"><div class="field"><label for="first-name">Prénom *</label><input id="first-name" required></div><div class="field"><label for="last-name">Nom *</label><input id="last-name" required></div><div class="field"><label for="email">E-mail *</label><input id="email" type="email" required></div><div class="field"><label for="phone">Téléphone *</label><input id="phone" type="tel" required></div><div class="field"><label for="instagram">Instagram</label><input id="instagram" placeholder="@pseudo"></div><div class="field"><label for="client-since">Cliente depuis</label><input id="client-since" type="date"></div><div class="field full"><label for="discovery-source">Comment elle a connu le studio</label><input id="discovery-source" placeholder="Instagram, bouche-à-oreille, ancienne cliente Iara…"></div><div class="field full"><label for="private-notes">Note privée</label><textarea id="private-notes" placeholder="Information utile pour son dossier"></textarea></div></div><p class="form-note">Tu pourras compléter son historique et ses préférences depuis sa fiche cliente.</p><div id="client-message" class="message"></div><div class="modal-actions"><button type="button" class="btn" id="cancel-client">Annuler</button><button type="submit" class="btn primary" id="save-client">Créer la cliente</button></div></form></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./service-worker.js")
+      .catch(error=>console.error("Service worker:",error));
+  });
+}
+
 const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";const SUPABASE_PUBLISHABLE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const euro=new Intl.NumberFormat("fr-BE",{style:"currency",currency:"EUR"});const dateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",weekday:"long",day:"numeric",month:"long",year:"numeric"});const shortDateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",weekday:"long",day:"numeric",month:"long"});const timeFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",hour:"2-digit",minute:"2-digit"});
 function capitalize(t){return t? t.charAt(0).toUpperCase()+t.slice(1):""}function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
