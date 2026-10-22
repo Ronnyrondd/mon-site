@@ -28,7 +28,7 @@
 </head><body>
 <div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
 <div class="app"><aside class="sidebar"><div class="brand">Thab's Lab</div><nav class="nav"><a class="nav-item active" href="./dashboard.html">Vue d'ensemble</a><a class="nav-item" href="./agenda.html">Agenda</a><a class="nav-item" href="./clientes.html">Clientes</a><a class="nav-item" href="./prestations.html">Prestations</a><a class="nav-item" href="./stock.html">Stock & matériel</a><a class="nav-item" href="./horaires.html">Horaires</a><a class="nav-item" href="./finances.html">Finances</a></nav><div class="sidebar-bottom"><div class="admin-label">Espace administrateur</div><button id="logout" class="logout">Se déconnecter</button></div></aside>
-<main class="content"><header class="topbar"><div><div class="eyebrow">Tableau de bord</div><h1>Bonjour Thabata</h1><div id="today-date" class="date"></div></div><div class="actions"><a class="btn primary" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a><button class="btn soft" id="new-client">+ Nouvelle cliente</button><a class="btn" href="./horaires.html">Bloquer / ouvrir un créneau</a></div></header>
+<main class="content"><header class="topbar"><div><div class="eyebrow">Tableau de bord</div><h1>Bonjour Thabata</h1><div id="today-date" class="date"></div></div><div class="actions"><a class="btn primary" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a><button class="btn soft" id="new-client">+ Nouvelle cliente</button><a class="btn" href="./horaires.html">Bloquer / ouvrir un créneau</a><button class="btn" id="push-notifications" type="button">🔔 Notifications</button></div></header>
 <p class="section-label">Aujourd'hui</p><section class="today-grid"><article class="panel"><div class="panel-header"><h2 class="panel-title">Ta journée</h2><span id="today-small" class="panel-subtitle"></span></div><div id="today-appointments"><div class="empty">Chargement…</div></div></article><article class="panel"><div class="panel-header"><h2 class="panel-title">Prochain rendez-vous</h2></div><div id="next-appointment"><div class="empty">Chargement…</div></div></article></section>
 <p class="section-label">Vue du mois</p><section class="stats"><article class="stat"><div class="stat-label">CA encaissé</div><div id="month-revenue" class="stat-value">—</div><div class="stat-detail">paiements réellement enregistrés</div></article><article class="stat"><div class="stat-label">CA à venir</div><div id="future-revenue" class="stat-value">—</div><div class="stat-detail">rendez-vous confirmés à venir</div></article><article class="stat"><div class="stat-label">Panier moyen</div><div id="average-basket" class="stat-value">—</div><div class="stat-detail">sur les rendez-vous encaissés ce mois</div></article><article class="stat"><div class="stat-label">Rendez-vous à venir</div><div id="future-count" class="stat-value">—</div><div class="stat-detail">confirmés ou en attente</div></article></section>
 <p class="section-label">Activité du mois</p><section class="activity-grid"><article class="mini"><div id="completed-count" class="mini-value">—</div><div class="mini-label">RDV effectués</div></article><article class="mini"><div id="new-client-count" class="mini-value">—</div><div class="mini-label">Nouvelles clientes</div></article><article class="mini"><div id="cancel-count" class="mini-value">—</div><div class="mini-label">Annulations clientes</div></article><article class="mini"><div id="no-show-count" class="mini-value">—</div><div class="mini-label">No-show</div></article></section>
@@ -70,5 +70,46 @@ function renderTopServices(a){const c=document.getElementById("top-services"),m=
 const modal=document.getElementById("client-modal");function openClientModal(){document.getElementById("client-form").reset();document.getElementById("client-since").value=brusselsDateKey();document.getElementById("client-message").textContent="";modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.getElementById("first-name").focus()}function closeClientModal(){modal.classList.remove("open");modal.setAttribute("aria-hidden","true")}
 document.getElementById("new-client").addEventListener("click",openClientModal);document.getElementById("new-client-secondary").addEventListener("click",openClientModal);document.getElementById("close-client").addEventListener("click",closeClientModal);document.getElementById("cancel-client").addEventListener("click",closeClientModal);modal.addEventListener("click",e=>{if(e.target===modal)closeClientModal()});
 document.getElementById("client-form").addEventListener("submit",async e=>{e.preventDefault();const btn=document.getElementById("save-client"),msg=document.getElementById("client-message");btn.disabled=true;btn.textContent="Création…";msg.className="message";msg.textContent="";const args={p_first_name:document.getElementById("first-name").value,p_last_name:document.getElementById("last-name").value,p_email:document.getElementById("email").value,p_phone:document.getElementById("phone").value,p_instagram:document.getElementById("instagram").value||null,p_client_since:document.getElementById("client-since").value||null,p_discovery_source:document.getElementById("discovery-source").value||null,p_private_notes:document.getElementById("private-notes").value||null,p_source:"manual"};const {data,error}=await supabaseClient.rpc("admin_create_client",args);if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de créer cette cliente. Vérifie les informations puis réessaie.";btn.disabled=false;btn.textContent="Créer la cliente";return}msg.className="message success";msg.textContent="Cliente créée ✓";setTimeout(()=>{location.href=`./clientes.html?client=${encodeURIComponent(data)}`},650)});
-document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});async function init(){if(await protectPage())await loadDashboard()}init();
+
+const VAPID_PUBLIC_KEY="BIlTIVdljp66zQP-aILEW3nl__iB3uKUpJSPDWUnYemxVc-aNtVp69q1YPh371hlgv2NL_GND7uYCgY5bzm1XDM";
+function urlBase64ToUint8Array(s){
+  const padding="=".repeat((4-s.length%4)%4),base64=(s+padding).replace(/-/g,"+").replace(/_/g,"/");
+  return Uint8Array.from([...atob(base64)].map(c=>c.charCodeAt(0)));
+}
+async function savePushSubscription(subscription){
+  const j=subscription.toJSON();
+  const {error}=await supabaseClient.from("admin_push_subscriptions").upsert({
+    endpoint:j.endpoint,p256dh:j.keys?.p256dh,auth:j.keys?.auth,user_agent:navigator.userAgent,updated_at:new Date().toISOString()
+  },{onConflict:"endpoint"});
+  if(error)throw error;
+}
+async function activatePushNotifications(){
+  const btn=document.getElementById("push-notifications");
+  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){
+    alert("Les notifications push ne sont pas disponibles sur cet appareil.");return;
+  }
+  btn.disabled=true;const old=btn.textContent;btn.textContent="Activation…";
+  try{
+    const permission=await Notification.requestPermission();
+    if(permission!=="granted"){alert("Les notifications n'ont pas été autorisées.");btn.textContent=old;return}
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
+    await savePushSubscription(sub);
+    const {error}=await supabaseClient.functions.invoke("admin-push-test",{body:{title:"Thab's Lab Pro 🌿",body:"Les notifications sont activées. Test réussi !",url:"/admin/dashboard.html"}});
+    if(error)throw error;
+    btn.textContent="🔔 Notifications activées";
+  }catch(error){console.error("Push:",error);alert("Impossible d'activer les notifications pour le moment.");btn.textContent=old}
+  finally{btn.disabled=false}
+}
+async function refreshPushButton(){
+  const btn=document.getElementById("push-notifications");if(!btn)return;
+  if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window)){btn.textContent="Notifications indisponibles";btn.disabled=true;return}
+  if(Notification.permission==="granted"){
+    try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){btn.textContent="🔔 Notifications activées";await savePushSubscription(sub)}}catch(e){console.error(e)}
+  }
+}
+document.getElementById("push-notifications")?.addEventListener("click",activatePushNotifications);
+
+document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});async function init(){if(await protectPage()){await loadDashboard();await refreshPushButton()}}init();
 </script></body></html>
