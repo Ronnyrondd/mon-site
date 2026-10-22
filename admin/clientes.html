@@ -58,14 +58,6 @@
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
     @media(max-width:760px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.top-actions{justify-content:flex-start}.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
-
-    /* V2.2a · Atelier Nail Art */
-    .studio-modal{position:fixed;inset:0;z-index:90;display:none;background:rgba(43,38,32,.48);backdrop-filter:blur(5px)}
-    .studio-modal.open{display:flex}.studio-shell{width:min(1180px,96vw);height:min(900px,94vh);margin:auto;background:#fbf8f2;border-radius:26px;box-shadow:0 24px 80px rgba(0,0,0,.22);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
-    .studio-head{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:18px 22px;border-bottom:1px solid rgba(74,67,57,.12);background:#fffdf8}.studio-head h2{margin:2px 0 0;font-size:22px}.studio-close{border:0;background:transparent;font-size:28px;cursor:pointer;color:var(--muted)}
-    .studio-body{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:0}.studio-tools{padding:18px;border-right:1px solid rgba(74,67,57,.12);overflow:auto;background:#f6f1e8}.studio-stage{min-width:0;min-height:0;display:flex;flex-direction:column;padding:14px;background:#eee7dc}
-    .studio-group{margin-bottom:18px}.studio-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;font-weight:700}.studio-row{display:flex;gap:7px;flex-wrap:wrap}.studio-chip{border:1px solid rgba(74,67,57,.18);background:#fffaf3;border-radius:999px;padding:8px 11px;font:inherit;font-size:12px;cursor:pointer}.studio-chip.active{background:#65715c;color:white;border-color:#65715c}.studio-select,.studio-color,.studio-range{width:100%}.studio-select{border:1px solid rgba(74,67,57,.18);border-radius:10px;padding:9px;background:white}.studio-color{height:40px;border:0;background:transparent;padding:0}.studio-range{accent-color:#65715c}.studio-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.studio-actions button{flex:1;min-width:92px}.studio-canvas-wrap{position:relative;flex:1;min-height:430px;background:#fffdf9;border-radius:20px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(74,67,57,.08);touch-action:none}.studio-canvas{width:100%;height:100%;display:block;touch-action:none}.studio-status{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 4px 0;font-size:12px;color:var(--muted)}.studio-save-message{min-height:18px}.studio-help{font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px}.project-studio-button{background:#65715c;color:#fff;border:0;border-radius:10px;padding:9px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}.project-studio-button:hover{filter:brightness(.96)}
-    @media(max-width:800px){.studio-shell{width:100vw;height:100dvh;border-radius:0}.studio-body{grid-template-columns:1fr;grid-template-rows:auto 1fr}.studio-tools{border-right:0;border-bottom:1px solid rgba(74,67,57,.12);padding:12px;display:flex;gap:12px;overflow-x:auto}.studio-group{min-width:150px;margin:0}.studio-canvas-wrap{min-height:360px}.studio-stage{padding:8px}}
   </style>
 </head>
 <body>
@@ -82,22 +74,6 @@
 <div id="history-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Prestation passée</div><h2>Ajouter une prestation réalisée</h2></div><button id="history-modal-close" class="modal-close" type="button">×</button></div><form id="history-form" class="modal-body"><div class="form-grid"><label class="field">Date<input id="history-date" type="date" required></label><label class="field">Heure<input id="history-time" type="time" required value="10:00"></label><label class="field full">Prestation<select id="history-service-select"><option value="">Chargement…</option></select></label><label class="field">Nom de la prestation<input id="history-service" required></label><label class="field">Durée (min)<input id="history-duration" type="number" min="1" step="1" required></label><label class="field">Montant payé (€)<input id="history-amount" type="number" min="0" step="0.01" required></label><label class="field">Moyen de paiement<select id="history-payment-method" required><option value="card">Carte</option><option value="qr">QR</option><option value="cash">Espèces</option><option value="bank_transfer">Virement</option><option value="other">Autre</option></select></label><label class="field">Réservation via<select id="history-source"><option value="iara">Iara</option><option value="instagram">Instagram</option><option value="phone">Téléphone</option><option value="other">Autre</option></select></label><label class="field">Forme<input id="history-shape" placeholder="Amande, carré…"></label><label class="field">Longueur<input id="history-length" placeholder="Courte, moyenne, longue…"></label><label class="field">Couleur / design<input id="history-color" placeholder="Nude, french, nail art…"></label><label class="field full">Notes<textarea id="history-notes" placeholder="Tenue, remarques, détails utiles…"></textarea></label><label class="field full">Photos de la pose<input id="history-photos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple><span class="history-upload-hint">Facultatif · jusqu’à 5 photos. La prestation apparaîtra aussi dans l’Agenda et les Finances. Aucun stock ne sera retiré et aucun message ne sera envoyé à la cliente.</span></label></div><div class="form-actions"><span id="history-message" class="message"></span><button id="history-cancel" class="ghost-button" type="button">Annuler</button><button id="history-save" class="small-button" type="submit">Enregistrer la prestation</button></div></form></div></div>
 
 <div id="project-modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><div class="eyebrow">Carnet cliente</div><h2 id="project-modal-title">Projet nail art</h2></div><button id="project-modal-close" class="modal-close" type="button">×</button></div><form id="project-form" class="modal-body"><input id="project-id" type="hidden"><div class="form-grid"><label class="field full">Nom du projet<input id="project-title"></label><label class="field">Date prévue<input id="project-date" type="date"></label><label class="field">Statut<select id="project-status"><option value="idea">Idée</option><option value="planned">Prévu</option><option value="completed">Réalisé</option><option value="cancelled">Annulé</option><option value="archived">Archivé</option></select></label><label class="field">Forme<input id="project-shape"></label><label class="field">Longueur<input id="project-length"></label><label class="field">Couleurs<input id="project-colors"></label><label class="field">Prix estimé (€)<input id="project-price" type="number" min="0" step="0.01"></label><label class="field full">Détails<textarea id="project-details"></textarea></label><label class="field full">Photos d’inspiration<input id="project-inspirations" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple><span class="project-upload-hint">Jusqu’à 5 photos · 5 Mo maximum par photo. Tu peux aussi en ajouter plus tard depuis la fiche du projet.</span></label></div><div class="form-actions"><span id="project-message" class="message"></span><button id="project-cancel" class="ghost-button" type="button">Annuler</button><button id="project-save" class="small-button" type="submit">Enregistrer</button></div></form></div></div>
-
-<div id="nail-studio-modal" class="studio-modal" aria-hidden="true">
-  <div class="studio-shell">
-    <div class="studio-head"><div><div class="eyebrow">Projet nail art · V2.2a.1</div><h2 id="studio-title">Atelier de croquis</h2></div><button id="studio-close" class="studio-close" type="button">×</button></div>
-    <div class="studio-body">
-      <aside class="studio-tools">
-        <div class="studio-group"><div class="studio-label">Planche</div><div class="studio-row"><button class="studio-chip active" data-studio-hand="left" type="button">Main gauche</button><button class="studio-chip" data-studio-hand="right" type="button">Main droite</button></div></div>
-        <div class="studio-group"><div class="studio-label">Outil</div><div class="studio-row"><button class="studio-chip active" data-studio-tool="pen" type="button">Dessiner</button><button class="studio-chip" data-studio-tool="eraser" type="button">Gomme</button></div><label class="studio-help">Couleur</label><input id="studio-color" class="studio-color" type="color" value="#7a4036"><label class="studio-help">Épaisseur</label><input id="studio-width" class="studio-range" type="range" min="2" max="28" value="7"></div>
-        <div class="studio-group"><div class="studio-label">Ongle sélectionné</div><select id="studio-finger" class="studio-select"><option value="0">Pouce</option><option value="1">Index</option><option value="2">Majeur</option><option value="3">Annulaire</option><option value="4">Auriculaire</option></select><label class="studio-help">Forme</label><select id="studio-shape" class="studio-select"><option value="round">Rond</option><option value="oval">Ovale</option><option value="square">Carré</option><option value="soft-square">Carré arrondi</option><option value="almond" selected>Amande</option><option value="coffin">Coffin</option><option value="stiletto">Stiletto</option></select><label class="studio-help">Longueur</label><select id="studio-length" class="studio-select"><option value="xs">Très court</option><option value="s">Court</option><option value="m" selected>Moyen</option><option value="l">Long</option><option value="xl">Très long</option></select><div class="studio-actions"><button id="studio-apply-hand" class="outline-button" type="button">Aux 5 ongles</button><button id="studio-apply-both" class="outline-button" type="button">Aux 2 mains</button></div></div>
-        <div class="studio-group"><div class="studio-label">Actions</div><div class="studio-actions"><button id="studio-undo" class="outline-button" type="button">↶ Annuler</button><button id="studio-clear" class="outline-button" type="button">Effacer</button></div><div class="studio-help">Le dessin est automatiquement limité à l’ongle : impossible de dépasser.</div></div>
-      </aside>
-      <section class="studio-stage"><div id="studio-canvas-wrap" class="studio-canvas-wrap"><canvas id="studio-canvas" class="studio-canvas"></canvas></div><div class="studio-status"><span id="studio-save-message" class="studio-save-message"></span><button id="studio-save" class="small-button" type="button">Enregistrer le croquis</button></div></section>
-    </div>
-  </div>
-</div>
-
 <div class="app">
   <aside class="sidebar">
     <div class="brand">Thab's Lab</div>
@@ -454,7 +430,7 @@
         </div>
       </div>
       </div>
-      <div class="tab-panel ${preferredTab==="projects"?"active":""}" data-panel="projects"><div class="section"><div class="section-head"><h3 class="section-title">Projets nail art</h3><button id="new-project" class="outline-button">+ Nouveau projet</button></div><div>${projectRows.length?projectRows.map(p=>`<div class="project-card"><div class="project-head"><div><div class="project-name">${escapeHtml(p.title||"Projet nail art")}</div><div class="project-meta">${p.planned_date?dateFmt.format(new Date(`${p.planned_date}T12:00:00`)):"Sans date"}${p.nail_shape?` · ${escapeHtml(p.nail_shape)}`:""}${p.nail_length?` · ${escapeHtml(p.nail_length)}`:""}</div></div><span class="source-badge">${escapeHtml(p.status)}</span></div>${p.colors?`<div class="project-meta">Couleurs · ${escapeHtml(p.colors)}</div>`:""}${p.details?`<div class="project-details">${escapeHtml(p.details)}</div>`:""}<div class="project-media"><div class="project-media-title">Inspirations</div><div class="result-actions"><button class="photo-button" type="button" data-add-project-photo="${p.id}">+ Ajouter des photos</button><input id="project-photo-input-${p.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="project-photo-message-${p.id}" class="result-message"></span></div><div id="project-media-${p.id}" class="result-gallery"></div></div><div class="project-actions"><button class="project-studio-button" type="button" data-open-studio="${p.id}">Ouvrir l’atelier de croquis</button><button class="outline-button" data-edit-project="${p.id}">Modifier</button><button class="outline-button" data-delete-project="${p.id}">Supprimer</button></div></div>`).join(""):'<div class="empty">Aucun projet nail art enregistré.</div>'}</div></div></div>
+      <div class="tab-panel ${preferredTab==="projects"?"active":""}" data-panel="projects"><div class="section"><div class="section-head"><h3 class="section-title">Projets nail art</h3><button id="new-project" class="outline-button">+ Nouveau projet</button></div><div>${projectRows.length?projectRows.map(p=>`<div class="project-card"><div class="project-head"><div><div class="project-name">${escapeHtml(p.title||"Projet nail art")}</div><div class="project-meta">${p.planned_date?dateFmt.format(new Date(`${p.planned_date}T12:00:00`)):"Sans date"}${p.nail_shape?` · ${escapeHtml(p.nail_shape)}`:""}${p.nail_length?` · ${escapeHtml(p.nail_length)}`:""}</div></div><span class="source-badge">${escapeHtml(p.status)}</span></div>${p.colors?`<div class="project-meta">Couleurs · ${escapeHtml(p.colors)}</div>`:""}${p.details?`<div class="project-details">${escapeHtml(p.details)}</div>`:""}<div class="project-media"><div class="project-media-title">Inspirations</div><div class="result-actions"><button class="photo-button" type="button" data-add-project-photo="${p.id}">+ Ajouter des photos</button><input id="project-photo-input-${p.id}" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden><span id="project-photo-message-${p.id}" class="result-message"></span></div><div id="project-media-${p.id}" class="result-gallery"></div></div><div class="project-actions"><button class="outline-button" data-edit-project="${p.id}">Modifier</button><button class="outline-button" data-delete-project="${p.id}">Supprimer</button></div></div>`).join(""):'<div class="empty">Aucun projet nail art enregistré.</div>'}</div></div></div>
       <div class="tab-panel ${preferredTab==="memory"?"active":""}" data-panel="memory"><div class="section"><h3 class="section-title">Les petits détails qui comptent</h3><div class="carnet-grid"><label class="carnet-field">Boissons appréciées<textarea id="mem-drinks">${escapeHtml(mem.favorite_drinks||"")}</textarea></label><label class="carnet-field">Snacks / nourriture<textarea id="mem-snacks">${escapeHtml(mem.favorite_snacks||"")}</textarea></label><label class="carnet-field wide">Ambiance préférée<textarea id="mem-ambiance">${escapeHtml(mem.preferred_ambiance||"")}</textarea></label><label class="carnet-field wide">Sujets, famille, travail, petits souvenirs…<textarea id="mem-personal">${escapeHtml(mem.personal_notes||"")}</textarea></label><label class="carnet-field wide">À penser pour la prochaine fois<textarea id="mem-next">${escapeHtml(mem.next_time_note||"")}</textarea></label></div><div class="carnet-actions"><button id="save-memory" class="small-button">Enregistrer</button><span id="mem-message" class="save-message"></span></div></div></div>
       <div class="danger-zone"><h3 class="danger-zone-title">Suppression du dossier</h3><p class="danger-zone-text">Supprime définitivement cette cliente et les données associées. Cette action est irréversible et sera bloquée si un historique financier doit être conservé.</p><button id="delete-client" class="delete-client-button" type="button">Supprimer cette cliente</button></div>
     </div>`;
@@ -465,7 +441,6 @@
     document.getElementById("save-memory").addEventListener("click",()=>saveClientMemory(c.id));
     document.getElementById("new-project").addEventListener("click",()=>openProjectModal());
     projectRows.forEach(p=>{const e=profile.querySelector(`[data-edit-project="${p.id}"]`),d=profile.querySelector(`[data-delete-project="${p.id}"]`),add=profile.querySelector(`[data-add-project-photo="${p.id}"]`),input=document.getElementById(`project-photo-input-${p.id}`),msg=document.getElementById(`project-photo-message-${p.id}`);if(e)e.addEventListener("click",()=>openProjectModal(p));if(d)d.addEventListener("click",()=>deleteNailProject(p.id));if(add&&input){add.addEventListener("click",()=>input.click());input.addEventListener("change",async()=>{add.disabled=true;try{await uploadProjectPhotos(p.id,input.files);if(msg)msg.textContent="Photos ajoutées ✓";await renderProjectMedia(p.id)}catch(err){console.error(err);if(msg)msg.textContent=err?.message||"Erreur lors de l’ajout."}finally{input.value="";add.disabled=false}})}renderProjectMedia(p.id)});
-    projectRows.forEach(p=>{const b=profile.querySelector(`[data-open-studio="${p.id}"]`);if(b)b.addEventListener("click",()=>openNailStudio(p));});
     document.getElementById("save-notes").addEventListener("click",()=>saveNotes(c));
     document.getElementById("add-history").addEventListener("click",()=>openHistoryModal(c));
     document.getElementById("delete-client").addEventListener("click",()=>deleteClient(c,appts));
@@ -624,91 +599,6 @@
 
   async function init(){if(!await protectPage())return;await loadClients();const requested=new URLSearchParams(location.search).get("client");if(requested&&clients.some(c=>c.id===requested))await openClient(requested)}
   init();
-
-
-  /* V2.2a · Atelier Nail Art — croquis enregistré dans client_nail_art_projects.sketch_data */
-  const STUDIO_DEFAULT_NAIL=()=>({shape:"almond",length:"m"});
-  let studioProject=null,studioData=null,studioHand="left",studioTool="pen",studioDrawing=false,studioStroke=null,studioCanvas=null,studioCtx=null,studioDpr=1;
-  function freshStudioData(){return {version:1,skinTone:"#d9aa8d",hands:{left:{nails:Array.from({length:5},STUDIO_DEFAULT_NAIL),strokes:[]},right:{nails:Array.from({length:5},STUDIO_DEFAULT_NAIL),strokes:[]}}}}
-  function normalizeStudioData(raw){const d=raw&&typeof raw==="object"?JSON.parse(JSON.stringify(raw)):freshStudioData();d.version=1;d.skinTone=d.skinTone||"#d9aa8d";d.hands=d.hands||{};for(const h of ["left","right"]){d.hands[h]=d.hands[h]||{};d.hands[h].nails=Array.isArray(d.hands[h].nails)?d.hands[h].nails.slice(0,5):[];while(d.hands[h].nails.length<5)d.hands[h].nails.push(STUDIO_DEFAULT_NAIL());d.hands[h].strokes=Array.isArray(d.hands[h].strokes)?d.hands[h].strokes:[]}return d}
-  function studioLayout(w,h){
-    /* V2.2a.2 : planche de 5 ongles volontairement simple et fiable.
-       Plus de dessin de main : chaque ongle dispose d'une vraie grande zone de travail. */
-    const margin=Math.max(26,w*.045), gap=Math.max(14,w*.018);
-    const usable=w-margin*2-gap*4, cellW=usable/5;
-    const top=h*.18, areaH=h*.64;
-    const baseWidths=[.72,.82,.88,.84,.72];
-    const baseHeights=[.72,.88,1,.92,.78];
-    return Array.from({length:5},(_,i)=>({
-      cx:margin+cellW/2+i*(cellW+gap),
-      cy:top+areaH*.46,
-      rot:0,
-      w:Math.min(cellW*.66,110)*baseWidths[i],
-      baseH:Math.min(areaH*.70,270)*baseHeights[i],
-      index:i,
-      scale:1,
-      cellX:margin+i*(cellW+gap),cellW,cellY:top,cellH:areaH
-    }));
-  }
-  function drawStudioBoard(ctx,w,h,geos,selected){
-    const labels=["Pouce","Index","Majeur","Annulaire","Auriculaire"];
-    ctx.save();
-    ctx.textAlign="center";ctx.textBaseline="middle";
-    geos.forEach((g,i)=>{
-      const x=g.cellX,y=g.cellY,cw=g.cellW,ch=g.cellH;
-      ctx.fillStyle=i===selected?"#f3eee4":"#faf7f1";
-      ctx.strokeStyle=i===selected?"rgba(101,113,92,.55)":"rgba(74,67,57,.12)";
-      ctx.lineWidth=i===selected?2:1;
-      ctx.beginPath();ctx.roundRect(x,y,cw,ch,18);ctx.fill();ctx.stroke();
-      ctx.fillStyle=i===selected?"#56604f":"#7a746b";
-      ctx.font="600 13px system-ui, -apple-system, sans-serif";
-      ctx.fillText(labels[i],x+cw/2,y+22);
-    });
-    ctx.restore();
-  }
-  function lengthFactor(v){return {xs:.68,s:.82,m:1,l:1.2,xl:1.42}[v]||1}
-  function nailPath(nail,geo){
-    const h=geo.baseH*lengthFactor(nail.length),w=geo.w,x=geo.cx,y=geo.cy,p=new Path2D(),shape=nail.shape||"almond";
-    if(shape==="square"||shape==="soft-square"){const r=shape==="soft-square"?w*.16:w*.05;p.roundRect(x-w/2,y-h/2,w,h,r)}
-    else if(shape==="coffin"){p.moveTo(x-w*.31,y-h/2);p.lineTo(x+w*.31,y-h/2);p.lineTo(x+w*.49,y+h*.28);p.quadraticCurveTo(x+w*.46,y+h*.5,x,y+h*.5);p.quadraticCurveTo(x-w*.46,y+h*.5,x-w*.49,y+h*.28);p.closePath()}
-    else if(shape==="stiletto"){p.moveTo(x,y-h*.54);p.bezierCurveTo(x+w*.46,y-h*.18,x+w*.5,y+h*.36,x,y+h*.5);p.bezierCurveTo(x-w*.5,y+h*.36,x-w*.46,y-h*.18,x,y-h*.54);p.closePath()}
-    else if(shape==="almond"){p.moveTo(x,y-h*.53);p.bezierCurveTo(x+w*.42,y-h*.25,x+w*.51,y+h*.27,x,y+h*.5);p.bezierCurveTo(x-w*.51,y+h*.27,x-w*.42,y-h*.25,x,y-h*.53);p.closePath()}
-    else if(shape==="oval"){p.ellipse(x,y,w/2,h/2,0,0,Math.PI*2)}
-    else {p.moveTo(x,y-h*.5);p.bezierCurveTo(x+w*.5,y-h*.42,x+w*.52,y+h*.32,x,y+h*.5);p.bezierCurveTo(x-w*.52,y+h*.32,x-w*.5,y-h*.42,x,y-h*.5);p.closePath()}
-    return {path:p,h,w}
-  }
-  function drawStudio(){
-    if(!studioCtx||!studioData)return;
-    const c=studioCanvas,ctx=studioCtx,w=c.width/studioDpr,h=c.height/studioDpr;
-    ctx.setTransform(studioDpr,0,0,studioDpr,0,0);ctx.clearRect(0,0,w,h);
-    ctx.fillStyle="#fffdf9";ctx.fillRect(0,0,w,h);
-    const geos=studioLayout(w,h),hand=studioData.hands[studioHand],selected=Number(document.getElementById("studio-finger")?.value||0);
-    drawStudioBoard(ctx,w,h,geos,selected);
-    geos.forEach((g,i)=>{
-      const {path}=nailPath(hand.nails[i],g);
-      ctx.fillStyle="#f8e6de";ctx.fill(path);
-      ctx.strokeStyle=i===selected?"#65715c":"rgba(91,70,60,.36)";
-      ctx.lineWidth=i===selected?3:1.5;ctx.stroke(path);
-    });
-    hand.strokes.forEach(st=>{
-      const g=geos[st.finger];if(!g||!st.points?.length)return;
-      const np=nailPath(hand.nails[st.finger],g);ctx.save();ctx.clip(np.path);
-      ctx.globalCompositeOperation="source-over";
-      ctx.strokeStyle=st.tool==="eraser"?"#f8e6de":(st.color||"#7a4036");
-      ctx.lineWidth=st.width||7;ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();
-      st.points.forEach((pt,j)=>{const x=pt.x*w,y=pt.y*h;j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.restore();
-    });
-  }
-  function resizeStudioCanvas(){const wrap=document.getElementById("studio-canvas-wrap");if(!wrap||!studioCanvas)return;const r=wrap.getBoundingClientRect();studioDpr=Math.min(window.devicePixelRatio||1,2);studioCanvas.width=Math.max(1,Math.round(r.width*studioDpr));studioCanvas.height=Math.max(1,Math.round(r.height*studioDpr));drawStudio()}
-  function studioPoint(e){const r=studioCanvas.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height,px:e.clientX-r.left,py:e.clientY-r.top,w:r.width,h:r.height}}
-  function hitStudioNail(pt){const geos=studioLayout(pt.w,pt.h),hand=studioData.hands[studioHand];for(let i=0;i<geos.length;i++){const np=nailPath(hand.nails[i],geos[i]);if(studioCtx.isPointInPath(np.path,pt.px,pt.py))return i}return -1}
-  function syncStudioControls(){document.querySelectorAll("[data-studio-hand]").forEach(b=>b.classList.toggle("active",b.dataset.studioHand===studioHand));document.querySelectorAll("[data-studio-tool]").forEach(b=>b.classList.toggle("active",b.dataset.studioTool===studioTool));const i=Number(document.getElementById("studio-finger").value||0),n=studioData.hands[studioHand].nails[i];document.getElementById("studio-shape").value=n.shape;document.getElementById("studio-length").value=n.length;drawStudio()}
-  function openNailStudio(p){studioProject=p;studioData=normalizeStudioData(p.sketch_data);studioHand="left";studioTool="pen";document.getElementById("studio-title").textContent=p.title||"Atelier de croquis";document.getElementById("studio-save-message").textContent="";document.getElementById("nail-studio-modal").classList.add("open");document.getElementById("nail-studio-modal").setAttribute("aria-hidden","false");studioCanvas=document.getElementById("studio-canvas");studioCtx=studioCanvas.getContext("2d");syncStudioControls();requestAnimationFrame(resizeStudioCanvas)}
-  function closeNailStudio(){document.getElementById("nail-studio-modal").classList.remove("open");document.getElementById("nail-studio-modal").setAttribute("aria-hidden","true");studioDrawing=false}
-  async function saveNailStudio(){if(!studioProject)return;const b=document.getElementById("studio-save"),m=document.getElementById("studio-save-message");b.disabled=true;m.textContent="Enregistrement…";const {error}=await supabaseClient.from("client_nail_art_projects").update({sketch_data:studioData}).eq("id",studioProject.id);b.disabled=false;if(error){console.error(error);m.textContent="Erreur lors de l’enregistrement.";return}studioProject.sketch_data=studioData;m.textContent="Croquis enregistré ✓"}
-  function initNailStudio(){document.getElementById("studio-close").addEventListener("click",closeNailStudio);document.getElementById("studio-save").addEventListener("click",saveNailStudio);document.querySelectorAll("[data-studio-hand]").forEach(b=>b.addEventListener("click",()=>{studioHand=b.dataset.studioHand;syncStudioControls()}));document.querySelectorAll("[data-studio-tool]").forEach(b=>b.addEventListener("click",()=>{studioTool=b.dataset.studioTool;syncStudioControls()}));document.getElementById("studio-finger").addEventListener("change",syncStudioControls);for(const id of ["studio-shape","studio-length"]){document.getElementById(id).addEventListener("change",()=>{const i=Number(document.getElementById("studio-finger").value),n=studioData.hands[studioHand].nails[i];n.shape=document.getElementById("studio-shape").value;n.length=document.getElementById("studio-length").value;drawStudio()})}document.getElementById("studio-apply-hand").addEventListener("click",()=>{const shape=document.getElementById("studio-shape").value,length=document.getElementById("studio-length").value;studioData.hands[studioHand].nails.forEach(n=>{n.shape=shape;n.length=length});drawStudio()});document.getElementById("studio-apply-both").addEventListener("click",()=>{const shape=document.getElementById("studio-shape").value,length=document.getElementById("studio-length").value;for(const h of ["left","right"])studioData.hands[h].nails.forEach(n=>{n.shape=shape;n.length=length});drawStudio()});document.getElementById("studio-undo").addEventListener("click",()=>{studioData.hands[studioHand].strokes.pop();drawStudio()});document.getElementById("studio-clear").addEventListener("click",()=>{if(confirm("Effacer tout le dessin de cette main ?")){studioData.hands[studioHand].strokes=[];drawStudio()}});studioCanvas=document.getElementById("studio-canvas");studioCtx=studioCanvas.getContext("2d");studioCanvas.addEventListener("pointerdown",e=>{if(!studioData)return;const pt=studioPoint(e),finger=hitStudioNail(pt);if(finger<0){return}document.getElementById("studio-finger").value=String(finger);syncStudioControls();studioDrawing=true;studioCanvas.setPointerCapture(e.pointerId);studioStroke={finger,tool:studioTool,color:document.getElementById("studio-color").value,width:Number(document.getElementById("studio-width").value),points:[{x:pt.x,y:pt.y}]};studioData.hands[studioHand].strokes.push(studioStroke)});studioCanvas.addEventListener("pointermove",e=>{if(!studioDrawing||!studioStroke)return;const pt=studioPoint(e);studioStroke.points.push({x:pt.x,y:pt.y});drawStudio()});const stop=()=>{studioDrawing=false;studioStroke=null};studioCanvas.addEventListener("pointerup",stop);studioCanvas.addEventListener("pointercancel",stop);window.addEventListener("resize",()=>{if(document.getElementById("nail-studio-modal").classList.contains("open"))resizeStudioCanvas()})}
-  initNailStudio();
-
 </script>
 </body>
 </html>
