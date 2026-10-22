@@ -626,54 +626,68 @@
   init();
 
 
-  /* V2.2a · Atelier Nail Art — croquis enregistré dans client_nail_art_projects.sketch_data */
+  /* V2.2a.2 · Atelier Nail Art — gabarit graphique fixe + ongles interactifs */
   const STUDIO_DEFAULT_NAIL=()=>({shape:"almond",length:"m"});
   let studioProject=null,studioData=null,studioHand="left",studioTool="pen",studioDrawing=false,studioStroke=null,studioCanvas=null,studioCtx=null,studioDpr=1;
   function freshStudioData(){return {version:1,skinTone:"#d9aa8d",hands:{left:{nails:Array.from({length:5},STUDIO_DEFAULT_NAIL),strokes:[]},right:{nails:Array.from({length:5},STUDIO_DEFAULT_NAIL),strokes:[]}}}}
   function normalizeStudioData(raw){const d=raw&&typeof raw==="object"?JSON.parse(JSON.stringify(raw)):freshStudioData();d.version=1;d.skinTone=d.skinTone||"#d9aa8d";d.hands=d.hands||{};for(const h of ["left","right"]){d.hands[h]=d.hands[h]||{};d.hands[h].nails=Array.isArray(d.hands[h].nails)?d.hands[h].nails.slice(0,5):[];while(d.hands[h].nails.length<5)d.hands[h].nails.push(STUDIO_DEFAULT_NAIL());d.hands[h].strokes=Array.isArray(d.hands[h].strokes)?d.hands[h].strokes:[]}return d}
-  function studioLayout(w,h){
-    /* Gabarit fixe de main : les ongles restent dynamiques, la main ne l'est plus. */
-    const scale=Math.min(w/900,h/650), ox=w*.5, oy=h*.54, mirror=studioHand==="right"?-1:1;
-    const raw=[[-220,108,-.72,72,62],[-128,-92,-.08,88,58],[-43,-137,-.02,96,61],[47,-118,.04,90,59],[126,-67,.10,78,54]];
-    return raw.map(([x,y,r,n,nw],i)=>({cx:ox+mirror*x*scale,cy:oy+y*scale,rot:mirror*r,w:nw*scale,baseH:n*scale,index:i,scale}));
+  const studioHandImage=new Image();
+  studioHandImage.src="../images/nail-designer-hand-v2.jpg";
+  studioHandImage.onload=()=>{if(studioCanvas&&document.getElementById("nail-studio-modal")?.classList.contains("open"))drawStudio()};
+  function studioImageRect(w,h){
+    const ratio=580/755, availableW=w*.92, availableH=h*.98;
+    let dh=availableH,dw=dh*ratio;
+    if(dw>availableW){dw=availableW;dh=dw/ratio}
+    return {x:(w-dw)/2,y:(h-dh)/2,w:dw,h:dh};
   }
-  function handTemplatePath(w,h){
-    /* Silhouette volontairement simple et stable, inspirée d'un gabarit de croquis nail-art. */
-    const s=Math.min(w/900,h/650), cx=w*.5, cy=h*.54, m=studioHand==="right"?-1:1;
-    const pts=[
-      [-265,215],[-286,164],[-282,116],[-258,72],[-225,34],[-194,10],
-      [-184,-36],[-177,-113],[-165,-191],[-146,-238],[-126,-248],[-107,-237],[-99,-209],[-103,-143],[-99,-72],
-      [-84,-173],[-74,-260],[-58,-301],[-38,-313],[-17,-302],[-9,-270],[-13,-188],[-10,-80],
-      [8,-196],[18,-279],[34,-315],[54,-323],[74,-311],[82,-279],[79,-203],[76,-76],
-      [96,-163],[108,-231],[125,-260],[144,-263],[161,-249],[167,-221],[160,-162],[151,-61],
-      [173,-112],[191,-157],[210,-172],[229,-164],[241,-143],[240,-116],[221,-66],[199,-20],
-      [213,22],[235,65],[244,113],[239,164],[221,213],[201,258],[189,307],[185,360],
-      [-188,360],[-194,307],[-211,263],[-237,239]
+  function studioLayout(w,h){
+    /* Positions calées sur le gabarit graphique fixe. Ordre : pouce, index, majeur, annulaire, auriculaire. */
+    const r=studioImageRect(w,h), mirror=studioHand==="right";
+    const raw=[
+      [.914,.583,.62,.145,.185], /* pouce */
+      [.776,.172,.03,.105,.155], /* index */
+      [.603,.093,.00,.108,.165], /* majeur */
+      [.431,.158,-.03,.105,.155],/* annulaire */
+      [.238,.305,-.08,.090,.135] /* auriculaire */
     ];
-    const p=new Path2D();
-    pts.forEach(([x,y],i)=>{const px=cx+m*x*s,py=cy+y*s;i?p.lineTo(px,py):p.moveTo(px,py)});p.closePath();return p;
+    return raw.map(([nx,ny,rot,nw,nh],i)=>({
+      cx:r.x+(mirror?(1-nx):nx)*r.w,
+      cy:r.y+ny*r.h,
+      rot:mirror?-rot:rot,
+      w:nw*r.w,
+      baseH:nh*r.h,
+      index:i,
+      imageRect:r
+    }));
   }
   function lengthFactor(v){return {xs:.68,s:.82,m:1,l:1.2,xl:1.42}[v]||1}
   function nailPath(nail,geo){
-    const h=geo.baseH*lengthFactor(nail.length),w=geo.w,x=geo.cx,y=geo.cy,p=new Path2D(),shape=nail.shape||"almond";
-    if(shape==="square"||shape==="soft-square"){const r=shape==="soft-square"?w*.16:w*.05;p.roundRect(x-w/2,y-h/2,w,h,r)}
-    else if(shape==="coffin"){p.moveTo(x-w*.31,y-h/2);p.lineTo(x+w*.31,y-h/2);p.lineTo(x+w*.49,y+h*.28);p.quadraticCurveTo(x+w*.46,y+h*.5,x,y+h*.5);p.quadraticCurveTo(x-w*.46,y+h*.5,x-w*.49,y+h*.28);p.closePath()}
-    else if(shape==="stiletto"){p.moveTo(x,y-h*.54);p.bezierCurveTo(x+w*.46,y-h*.18,x+w*.5,y+h*.36,x,y+h*.5);p.bezierCurveTo(x-w*.5,y+h*.36,x-w*.46,y-h*.18,x,y-h*.54);p.closePath()}
-    else if(shape==="almond"){p.moveTo(x,y-h*.53);p.bezierCurveTo(x+w*.42,y-h*.25,x+w*.51,y+h*.27,x,y+h*.5);p.bezierCurveTo(x-w*.51,y+h*.27,x-w*.42,y-h*.25,x,y-h*.53);p.closePath()}
-    else if(shape==="oval"){p.ellipse(x,y,w/2,h/2,0,0,Math.PI*2)}
-    else {p.moveTo(x,y-h*.5);p.bezierCurveTo(x+w*.5,y-h*.42,x+w*.52,y+h*.32,x,y+h*.5);p.bezierCurveTo(x-w*.52,y+h*.32,x-w*.5,y-h*.42,x,y-h*.5);p.closePath()}
+    const h=geo.baseH*lengthFactor(nail.length),w=geo.w,shape=nail.shape||"almond",local=new Path2D();
+    if(shape==="square"||shape==="soft-square"){const r=shape==="soft-square"?w*.16:w*.05;local.roundRect(-w/2,-h/2,w,h,r)}
+    else if(shape==="coffin"){local.moveTo(-w*.31,-h/2);local.lineTo(w*.31,-h/2);local.lineTo(w*.49,h*.28);local.quadraticCurveTo(w*.46,h*.5,0,h*.5);local.quadraticCurveTo(-w*.46,h*.5,-w*.49,h*.28);local.closePath()}
+    else if(shape==="stiletto"){local.moveTo(0,-h*.54);local.bezierCurveTo(w*.46,-h*.18,w*.5,h*.36,0,h*.5);local.bezierCurveTo(-w*.5,h*.36,-w*.46,-h*.18,0,-h*.54);local.closePath()}
+    else if(shape==="almond"){local.moveTo(0,-h*.53);local.bezierCurveTo(w*.42,-h*.25,w*.51,h*.27,0,h*.5);local.bezierCurveTo(-w*.51,h*.27,-w*.42,-h*.25,0,-h*.53);local.closePath()}
+    else if(shape==="oval"){local.ellipse(0,0,w/2,h/2,0,0,Math.PI*2)}
+    else {local.moveTo(0,-h*.5);local.bezierCurveTo(w*.5,-h*.42,w*.52,h*.32,0,h*.5);local.bezierCurveTo(-w*.52,h*.32,-w*.5,-h*.42,0,-h*.5);local.closePath()}
+    const p=new Path2D();
+    if(typeof DOMMatrix!=="undefined"&&p.addPath){p.addPath(local,new DOMMatrix().translate(geo.cx,geo.cy).rotate(geo.rot*180/Math.PI))}
+    else { /* repli très ancien navigateur : forme non tournée */ p.addPath(local,new DOMMatrix().translate(geo.cx,geo.cy)) }
     return {path:p,h,w}
   }
   function drawStudio(){
     if(!studioCtx||!studioData)return;
     const c=studioCanvas,ctx=studioCtx,w=c.width/studioDpr,h=c.height/studioDpr;
     ctx.setTransform(studioDpr,0,0,studioDpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle="#fffdf9";ctx.fillRect(0,0,w,h);
-    const geos=studioLayout(w,h),hand=studioData.hands[studioHand],selected=Number(document.getElementById("studio-finger")?.value||0);
-    const hp=handTemplatePath(w,h);
-    ctx.save();ctx.fillStyle=studioData.skinTone;ctx.strokeStyle="rgba(96,68,55,.28)";ctx.lineWidth=2;ctx.fill(hp);ctx.stroke(hp);ctx.restore();
-    /* repères très légers aux articulations pour garder l'aspect croquis */
-    ctx.save();ctx.strokeStyle="rgba(112,79,63,.10)";ctx.lineWidth=1.2;geos.slice(1).forEach(g=>{ctx.beginPath();ctx.arc(g.cx,g.cy+g.baseH*.95,g.w*.34,0.15*Math.PI,.85*Math.PI);ctx.stroke()});ctx.restore();
-    geos.forEach((g,i)=>{const {path}=nailPath(hand.nails[i],g);ctx.fillStyle="#f8e6de";ctx.fill(path);ctx.strokeStyle=i===selected?"#65715c":"rgba(91,70,60,.32)";ctx.lineWidth=i===selected?3:1.5;ctx.stroke(path)});
+    const geos=studioLayout(w,h),hand=studioData.hands[studioHand],selected=Number(document.getElementById("studio-finger")?.value||0),r=studioImageRect(w,h);
+    if(studioHandImage.complete&&studioHandImage.naturalWidth){
+      ctx.save();
+      if(studioHand==="right"){ctx.translate(w,0);ctx.scale(-1,1);ctx.drawImage(studioHandImage,w-r.x-r.w,r.y,r.w,r.h)}
+      else ctx.drawImage(studioHandImage,r.x,r.y,r.w,r.h);
+      ctx.restore();
+    } else {
+      ctx.fillStyle="#f5eee5";ctx.fillRect(r.x,r.y,r.w,r.h);
+    }
+    geos.forEach((g,i)=>{const {path}=nailPath(hand.nails[i],g);ctx.fillStyle="rgba(250,235,229,.94)";ctx.fill(path);ctx.strokeStyle=i===selected?"#65715c":"rgba(120,78,63,.42)";ctx.lineWidth=i===selected?3:1.5;ctx.stroke(path)});
     hand.strokes.forEach(st=>{const g=geos[st.finger];if(!g||!st.points?.length)return;const np=nailPath(hand.nails[st.finger],g);ctx.save();ctx.clip(np.path);ctx.globalCompositeOperation="source-over";ctx.strokeStyle=st.tool==="eraser"?"#f8e6de":(st.color||"#7a4036");ctx.lineWidth=st.width||7;ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();st.points.forEach((pt,j)=>{const x=pt.x*w,y=pt.y*h;j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.restore()});
   }
   function resizeStudioCanvas(){const wrap=document.getElementById("studio-canvas-wrap");if(!wrap||!studioCanvas)return;const r=wrap.getBoundingClientRect();studioDpr=Math.min(window.devicePixelRatio||1,2);studioCanvas.width=Math.max(1,Math.round(r.width*studioDpr));studioCanvas.height=Math.max(1,Math.round(r.height*studioDpr));drawStudio()}
