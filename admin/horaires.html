@@ -87,4 +87,4 @@ document.getElementById("exception-form").onsubmit=async e=>{e.preventDefault();
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).classList.remove("open"));document.querySelectorAll(".modal-bg").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove("open")});
 document.getElementById("logout").onclick=async()=>{await supabaseClient.auth.signOut();location.replace("./")};
 (async()=>{if(await protect())await load()})();
-</script><script src="./admin-nav.js"></script></body></html>
+</script><script src="./admin-nav.js"></script></body></html> 
