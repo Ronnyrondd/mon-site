@@ -599,6 +599,6 @@
 
   async function init(){if(!await protectPage())return;await loadClients();const requested=new URLSearchParams(location.search).get("client");if(requested&&clients.some(c=>c.id===requested))await openClient(requested)}
   init();
-</script>
+<script src="./admin-nav.js"></script>
 </body>
 </html>
