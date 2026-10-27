@@ -192,5 +192,5 @@ document.getElementById("cancel-modal").addEventListener("click",closeModal);
 document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")closeModal()});
 document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});
 async function init(){if(!await protectPage())return;await loadData()}init();
-</script>
+<script src="./admin-nav.js"></script>
 </body></html>
