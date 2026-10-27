@@ -379,7 +379,7 @@ function downloadCalendarEvent(){
     state.service.name+(state.serviceQty>1?` × ${state.serviceQty}`:""),
     optionNames ? `Options : ${optionNames}` : "",
     "Rendez-vous chez Thab's Lab."
-  ].filter(Boolean).join("\\n");
+  ].filter(Boolean).join("\n");
   const ics=[
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -395,7 +395,7 @@ function downloadCalendarEvent(){
     `DESCRIPTION:${icsEscape(description)}`,
     "END:VEVENT",
     "END:VCALENDAR"
-  ].join("\\r\\n");
+  ].join("\r\n");
   const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
