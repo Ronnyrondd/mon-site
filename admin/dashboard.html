@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#76806d">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,26 +15,239 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#f7f3ec;--white:#fffdf9;--ink:#292824;--muted:#77746d;--sage:#aeb8a2;--sage-light:#e7eadf;--sage-dark:#76806d;--rose-light:#eee1dc;--line:rgba(41,40,36,.10);--shadow:0 18px 45px rgba(41,40,36,.06)}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
-.sidebar{min-height:100vh;position:sticky;top:0;height:100vh;padding:34px 24px 26px;background:var(--ink);color:var(--white);display:flex;flex-direction:column}.brand{padding:0 12px 38px;font-size:14px;font-weight:600;letter-spacing:.17em;text-transform:uppercase}.nav{display:flex;flex-direction:column;gap:6px}.nav-item{width:100%;padding:13px 14px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.62);text-align:left;text-decoration:none;display:block;transition:.2s}.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.09);color:#fff}.sidebar-bottom{margin-top:auto;padding-top:25px}.admin-label{padding:0 12px 17px;color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase}.logout{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:transparent;color:rgba(255,255,255,.72);text-align:left}
-.content{min-width:0;padding:40px clamp(24px,4vw,60px) 70px;max-width:1500px;width:100%;margin:auto}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;margin-bottom:28px}.eyebrow{margin-bottom:8px;color:var(--sage-dark);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(36px,4vw,50px);font-weight:500;line-height:1.05}.date{margin-top:9px;color:var(--muted);font-size:14px}
-.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.btn{padding:12px 17px;border-radius:100px;border:1px solid var(--line);background:var(--white);color:var(--ink);font-size:12px;font-weight:600;text-decoration:none}.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}.btn.soft{background:var(--sage-light)}
-.section-label{margin:0 0 12px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.today-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr);gap:18px;margin-bottom:30px}.panel{border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:var(--shadow);overflow:hidden}.panel-header{padding:20px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.panel-title{margin:0;font-family:"Playfair Display",serif;font-size:21px;font-weight:500}.panel-subtitle{color:var(--muted);font-size:11px}.appointment{padding:17px 22px;display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:center;gap:14px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}.appointment:last-child{border-bottom:0}.appointment:hover{background:#fbf9f5}.appointment-time{font-family:"Playfair Display",serif;font-size:20px}.appointment-name{margin-bottom:3px;font-weight:600}.appointment-service{color:var(--muted);font-size:12px}.appointment-price{font-size:12px;font-weight:600}.next-content{padding:24px 22px 26px}.next-time{font-family:"Playfair Display",serif;font-size:42px;line-height:1}.next-date{margin-top:7px;color:var(--sage-dark);font-size:12px;font-weight:600}.next-client{margin-top:27px;font-size:17px;font-weight:600}.next-service{margin-top:5px;color:var(--muted);font-size:12px}.next-meta{margin-top:20px;padding-top:17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:30px}.stat{min-height:128px;padding:19px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.65)}.stat:nth-child(2){background:var(--sage-light)}.stat:nth-child(3){background:var(--rose-light)}.stat-label{color:var(--muted);font-size:11px;font-weight:600}.stat-value{margin-top:22px;font-family:"Playfair Display",serif;font-size:29px;line-height:1}.stat-detail{margin-top:8px;color:var(--muted);font-size:10px}.activity-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:30px}.mini{padding:17px 18px;border:1px solid var(--line);border-radius:16px;background:var(--white)}.mini-value{font-family:"Playfair Display",serif;font-size:25px}.mini-label{margin-top:6px;color:var(--muted);font-size:11px}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ranking{padding:5px 22px 13px}.rank-row{display:flex;justify-content:space-between;gap:15px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}.rank-row:last-child{border-bottom:0}.rank-row span:last-child{font-weight:600}.empty{padding:30px 22px;color:var(--muted);font-size:12px;line-height:1.7}.loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
-.modal-backdrop{position:fixed;inset:0;z-index:200;background:rgba(41,40,36,.38);display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.open{display:flex}.modal{width:min(650px,100%);max-height:90vh;overflow:auto;background:var(--white);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.18)}.modal-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}.modal-head h2{margin:0;font-family:"Playfair Display",serif;font-weight:500}.close{border:0;background:transparent;font-size:22px;color:var(--muted)}.form{padding:22px 24px 25px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:600}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 12px;color:var(--ink)}.field textarea{min-height:85px;resize:vertical}.form-note{margin:12px 0 0;color:var(--muted);font-size:10px;line-height:1.5}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.message{margin-top:12px;font-size:11px}.message.error{color:#8a4f47}.message.success{color:var(--sage-dark)}
-@media(max-width:1100px){.stats,.activity-grid{grid-template-columns:repeat(2,1fr)}.today-grid,.bottom-grid{grid-template-columns:1fr}}@media(max-width:760px){.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:28px 18px 55px}.topbar{flex-direction:column}.actions{justify-content:flex-start}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}@media(max-width:520px){.stats,.activity-grid{grid-template-columns:1fr 1fr}.appointment{grid-template-columns:55px minmax(0,1fr)}.appointment-price{grid-column:2}}
+:root{--cream:#f7f3ec;--white:#fffdf9;--ink:#292824;--muted:#77746d;--sage:#aeb8a2;--sage-light:#e7eadf;--sage-dark:#76806d;--rose-light:#eee1dc;--rose-dark:#87574e;--line:rgba(41,40,36,.10);--shadow:0 18px 45px rgba(41,40,36,.06)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+a{color:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
+
+/* barre latérale (ordinateur) */
+.sidebar{min-height:100vh;position:sticky;top:0;height:100vh;padding:34px 24px 26px;background:var(--ink);color:var(--white);display:flex;flex-direction:column}
+.brand{padding:0 12px 38px;font-size:14px;font-weight:600;letter-spacing:.17em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:6px}
+.nav-item{width:100%;padding:13px 14px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.62);text-align:left;text-decoration:none;display:block;transition:.2s}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.09);color:#fff}
+.sidebar-bottom{margin-top:auto;padding-top:25px}
+.admin-label{padding:0 12px 17px;color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.logout{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:transparent;color:rgba(255,255,255,.72);text-align:left}
+
+/* contenu */
+.content{min-width:0;padding:40px clamp(24px,4vw,60px) 70px;max-width:1500px;width:100%;margin:auto}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;margin-bottom:30px}
+.eyebrow{margin-bottom:8px;color:var(--sage-dark);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px);font-weight:500;line-height:1.05;white-space:nowrap}
+.topbar>div:first-child{flex:0 0 auto;max-width:100%}
+.date{margin-top:9px;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.updated{font-size:11px;opacity:.75}
+.refresh{border:0;background:none;color:var(--sage-dark);font-size:11px;font-weight:600;padding:2px 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.btn{padding:12px 17px;border-radius:100px;border:1px solid var(--line);background:var(--white);color:var(--ink);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.soft{background:var(--sage-light)}
+.section-label{margin:30px 0 12px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.section-label:first-of-type{margin-top:0}
+
+.panel{border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:var(--shadow);overflow:hidden}
+.panel-header{padding:19px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.panel-title{margin:0;font-family:"Playfair Display",serif;font-size:21px;font-weight:500}
+.panel-subtitle{color:var(--muted);font-size:11px}
+.empty{padding:28px 22px;color:var(--muted);font-size:13px;line-height:1.7}
+.empty strong{color:var(--ink);font-weight:600}
+
+/* aujourd'hui */
+.today-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:18px}
+.side-stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:6px 11px;border-radius:100px;background:var(--sage-light);font-size:11px;font-weight:600;white-space:nowrap}
+.chip.rose{background:var(--rose-light);color:var(--rose-dark)}
+
+.appointment{padding:16px 22px;display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:14px;align-items:start;border-bottom:1px solid var(--line)}
+.appointment:last-child{border-bottom:0}
+.appointment.past{opacity:.58}
+.appointment.now{background:linear-gradient(90deg,var(--sage-light),rgba(231,234,223,0) 75%)}
+.a-start{font-family:"Playfair Display",serif;font-size:21px;line-height:1}
+.a-end{margin-top:6px;color:var(--muted);font-size:11px}
+.a-name{font-weight:600;text-decoration:none}
+.a-name:hover{text-decoration:underline}
+.a-service{margin-top:3px;color:var(--muted);font-size:12px}
+.a-opts{margin-top:2px;color:var(--muted);font-size:11px}
+.a-phone{display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:var(--sage-dark);font-size:12px;font-weight:600;text-decoration:none}
+.a-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+.a-price{font-size:13px;font-weight:600}
+.a-dur{color:var(--muted);font-size:11px}
+.pill{display:inline-block;padding:4px 9px;border-radius:100px;background:var(--sage-light);font-size:10px;font-weight:600;white-space:nowrap}
+.pill.now{background:var(--sage-dark);color:#fff}
+.pill.warn{background:var(--rose-light);color:var(--rose-dark)}
+.pill.done{background:transparent;border:1px solid var(--line);color:var(--muted)}
+
+/* prochain rendez-vous */
+.next-card{border-radius:20px;background:var(--ink);color:var(--white);padding:24px 24px 22px;box-shadow:var(--shadow)}
+.next-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.next-label{color:rgba(255,255,255,.55);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.next-in{padding:5px 10px;border-radius:100px;background:rgba(174,184,162,.22);color:#d7dfcc;font-size:11px;font-weight:600}
+.next-time{margin-top:18px;font-family:"Playfair Display",serif;font-size:46px;line-height:1}
+.next-date{margin-top:8px;color:#c9d3bd;font-size:12px;font-weight:600}
+.next-client{margin-top:24px;font-size:18px;font-weight:600}
+.next-client a{text-decoration:none}
+.next-service{margin-top:4px;color:rgba(255,255,255,.65);font-size:12px;line-height:1.5}
+.next-meta{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.6)}
+.next-meta a{color:#d7dfcc;font-weight:600;text-decoration:none}
+.next-empty{color:rgba(255,255,255,.7);font-size:13px;line-height:1.7;margin-top:14px}
+
+/* à clôturer */
+.close-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 22px;border-bottom:1px solid var(--line);text-decoration:none}
+.close-row:last-child{border-bottom:0}
+.close-row:hover{background:#fbf9f5}
+.close-name{font-size:13px;font-weight:600}
+.close-sub{margin-top:2px;color:var(--muted);font-size:11px}
+.close-go{color:var(--sage-dark);font-size:18px}
+
+/* semaine */
+.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.day{display:block;text-decoration:none;padding:14px 12px;border:1px solid var(--line);border-radius:16px;background:var(--white);text-align:center;transition:.15s}
+.day:hover{transform:translateY(-1px)}
+.day.today{background:var(--ink);color:#fff;border-color:var(--ink)}
+.day-name{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.day.today .day-name{color:rgba(255,255,255,.6)}
+.day-num{margin-top:5px;font-family:"Playfair Display",serif;font-size:24px;line-height:1}
+.day-count{margin-top:9px;font-size:11px;font-weight:600}
+.day-first{margin-top:2px;color:var(--muted);font-size:10px}
+.day.today .day-first{color:rgba(255,255,255,.6)}
+.day.zero .day-count,.day.zero .day-first{color:var(--muted);font-weight:400}
+.day.zero:not(.today){background:transparent}
+
+/* chiffres du mois */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.stat{min-height:128px;padding:19px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.65)}
+.stat:nth-child(2){background:var(--sage-light)}
+.stat:nth-child(3){background:var(--rose-light)}
+.stat-label{color:var(--muted);font-size:11px;font-weight:600}
+.stat-value{margin-top:20px;font-family:"Playfair Display",serif;font-size:29px;line-height:1}
+.stat-detail{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.4}
+.delta{display:inline-block;margin-top:8px;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(255,255,255,.7)}
+.delta.up{color:#4f6a3f}.delta.down{color:var(--rose-dark)}
+.activity-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.mini{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.mini-value{font-family:"Playfair Display",serif;font-size:25px}
+.mini-label{margin-top:6px;color:var(--muted);font-size:11px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.ranking{padding:5px 22px 13px}
+.rank-row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:14px 0;border-bottom:1px solid var(--line);font-size:12px}
+.rank-row:last-child{border-bottom:0}
+.rank-row span:last-child{font-weight:600}
+.loading-screen{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
+
+/* fenêtre « nouvelle cliente » */
+.modal-backdrop{position:fixed;inset:0;z-index:250;background:rgba(41,40,36,.38);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.open{display:flex}
+.modal{width:min(650px,100%);max-height:90vh;overflow:auto;background:var(--white);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.18)}
+.modal-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}
+.modal-head h2{margin:0;font-family:"Playfair Display",serif;font-weight:500}
+.close{border:0;background:transparent;font-size:22px;color:var(--muted)}
+.form{padding:22px 24px 25px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 12px;color:var(--ink)}
+.field textarea{min-height:85px;resize:vertical}
+.form-note{margin:12px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.message{margin-top:12px;font-size:11px}
+.message.error{color:#8a4f47}.message.success{color:var(--sage-dark)}
+
+@media(max-width:1100px){
+  .stats,.activity-grid{grid-template-columns:repeat(2,1fr)}
+  .today-grid,.bottom-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .app{display:block}
+  .sidebar{display:none}
+  .content{padding:max(22px,env(safe-area-inset-top)) 16px 40px}
+  .topbar{flex-direction:column;gap:16px;margin-bottom:22px}
+  .actions{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;width:calc(100% + 32px);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .actions::-webkit-scrollbar{display:none}
+  .btn{padding:11px 15px}
+  .appointment{grid-template-columns:58px minmax(0,1fr);padding:15px 16px}
+  .a-right{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;text-align:left}
+  .panel-header{padding:16px}
+  .close-row{padding:13px 16px}
+  .ranking{padding:4px 16px 10px}
+  .week-strip{display:flex;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;gap:8px;scroll-snap-type:x proximity;scrollbar-width:none}
+  .week-strip::-webkit-scrollbar{display:none}
+  .day{flex:0 0 74px;scroll-snap-align:start}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .next-time{font-size:42px}
+}
+@media(max-width:520px){
+  .stats,.activity-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat{min-height:112px;padding:16px}
+  .stat-value{font-size:25px;margin-top:16px}
+}
 </style>
-</head><body>
+</head>
+<body>
 <div id="loading-screen" class="loading-screen">Vérification de ton espace…</div>
-<div class="app"><aside class="sidebar"><div class="brand">Thab's Lab</div><nav class="nav"><a class="nav-item active" href="./dashboard.html">Vue d'ensemble</a><a class="nav-item" href="./agenda.html">Agenda</a><a class="nav-item" href="./clientes.html">Clientes</a><a class="nav-item" href="./prestations.html">Prestations</a><a class="nav-item" href="./stock.html">Stock & matériel</a><a class="nav-item" href="./horaires.html">Horaires</a><a class="nav-item" href="./finances.html">Finances</a></nav><div class="sidebar-bottom"><div class="admin-label">Espace administrateur</div><button id="logout" class="logout">Se déconnecter</button></div></aside>
-<main class="content"><header class="topbar"><div><div class="eyebrow">Tableau de bord</div><h1>Bonjour Thabata</h1><div id="today-date" class="date"></div></div><div class="actions"><a class="btn primary" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a><button class="btn soft" id="new-client">+ Nouvelle cliente</button><a class="btn" href="./horaires.html">Bloquer / ouvrir un créneau</a><button class="btn" id="push-notifications" type="button">🔔 Notifications</button></div></header>
-<p class="section-label">Aujourd'hui</p><section class="today-grid"><article class="panel"><div class="panel-header"><h2 class="panel-title">Ta journée</h2><span id="today-small" class="panel-subtitle"></span></div><div id="today-appointments"><div class="empty">Chargement…</div></div></article><article class="panel"><div class="panel-header"><h2 class="panel-title">Prochain rendez-vous</h2></div><div id="next-appointment"><div class="empty">Chargement…</div></div></article></section>
-<p class="section-label">Vue du mois</p><section class="stats"><article class="stat"><div class="stat-label">CA encaissé</div><div id="month-revenue" class="stat-value">—</div><div class="stat-detail">paiements réellement enregistrés</div></article><article class="stat"><div class="stat-label">CA à venir</div><div id="future-revenue" class="stat-value">—</div><div class="stat-detail">rendez-vous confirmés à venir</div></article><article class="stat"><div class="stat-label">Panier moyen</div><div id="average-basket" class="stat-value">—</div><div class="stat-detail">sur les rendez-vous encaissés ce mois</div></article><article class="stat"><div class="stat-label">Rendez-vous à venir</div><div id="future-count" class="stat-value">—</div><div class="stat-detail">confirmés ou en attente</div></article></section>
-<p class="section-label">Activité du mois</p><section class="activity-grid"><article class="mini"><div id="completed-count" class="mini-value">—</div><div class="mini-label">RDV effectués</div></article><article class="mini"><div id="new-client-count" class="mini-value">—</div><div class="mini-label">Nouvelles clientes</div></article><article class="mini"><div id="cancel-count" class="mini-value">—</div><div class="mini-label">Annulations clientes</div></article><article class="mini"><div id="no-show-count" class="mini-value">—</div><div class="mini-label">No-show</div></article></section>
-<section class="bottom-grid"><article class="panel"><div class="panel-header"><h2 class="panel-title">Prestations du mois</h2><span class="panel-subtitle">les plus réalisées</span></div><div id="top-services" class="ranking"><div class="empty">Chargement…</div></div></article><article class="panel"><div class="panel-header"><h2 class="panel-title">Clientes</h2><span class="panel-subtitle">vue rapide</span></div><div class="ranking"><div class="rank-row"><span>Total dans ton fichier</span><span id="client-count">—</span></div><div class="rank-row"><span>Nouvelles ce mois</span><span id="client-count-month">—</span></div><div class="rank-row"><span>Action rapide</span><span><button class="btn soft" id="new-client-secondary">+ Ajouter</button></span></div></div></article></section>
-</main></div>
-<div id="client-modal" class="modal-backdrop" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="client-modal-title"><div class="modal-head"><h2 id="client-modal-title">Nouvelle cliente</h2><button class="close" id="close-client" aria-label="Fermer">×</button></div><form id="client-form" class="form"><div class="form-grid"><div class="field"><label for="first-name">Prénom *</label><input id="first-name" required></div><div class="field"><label for="last-name">Nom *</label><input id="last-name" required></div><div class="field"><label for="email">E-mail *</label><input id="email" type="email" required></div><div class="field"><label for="phone">Téléphone *</label><input id="phone" type="tel" required></div><div class="field"><label for="instagram">Instagram</label><input id="instagram" placeholder="@pseudo"></div><div class="field"><label for="client-since">Cliente depuis</label><input id="client-since" type="date"></div><div class="field full"><label for="discovery-source">Comment elle a connu le studio</label><input id="discovery-source" placeholder="Instagram, bouche-à-oreille, ancienne cliente Iara…"></div><div class="field full"><label for="private-notes">Note privée</label><textarea id="private-notes" placeholder="Information utile pour son dossier"></textarea></div></div><p class="form-note">Tu pourras compléter son historique et ses préférences depuis sa fiche cliente.</p><div id="client-message" class="message"></div><div class="modal-actions"><button type="button" class="btn" id="cancel-client">Annuler</button><button type="submit" class="btn primary" id="save-client">Créer la cliente</button></div></form></div></div>
+<div class="app">
+<aside class="sidebar"><div class="brand">Thab's Lab</div><nav class="nav"><a class="nav-item active" href="./dashboard.html">Vue d'ensemble</a><a class="nav-item" href="./agenda.html">Agenda</a><a class="nav-item" href="./clientes.html">Clientes</a><a class="nav-item" href="./prestations.html">Prestations</a><a class="nav-item" href="./stock.html">Stock & matériel</a><a class="nav-item" href="./horaires.html">Horaires</a><a class="nav-item" href="./finances.html">Finances</a></nav><div class="sidebar-bottom"><div class="admin-label">Espace administrateur</div><button id="logout" class="logout">Se déconnecter</button></div></aside>
+
+<main class="content">
+<header class="topbar">
+  <div>
+    <div class="eyebrow">Tableau de bord</div>
+    <h1 id="greeting">Bonjour Thabata</h1>
+    <div class="date"><span id="today-date"></span><span id="last-update" class="updated"></span><button id="refresh" class="refresh" type="button">↻ Actualiser</button></div>
+  </div>
+  <div class="actions">
+    <a class="btn primary" href="./nouveau-rdv.html">+ Nouveau rendez-vous</a>
+    <button class="btn soft" id="new-client" type="button">+ Nouvelle cliente</button>
+    <a class="btn" href="./horaires.html">Bloquer / ouvrir un créneau</a>
+    <button class="btn" id="push-notifications" type="button">🔔 Notifications</button>
+  </div>
+</header>
+
+<p class="section-label">Aujourd'hui</p>
+<section class="today-grid">
+  <article class="panel">
+    <div class="panel-header"><h2 class="panel-title">Ta journée</h2><div id="day-summary" class="chips"></div></div>
+    <div id="today-appointments"><div class="empty">Chargement…</div></div>
+  </article>
+  <div class="side-stack">
+    <article id="next-appointment" class="next-card"><div class="next-top"><span class="next-label">Prochain rendez-vous</span></div><div class="next-empty">Chargement…</div></article>
+    <article id="to-close-panel" class="panel">
+      <div class="panel-header"><h2 class="panel-title">À clôturer</h2><span id="to-close-count" class="panel-subtitle"></span></div>
+      <div id="to-close"><div class="empty">Chargement…</div></div>
+    </article>
+  </div>
+</section>
+
+<p class="section-label">Les 7 prochains jours</p>
+<section id="week-strip" class="week-strip"></section>
+
+<p class="section-label">Vue du mois</p>
+<section class="stats">
+  <article class="stat"><div class="stat-label">CA encaissé</div><div id="month-revenue" class="stat-value">—</div><div id="revenue-delta"></div><div class="stat-detail">paiements réellement enregistrés</div></article>
+  <article class="stat"><div class="stat-label">CA à venir</div><div id="future-revenue" class="stat-value">—</div><div class="stat-detail">rendez-vous confirmés à venir</div></article>
+  <article class="stat"><div class="stat-label">Panier moyen</div><div id="average-basket" class="stat-value">—</div><div class="stat-detail">sur les rendez-vous encaissés ce mois</div></article>
+  <article class="stat"><div class="stat-label">Rendez-vous à venir</div><div id="future-count" class="stat-value">—</div><div class="stat-detail">confirmés ou en attente</div></article>
+</section>
+<section class="activity-grid">
+  <article class="mini"><div id="completed-count" class="mini-value">—</div><div class="mini-label">RDV effectués</div></article>
+  <article class="mini"><div id="new-client-count" class="mini-value">—</div><div class="mini-label">Nouvelles clientes</div></article>
+  <article class="mini"><div id="cancel-count" class="mini-value">—</div><div class="mini-label">Annulations clientes</div></article>
+  <article class="mini"><div id="no-show-count" class="mini-value">—</div><div class="mini-label">No-show</div></article>
+</section>
+<section class="bottom-grid">
+  <article class="panel"><div class="panel-header"><h2 class="panel-title">Prestations du mois</h2><span class="panel-subtitle">les plus réalisées</span></div><div id="top-services" class="ranking"><div class="empty">Chargement…</div></div></article>
+  <article class="panel"><div class="panel-header"><h2 class="panel-title">Clientes</h2><span class="panel-subtitle">vue rapide</span></div><div class="ranking"><div class="rank-row"><span>Total dans ton fichier</span><span id="client-count">—</span></div><div class="rank-row"><span>Nouvelles ce mois</span><span id="client-count-month">—</span></div><div class="rank-row"><span>Action rapide</span><span><button class="btn soft" id="new-client-secondary" type="button">+ Ajouter</button></span></div></div></article>
+</section>
+</main>
+</div>
+
+<div id="client-modal" class="modal-backdrop" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="client-modal-title"><div class="modal-head"><h2 id="client-modal-title">Nouvelle cliente</h2><button class="close" id="close-client" aria-label="Fermer" type="button">×</button></div><form id="client-form" class="form"><div class="form-grid"><div class="field"><label for="first-name">Prénom *</label><input id="first-name" required></div><div class="field"><label for="last-name">Nom *</label><input id="last-name" required></div><div class="field"><label for="email">E-mail *</label><input id="email" type="email" required></div><div class="field"><label for="phone">Téléphone *</label><input id="phone" type="tel" required></div><div class="field"><label for="instagram">Instagram</label><input id="instagram" placeholder="@pseudo"></div><div class="field"><label for="client-since">Cliente depuis</label><input id="client-since" type="date"></div><div class="field full"><label for="discovery-source">Comment elle a connu le studio</label><input id="discovery-source" placeholder="Instagram, bouche-à-oreille, ancienne cliente Iara…"></div><div class="field full"><label for="private-notes">Note privée</label><textarea id="private-notes" placeholder="Information utile pour son dossier"></textarea></div></div><p class="form-note">Tu pourras compléter son historique et ses préférences depuis sa fiche cliente.</p><div id="client-message" class="message"></div><div class="modal-actions"><button type="button" class="btn" id="cancel-client">Annuler</button><button type="submit" class="btn primary" id="save-client">Créer la cliente</button></div></form></div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 if("serviceWorker" in navigator){
@@ -44,33 +257,210 @@ if("serviceWorker" in navigator){
   });
 }
 
-const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";const SUPABASE_PUBLISHABLE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const euro=new Intl.NumberFormat("fr-BE",{style:"currency",currency:"EUR"});const dateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",weekday:"long",day:"numeric",month:"long",year:"numeric"});const shortDateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",weekday:"long",day:"numeric",month:"long"});const timeFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:"Europe/Brussels",hour:"2-digit",minute:"2-digit"});
-function capitalize(t){return t? t.charAt(0).toUpperCase()+t.slice(1):""}function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function brusselsDateKey(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Brussels",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),v={};p.forEach(x=>{if(x.type!=="literal")v[x.type]=x.value});return `${v.year}-${v.month}-${v.day}`}
-function monthBounds(){const n=new Date(),y=n.getFullYear(),m=n.getMonth();return {start:new Date(y,m,1).toISOString(),end:new Date(y,m+1,1).toISOString(),dateStart:`${y}-${String(m+1).padStart(2,"0")}-01`,dateEnd:`${m===11?y+1:y}-${String((m+1)%12+1).padStart(2,"0")}-01`}}
-async function protectPage(){const {data:{session}}=await supabaseClient.auth.getSession();if(!session){location.replace("./");return false}const {data:isAdmin,error}=await supabaseClient.rpc("is_admin");if(error||isAdmin!==true){await supabaseClient.auth.signOut();location.replace("./");return false}document.getElementById("loading-screen").style.display="none";return true}
-async function loadDashboard(){const now=new Date(),b=monthBounds();document.getElementById("today-date").textContent=capitalize(dateFormatter.format(now));document.getElementById("today-small").textContent=capitalize(shortDateFormatter.format(now));
-const [clientsRes,futureRes,todayRes,payRes,monthApptRes,newClientsRes]=await Promise.all([
-supabaseClient.from("clients").select("id",{count:"exact",head:true}),
-supabaseClient.from("appointments").select("id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot,client_id,clients(first_name,last_name)").gte("starts_at",now.toISOString()).in("status",["confirmed","pending"]).order("starts_at",{ascending:true}),
-supabaseClient.from("appointments").select("id,starts_at,expected_price_cents,status,service_name_snapshot,client_id,clients(first_name,last_name)").gte("starts_at",new Date(now.getTime()-86400000).toISOString()).lte("starts_at",new Date(now.getTime()+86400000).toISOString()).in("status",["confirmed","completed","pending"]).order("starts_at",{ascending:true}),
-supabaseClient.from("payments").select("appointment_id,amount_cents,payment_type,paid_at").gte("paid_at",b.start).lt("paid_at",b.end),
-supabaseClient.from("appointments").select("id,status,service_name_snapshot,starts_at").gte("starts_at",b.start).lt("starts_at",b.end),
-supabaseClient.from("clients").select("id",{count:"exact",head:true}).gte("client_since",b.dateStart).lt("client_since",b.dateEnd)
-]);
-if(!clientsRes.error)document.getElementById("client-count").textContent=clientsRes.count??0;if(!newClientsRes.error){document.getElementById("new-client-count").textContent=newClientsRes.count??0;document.getElementById("client-count-month").textContent=newClientsRes.count??0}
-if(!futureRes.error){const a=futureRes.data||[];document.getElementById("future-count").textContent=a.length;document.getElementById("future-revenue").textContent=euro.format(a.reduce((s,x)=>s+(x.expected_price_cents||0),0)/100);renderNextAppointment(a[0]||null)}
-if(!todayRes.error){const key=brusselsDateKey(now),a=(todayRes.data||[]).filter(x=>brusselsDateKey(new Date(x.starts_at))===key);renderTodayAppointments(a)}
-let revenue=0,paidAppointmentIds=new Set();if(!payRes.error){for(const p of payRes.data||[]){revenue+=p.payment_type==="refund"?-(p.amount_cents||0):(p.amount_cents||0);if(p.payment_type!=="refund"&&p.appointment_id)paidAppointmentIds.add(p.appointment_id)}document.getElementById("month-revenue").textContent=euro.format(revenue/100);document.getElementById("average-basket").textContent=paidAppointmentIds.size?euro.format(revenue/paidAppointmentIds.size/100):euro.format(0)}
-if(!monthApptRes.error){const a=monthApptRes.data||[];document.getElementById("completed-count").textContent=a.filter(x=>x.status==="completed").length;document.getElementById("cancel-count").textContent=a.filter(x=>x.status==="cancelled_by_client"||x.status==="late_cancellation").length;document.getElementById("no-show-count").textContent=a.filter(x=>x.status==="no_show").length;renderTopServices(a.filter(x=>x.status==="completed"))}}
-function renderTodayAppointments(a){const c=document.getElementById("today-appointments");if(!a.length){c.innerHTML="<div class=\"empty\">Aucun rendez-vous prévu aujourd'hui.</div>";return}c.innerHTML=a.map(x=>{const n=x.clients?`${x.clients.first_name} ${x.clients.last_name}`:"Cliente";return `<a class="appointment" href="./agenda.html"><div class="appointment-time">${timeFormatter.format(new Date(x.starts_at))}</div><div><div class="appointment-name">${escapeHtml(n)}</div><div class="appointment-service">${escapeHtml(x.service_name_snapshot)}</div></div><div class="appointment-price">${euro.format((x.expected_price_cents||0)/100)}</div></a>`}).join("")}
-function renderNextAppointment(x){const c=document.getElementById("next-appointment");if(!x){c.innerHTML='<div class="empty">Aucun rendez-vous à venir pour le moment.</div>';return}const d=new Date(x.starts_at),n=x.clients?`${x.clients.first_name} ${x.clients.last_name}`:"Cliente";c.innerHTML=`<div class="next-content"><div class="next-time">${timeFormatter.format(d)}</div><div class="next-date">${capitalize(shortDateFormatter.format(d))}</div><div class="next-client">${escapeHtml(n)}</div><div class="next-service">${escapeHtml(x.service_name_snapshot)}</div><div class="next-meta"><span>Montant prévu</span><strong>${euro.format((x.expected_price_cents||0)/100)}</strong></div></div>`}
-function renderTopServices(a){const c=document.getElementById("top-services"),m=new Map();a.forEach(x=>m.set(x.service_name_snapshot,(m.get(x.service_name_snapshot)||0)+1));const rows=[...m.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);c.innerHTML=rows.length?rows.map(([n,v])=>`<div class="rank-row"><span>${escapeHtml(n)}</span><span>${v}</span></div>`).join(""):'<div class="empty">Pas encore assez de rendez-vous terminés ce mois-ci.</div>'}
-const modal=document.getElementById("client-modal");function openClientModal(){document.getElementById("client-form").reset();document.getElementById("client-since").value=brusselsDateKey();document.getElementById("client-message").textContent="";modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.getElementById("first-name").focus()}function closeClientModal(){modal.classList.remove("open");modal.setAttribute("aria-hidden","true")}
-document.getElementById("new-client").addEventListener("click",openClientModal);document.getElementById("new-client-secondary").addEventListener("click",openClientModal);document.getElementById("close-client").addEventListener("click",closeClientModal);document.getElementById("cancel-client").addEventListener("click",closeClientModal);modal.addEventListener("click",e=>{if(e.target===modal)closeClientModal()});
-document.getElementById("client-form").addEventListener("submit",async e=>{e.preventDefault();const btn=document.getElementById("save-client"),msg=document.getElementById("client-message");btn.disabled=true;btn.textContent="Création…";msg.className="message";msg.textContent="";const args={p_first_name:document.getElementById("first-name").value,p_last_name:document.getElementById("last-name").value,p_email:document.getElementById("email").value,p_phone:document.getElementById("phone").value,p_instagram:document.getElementById("instagram").value||null,p_client_since:document.getElementById("client-since").value||null,p_discovery_source:document.getElementById("discovery-source").value||null,p_private_notes:document.getElementById("private-notes").value||null,p_source:"manual"};const {data,error}=await supabaseClient.rpc("admin_create_client",args);if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de créer cette cliente. Vérifie les informations puis réessaie.";btn.disabled=false;btn.textContent="Créer la cliente";return}msg.className="message success";msg.textContent="Cliente créée ✓";setTimeout(()=>{location.href=`./clientes.html?client=${encodeURIComponent(data)}`},650)});
+const SUPABASE_URL="https://zlmwytycgopowalfrjwf.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
+/* ---------- outils ---------- */
+const TZ="Europe/Brussels";
+const $=id=>document.getElementById(id);
+const euro=new Intl.NumberFormat("fr-BE",{style:"currency",currency:"EUR"});
+const dateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const shortDateFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"});
+const timeFormatter=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,hour:"2-digit",minute:"2-digit"});
+const hourOnly=new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",hourCycle:"h23"});
+function capitalize(t){return t?t.charAt(0).toUpperCase()+t.slice(1):""}
+function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function brusselsDateKey(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),v={};p.forEach(x=>{if(x.type!=="literal")v[x.type]=x.value});return `${v.year}-${v.month}-${v.day}`}
+function monthRange(offset=0){const n=new Date(),y=n.getFullYear(),m=n.getMonth()+offset;const s=new Date(y,m,1),e=new Date(y,m+1,1);const k=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;return{start:s.toISOString(),end:e.toISOString(),dateStart:k(s),dateEnd:k(e)}}
+function clientName(c){return c?`${c.first_name||""} ${c.last_name||""}`.trim()||"Cliente":"Cliente"}
+function phoneHref(p){const d=String(p||"").replace(/[^\d+]/g,"");return d?`tel:${d}`:""}
+function durationText(min){const m=Math.max(0,Math.round(min));const h=Math.floor(m/60),r=m%60;if(!h)return `${r} min`;return r?`${h} h ${String(r).padStart(2,"0")}`:`${h} h`}
+function netRevenue(rows){let s=0;for(const p of rows||[])s+=p.payment_type==="refund"?-(p.amount_cents||0):(p.amount_cents||0);return s}
+function optionsText(x){return (x.appointment_options||[]).map(o=>`${o.option_name_snapshot}${(o.quantity||1)>1?` × ${o.quantity}`:""}`).filter(Boolean).join(" · ")}
+function statusInfo(x,now){
+  const start=new Date(x.starts_at).getTime(),end=new Date(x.ends_at||x.starts_at).getTime();
+  if(x.status==="completed")return{cls:"done",label:"Terminé ✓",state:"past"};
+  if(now>=start&&now<end)return{cls:"now",label:"En cours",state:"now"};
+  if(now>=end)return{cls:"warn",label:"À clôturer",state:"past"};
+  return x.status==="pending"?{cls:"warn",label:"En attente",state:"future"}:{cls:"",label:"Confirmé",state:"future"};
+}
+
+/* ---------- données en mémoire (pour recalculer sans recharger) ---------- */
+const data={today:[],future:[],toClose:[],todayKey:brusselsDateKey(),loadedAt:0};
+
+/* ---------- accès ---------- */
+async function protectPage(){const {data:{session}}=await supabaseClient.auth.getSession();if(!session){location.replace("./");return false}const {data:isAdmin,error}=await supabaseClient.rpc("is_admin");if(error||isAdmin!==true){await supabaseClient.auth.signOut();location.replace("./");return false}$("loading-screen").style.display="none";return true}
+
+/* ---------- chargement ---------- */
+async function loadDashboard(){
+  const now=new Date(),cur=monthRange(0),prev=monthRange(-1);
+  data.todayKey=brusselsDateKey(now);
+  $("today-date").textContent=capitalize(dateFormatter.format(now));
+  const hour=Number(hourOnly.format(now));
+  $("greeting").textContent=(hour>=18||hour<4?"Bonsoir":"Bonjour")+" Thabata";
+
+  const apptCols="id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot,client_id";
+  const [clientsRes,futureRes,todayRes,closeRes,payRes,prevPayRes,monthApptRes,newClientsRes]=await Promise.all([
+    supabaseClient.from("clients").select("id",{count:"exact",head:true}),
+    supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name,phone)`).gte("starts_at",now.toISOString()).in("status",["confirmed","pending"]).order("starts_at",{ascending:true}),
+    supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name,phone),appointment_options(option_name_snapshot,quantity)`).gte("starts_at",new Date(now.getTime()-36*3600000).toISOString()).lte("starts_at",new Date(now.getTime()+36*3600000).toISOString()).in("status",["confirmed","completed","pending"]).order("starts_at",{ascending:true}),
+    supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name)`).lt("ends_at",now.toISOString()).gte("starts_at",new Date(now.getTime()-60*86400000).toISOString()).in("status",["confirmed","pending"]).order("starts_at",{ascending:false}).limit(30),
+    supabaseClient.from("payments").select("appointment_id,amount_cents,payment_type,paid_at").gte("paid_at",cur.start).lt("paid_at",cur.end),
+    supabaseClient.from("payments").select("amount_cents,payment_type,paid_at").gte("paid_at",prev.start).lt("paid_at",prev.end),
+    supabaseClient.from("appointments").select("id,status,service_name_snapshot,starts_at").gte("starts_at",cur.start).lt("starts_at",cur.end),
+    supabaseClient.from("clients").select("id",{count:"exact",head:true}).gte("client_since",cur.dateStart).lt("client_since",cur.dateEnd)
+  ]);
+
+  if(!clientsRes.error)$("client-count").textContent=clientsRes.count??0;
+  if(!newClientsRes.error){$("new-client-count").textContent=newClientsRes.count??0;$("client-count-month").textContent=newClientsRes.count??0}
+
+  if(!futureRes.error){
+    data.future=futureRes.data||[];
+    $("future-count").textContent=data.future.length;
+    $("future-revenue").textContent=euro.format(data.future.reduce((s,x)=>s+(x.expected_price_cents||0),0)/100);
+  }
+  if(!todayRes.error)data.today=(todayRes.data||[]).filter(x=>brusselsDateKey(new Date(x.starts_at))===data.todayKey);
+  if(!closeRes.error)data.toClose=closeRes.data||[];
+
+  if(!payRes.error){
+    const rows=payRes.data||[],revenue=netRevenue(rows),paidIds=new Set();
+    rows.forEach(p=>{if(p.payment_type!=="refund"&&p.appointment_id)paidIds.add(p.appointment_id)});
+    $("month-revenue").textContent=euro.format(revenue/100);
+    $("average-basket").textContent=paidIds.size?euro.format(revenue/paidIds.size/100):euro.format(0);
+    if(!prevPayRes.error){
+      const before=netRevenue(prevPayRes.data||[]);
+      const el=$("revenue-delta");
+      if(before>0){const pct=Math.round((revenue-before)/before*100);el.innerHTML=`<span class="delta ${pct>=0?"up":"down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)} % vs mois dernier</span>`}
+      else el.innerHTML="";
+    }
+  }
+  if(!monthApptRes.error){
+    const a=monthApptRes.data||[];
+    $("completed-count").textContent=a.filter(x=>x.status==="completed").length;
+    $("cancel-count").textContent=a.filter(x=>["cancelled_by_client","late_cancellation"].includes(x.status)).length;
+    $("no-show-count").textContent=a.filter(x=>x.status==="no_show").length;
+    renderTopServices(a.filter(x=>x.status==="completed"));
+  }
+  data.loadedAt=Date.now();
+  $("last-update").textContent=`Mis à jour à ${timeFormatter.format(new Date())}`;
+  renderLive();
+}
+
+/* ---------- affichages qui dépendent de l'heure (recalculés chaque minute) ---------- */
+function renderLive(){
+  const now=Date.now();
+  renderTodayAppointments(now);
+  renderNext(now);
+  renderToClose();
+  renderWeek(now);
+}
+
+function renderTodayAppointments(now){
+  const list=data.today,c=$("today-appointments"),chips=$("day-summary");
+  if(!list.length){
+    chips.innerHTML="";
+    c.innerHTML='<div class="empty"><strong>Journée libre ✨</strong><br>Aucun rendez-vous prévu aujourd\'hui. Profites-en !</div>';
+    return;
+  }
+  const first=list[0],last=list.reduce((m,x)=>new Date(x.ends_at)>new Date(m.ends_at)?x:m,list[0]);
+  const total=list.reduce((s,x)=>s+(x.expected_price_cents||0),0);
+  chips.innerHTML=`<span class="chip">${list.length} rendez-vous</span><span class="chip">${timeFormatter.format(new Date(first.starts_at))} → ${timeFormatter.format(new Date(last.ends_at))}</span><span class="chip">${euro.format(total/100)} prévus</span>`;
+  c.innerHTML=list.map(x=>{
+    const info=statusInfo(x,now),name=clientName(x.clients),href=phoneHref(x.clients?.phone);
+    const dur=(new Date(x.ends_at)-new Date(x.starts_at))/60000;
+    const opts=optionsText(x);
+    const nameHtml=x.clients?.id?`<a class="a-name" href="./clientes.html?client=${encodeURIComponent(x.clients.id)}">${escapeHtml(name)}</a>`:`<span class="a-name">${escapeHtml(name)}</span>`;
+    return `<div class="appointment ${info.state==="past"&&info.cls!=="warn"?"past":""} ${info.state==="now"?"now":""}">
+      <div><div class="a-start">${timeFormatter.format(new Date(x.starts_at))}</div><div class="a-end">→ ${timeFormatter.format(new Date(x.ends_at))}</div></div>
+      <div>${nameHtml}<div class="a-service">${escapeHtml(x.service_name_snapshot)}</div>${opts?`<div class="a-opts">+ ${escapeHtml(opts)}</div>`:""}${href?`<a class="a-phone" href="${href}">📞 ${escapeHtml(x.clients.phone)}</a>`:""}</div>
+      <div class="a-right"><span class="pill ${info.cls}">${info.label}</span><span class="a-price">${euro.format((x.expected_price_cents||0)/100)}</span><span class="a-dur">${durationText(dur)}</span></div>
+    </div>`;
+  }).join("");
+}
+
+function inText(ms){
+  const m=Math.round(ms/60000);
+  if(m<=1)return "dans un instant";
+  if(m<60)return `dans ${m} min`;
+  const h=Math.floor(m/60),r=m%60;
+  return `dans ${h} h${r?" "+String(r).padStart(2,"0"):""}`;
+}
+function dayLabel(date){
+  const key=brusselsDateKey(date),today=data.todayKey;
+  const tomorrow=new Date(`${today}T12:00:00Z`);tomorrow.setUTCDate(tomorrow.getUTCDate()+1);
+  if(key===today)return "Aujourd'hui";
+  if(key===tomorrow.toISOString().slice(0,10))return "Demain";
+  return capitalize(shortDateFormatter.format(date));
+}
+function renderNext(now){
+  const c=$("next-appointment");
+  const upcoming=data.future.filter(x=>new Date(x.starts_at).getTime()>=now);
+  const x=upcoming[0];
+  if(!x){c.innerHTML='<div class="next-top"><span class="next-label">Prochain rendez-vous</span></div><div class="next-empty">Aucun rendez-vous à venir pour le moment.<br>Ton agenda est libre 🌿</div>';return}
+  const d=new Date(x.starts_at),diff=d.getTime()-now,name=clientName(x.clients),href=phoneHref(x.clients?.phone);
+  const inTxt=diff<24*3600000?`<span class="next-in">${inText(diff)}</span>`:"";
+  const nameHtml=x.clients?.id?`<a href="./clientes.html?client=${encodeURIComponent(x.clients.id)}">${escapeHtml(name)}</a>`:escapeHtml(name);
+  c.innerHTML=`<div class="next-top"><span class="next-label">Prochain rendez-vous</span>${inTxt}</div>
+    <div class="next-time">${timeFormatter.format(d)}</div><div class="next-date">${escapeHtml(dayLabel(d))}</div>
+    <div class="next-client">${nameHtml}</div><div class="next-service">${escapeHtml(x.service_name_snapshot)} · ${durationText((new Date(x.ends_at)-d)/60000)}</div>
+    <div class="next-meta"><span>${euro.format((x.expected_price_cents||0)/100)}</span>${href?`<a href="${href}">📞 Appeler</a>`:""}</div>`;
+}
+
+function renderToClose(){
+  const c=$("to-close"),cnt=$("to-close-count"),list=data.toClose;
+  if(!list.length){cnt.textContent="";c.innerHTML='<div class="empty"><strong>Tout est à jour ✓</strong><br>Aucun rendez-vous passé en attente de clôture.</div>';return}
+  cnt.textContent=`${list.length} rendez-vous`;
+  c.innerHTML=list.slice(0,5).map(x=>{
+    const d=new Date(x.starts_at);
+    return `<a class="close-row" href="./agenda.html"><div><div class="close-name">${escapeHtml(clientName(x.clients))}</div><div class="close-sub">${escapeHtml(x.service_name_snapshot)} · ${escapeHtml(capitalize(shortDateFormatter.format(d)))} · ${timeFormatter.format(d)}</div></div><span class="close-go">›</span></a>`;
+  }).join("")+(list.length>5?`<div class="empty" style="padding:12px 22px;font-size:11px">+ ${list.length-5} autre${list.length-5>1?"s":""} dans l'agenda</div>`:"");
+}
+
+function renderWeek(now){
+  const wd=new Intl.DateTimeFormat("fr-BE",{timeZone:"UTC",weekday:"short"}),dn=new Intl.DateTimeFormat("fr-BE",{timeZone:"UTC",day:"numeric"});
+  const map={};
+  const add=x=>{const k=brusselsDateKey(new Date(x.starts_at));(map[k]=map[k]||[]).push(x)};
+  data.future.filter(x=>brusselsDateKey(new Date(x.starts_at))!==data.todayKey).forEach(add);
+  data.today.forEach(add);
+  const base=new Date(`${data.todayKey}T12:00:00Z`);
+  let html="";
+  for(let i=0;i<7;i++){
+    const d=new Date(base.getTime()+i*86400000),key=d.toISOString().slice(0,10),list=(map[key]||[]).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+    const n=list.length;
+    html+=`<a class="day ${i===0?"today":""} ${n?"":"zero"}" href="./agenda.html"><div class="day-name">${escapeHtml(wd.format(d).replace(".",""))}</div><div class="day-num">${dn.format(d)}</div><div class="day-count">${n?`${n} RDV`:"Libre"}</div><div class="day-first">${n?`dès ${timeFormatter.format(new Date(list[0].starts_at))}`:"&nbsp;"}</div></a>`;
+  }
+  $("week-strip").innerHTML=html;
+}
+
+function renderTopServices(a){
+  const c=$("top-services"),m=new Map();
+  a.forEach(x=>m.set(x.service_name_snapshot,(m.get(x.service_name_snapshot)||0)+1));
+  const rows=[...m.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+  c.innerHTML=rows.length?rows.map(([n,v])=>`<div class="rank-row"><span>${escapeHtml(n)}</span><span>${v}</span></div>`).join(""):'<div class="empty">Pas encore assez de rendez-vous terminés ce mois-ci.</div>';
+}
+
+/* ---------- nouvelle cliente ---------- */
+const modal=$("client-modal");
+function openClientModal(){$("client-form").reset();$("client-since").value=brusselsDateKey();$("client-message").textContent="";modal.classList.add("open");modal.setAttribute("aria-hidden","false");$("first-name").focus()}
+function closeClientModal(){modal.classList.remove("open");modal.setAttribute("aria-hidden","true")}
+$("new-client").addEventListener("click",openClientModal);
+$("new-client-secondary").addEventListener("click",openClientModal);
+$("close-client").addEventListener("click",closeClientModal);
+$("cancel-client").addEventListener("click",closeClientModal);
+modal.addEventListener("click",e=>{if(e.target===modal)closeClientModal()});
+$("client-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=$("save-client"),msg=$("client-message");
+  btn.disabled=true;btn.textContent="Création…";msg.className="message";msg.textContent="";
+  const args={p_first_name:$("first-name").value,p_last_name:$("last-name").value,p_email:$("email").value,p_phone:$("phone").value,p_instagram:$("instagram").value||null,p_client_since:$("client-since").value||null,p_discovery_source:$("discovery-source").value||null,p_private_notes:$("private-notes").value||null,p_source:"manual"};
+  const {data:id,error}=await supabaseClient.rpc("admin_create_client",args);
+  if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de créer cette cliente. Vérifie les informations puis réessaie.";btn.disabled=false;btn.textContent="Créer la cliente";return}
+  msg.className="message success";msg.textContent="Cliente créée ✓";
+  setTimeout(()=>{location.href=`./clientes.html?client=${encodeURIComponent(id)}`},650);
+});
+
+/* ---------- notifications push ---------- */
 const VAPID_PUBLIC_KEY="BIlTIVdljp66zQP-aILEW3nl__iB3uKUpJSPDWUnYemxVc-aNtVp69q1YPh371hlgv2NL_GND7uYCgY5bzm1XDM";
 function urlBase64ToUint8Array(s){
   const padding="=".repeat((4-s.length%4)%4),base64=(s+padding).replace(/-/g,"+").replace(/_/g,"/");
@@ -84,14 +474,14 @@ async function savePushSubscription(subscription){
   if(error)throw error;
 }
 async function activatePushNotifications(){
-  const btn=document.getElementById("push-notifications");
+  const btn=$("push-notifications");
   if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){
-    alert("Les notifications push ne sont pas disponibles sur cet appareil.");return;
+    alert("Les notifications push ne sont pas disponibles sur cet appareil. Sur iPhone, ouvre l'application depuis l'écran d'accueil.");return;
   }
   btn.disabled=true;const old=btn.textContent;btn.textContent="Activation…";
   try{
     const permission=await Notification.requestPermission();
-    if(permission!=="granted"){alert("Les notifications n'ont pas été autorisées.");btn.textContent=old;return}
+    if(permission!=="granted"){alert("Les notifications n'ont pas été autorisées. Tu peux les réactiver dans les Réglages de l'iPhone > Notifications.");btn.textContent=old;return}
     const reg=await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
     if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
@@ -103,13 +493,28 @@ async function activatePushNotifications(){
   finally{btn.disabled=false}
 }
 async function refreshPushButton(){
-  const btn=document.getElementById("push-notifications");if(!btn)return;
+  const btn=$("push-notifications");if(!btn)return;
   if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window)){btn.textContent="Notifications indisponibles";btn.disabled=true;return}
+  if(Notification.permission==="denied"){btn.textContent="🔕 Notifications bloquées";return}
   if(Notification.permission==="granted"){
     try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){btn.textContent="🔔 Notifications activées";await savePushSubscription(sub)}}catch(e){console.error(e)}
   }
 }
-document.getElementById("push-notifications")?.addEventListener("click",activatePushNotifications);
+$("push-notifications").addEventListener("click",activatePushNotifications);
 
-document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});async function init(){if(await protectPage()){await loadDashboard();await refreshPushButton()}}init();
-</script></body></html>
+/* ---------- vie de l'appli ---------- */
+$("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();location.replace("./")});
+$("refresh").addEventListener("click",()=>loadDashboard());
+
+let loading=false;
+async function safeReload(){if(loading)return;loading=true;try{await loadDashboard()}catch(e){console.error(e)}finally{loading=false}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Date.now()-data.loadedAt>60000)safeReload()});
+window.addEventListener("focus",()=>{if(Date.now()-data.loadedAt>60000)safeReload()});
+setInterval(()=>{if(document.visibilityState!=="visible")return;if(Date.now()-data.loadedAt>300000)safeReload();else renderLive()},30000);
+
+async function init(){if(await protectPage()){await safeReload();await refreshPushButton()}}
+init();
+</script>
+<script src="./admin-nav.js"></script>
+</body>
+</html>
