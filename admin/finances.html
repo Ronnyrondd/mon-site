@@ -160,6 +160,6 @@ function render(ps,as,us){
 period.onchange=load;
 logout.onclick=async()=>{await db.auth.signOut();location.replace("./")};
 (async()=>{if(await protect())await load()})();
-</script>
+<script src="./admin-nav.js"></script>
 </body>
 </html>
