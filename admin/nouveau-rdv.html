@@ -441,7 +441,7 @@
             </select>
 
             <div class="hint">
-              5 € et 15 min par ongle cassé.
+              <span id="service-quantity-hint"></span>
             </div>
           </div>
 
@@ -500,6 +500,22 @@
         <!-- NOTES -->
 
         <section class="section">
+
+          <h2>Prix final</h2>
+
+          <label for="price-override">
+            Prix convenu (€) : laisse vide pour utiliser le total calculé
+          </label>
+
+          <input
+            id="price-override"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="0.01"
+            placeholder="Ex. 80"
+            style="width:100%;padding:13px;border:1px solid rgba(41,40,36,.12);border-radius:12px;font-size:16px;margin-bottom:22px;"
+          >
 
           <h2>Notes</h2>
 
@@ -654,7 +670,6 @@
         .from("services")
         .select("*")
         .eq("is_active", true)
-        .eq("is_bookable_online", true)
         .order("display_order"),
 
       supabaseClient
@@ -724,7 +739,7 @@
       option.value = service.id;
 
       option.textContent =
-        `${service.name} — ${euro.format(service.price_cents / 100)}`;
+        `${service.name} — ${euro.format(service.price_cents / 100)}${service.is_bookable_online ? "" : " · hors ligne"}`;
 
       serviceSelect.appendChild(option);
     });
@@ -782,6 +797,8 @@ function updateServiceQuantity() {
   ) {
 
     wrapper.classList.remove("hidden");
+    document.getElementById("service-quantity-hint").textContent =
+      `${euro.format(service.price_cents / 100)} et ${formatDuration(service.duration_minutes)} par doigt.`;
 
   } else {
 
@@ -1067,6 +1084,15 @@ return selectedOptions.reduce(
   }
 
 
+  function getFinalPriceCents(totals) {
+    const raw = (document.getElementById("price-override")?.value || "").trim().replace(",", ".");
+    if (raw) {
+      const v = Number(raw);
+      if (Number.isFinite(v) && v >= 0) return Math.round(v * 100);
+    }
+    return totals.price;
+  }
+
   function formatDuration(minutes) {
 
     if (!minutes) return "0 min";
@@ -1093,7 +1119,7 @@ return selectedOptions.reduce(
       service ? formatDuration(totals.duration) : "—";
 
     document.getElementById("summary-price").textContent =
-      euro.format(totals.price / 100);
+      euro.format(getFinalPriceCents(totals) / 100);
 
 
     const date =
@@ -1147,6 +1173,10 @@ return selectedOptions.reduce(
   document
     .getElementById("service-quantity")
     .addEventListener("change", updateSummary);
+
+  document
+    .getElementById("price-override")
+    .addEventListener("input", updateSummary);
 
 
   /* =========================================================
@@ -1368,7 +1398,7 @@ return selectedOptions.reduce(
               end.toISOString(),
 
             expected_price_cents:
-              totals.price,
+              getFinalPriceCents(totals),
 
             status:
               "confirmed",
