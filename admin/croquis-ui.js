@@ -25,8 +25,8 @@ function confirmBox(title,text,ok){return new Promise(res=>{const m=modal(`<h2>$
 /* ---------- onglets et outils ---------- */
 function showTab(t){$$("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));$$(".pbody section").forEach(s=>s.classList.toggle("on",s.dataset.tab===t))}
 $$("#tabs button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-$$(".tool").forEach(b=>b.onclick=()=>{CQ.tool=b.dataset.tool;if(CQ.tool==="deco")showTab("deco");CQ.refresh();CQ.ui.sync()});
-$("#size").addEventListener("input",e=>{const v=+e.target.value;if(CQ.tool==="deco"){CQ.decoSize=v;const d=nail().deco[CQ.decoSel];if(d)d.r=v;CQ.refresh()}else CQ.sizes[CQ.tool]=v});
+$$(".tool").forEach(b=>b.onclick=()=>{if(CQ.tool===b.dataset.tool&&["pen","air","erase","relief"].includes(CQ.tool))showTab("pinceau");CQ.tool=b.dataset.tool;if(CQ.tool==="deco")showTab("deco");CQ.refresh();CQ.ui.sync()});
+$("#size").addEventListener("input",e=>{const v=+e.target.value;if(CQ.tool==="deco"){CQ.decoSize=v;const d=nail().deco[CQ.decoSel];if(d)d.r=v;CQ.refresh()}else{CQ.sizes[CQ.tool]=v;brushPreview();$("#bSize").value=v}});
 $("#curColor").onclick=()=>showTab("couleur");
 $("#undo").onclick=()=>CQ.undo();$("#redo").onclick=()=>CQ.redoOp();
 CQ.ui.updateUndo=()=>{$("#undo").disabled=!CQ.hist.length;$("#redo").disabled=!CQ.redo.length};
@@ -39,6 +39,21 @@ N.SHAPES.forEach(([id,label])=>{
 });
 N.LENGTH_LIST.forEach(([id,label])=>{const b=mk("button","opt",label);b.dataset.len=id;b.onclick=()=>{CQ.snapshot();(CQ.same?CQ.nails:[nail()]).forEach(n=>n.len=id);CQ.refresh(true)};$("#lengths").appendChild(b)});
 $("#sameShape").onclick=()=>{CQ.same=!CQ.same;CQ.ui.sync()};
+
+/* ---------- pinceau ---------- */
+function brushPreview(){
+  const c=$("#brushPrev"),x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);x.save();x.scale(4,4);
+  const tool=["pen","air","erase","relief"].includes(CQ.tool)?CQ.tool:"pen",s=Math.min(CQ.sizes[tool]||3,30),pts=[];for(let i=0;i<=24;i++)pts.push([12+i*5.5,18.5+Math.sin(i/3.2)*9,1]);
+  if(tool==="air"){const g=x;pts.forEach(p=>{const r=g.createRadialGradient(p[0],p[1],0,p[0],p[1],s*1.8);r.addColorStop(0,N.rgba(CQ.color,.16));r.addColorStop(1,N.rgba(CQ.color,0));g.fillStyle=r;g.fillRect(p[0]-s*2,p[1]-s*2,s*4,s*4)})}
+  else{const b=CQ.brush,st={t:"pen",c:tool==="erase"?"#cccccc":CQ.color,s,p:pts,a:tool==="pen"&&b.a<1?b.a:1};if(tool==="pen"&&b.m!=="solid"){st.m=b.m;st.mk=b.mk}N.drawStroke(x,st,37)}
+  x.restore();
+}
+const MATS=[["solid","Couleur unie"],["chrome","Chrome"],["miroir","Miroir"],["holo","Holo"],["glitter","Paillettes"],["cateye","Œil de chat"]];
+MATS.forEach(([v,l])=>{const b=mk("button","chip",l);b.dataset.m=v;b.onclick=()=>{CQ.brush.m=v;CQ.tool="pen";CQ.ui.sync()};$("#brushMat").appendChild(b)});
+Object.entries(N.METALS).filter(([k])=>k!=="noir").forEach(([k,m])=>{const b=mk("button","chip",m.n);b.dataset.mk=k;b.onclick=()=>{CQ.brush.mk=k;CQ.ui.sync()};$("#brushMetal").appendChild(b)});
+[2,5,10,20,35,55].forEach(v=>{const b=mk("button","chip",String(v));b.dataset.v=v;b.onclick=()=>{CQ.sizes[CQ.tool==="deco"||CQ.tool==="fill"||CQ.tool==="photo"?"pen":CQ.tool]=v;CQ.ui.sync()};$("#sizePre").appendChild(b)});
+$("#bSize").addEventListener("input",e=>{const t=["pen","air","erase","relief"].includes(CQ.tool)?CQ.tool:"pen";CQ.sizes[t]=+e.target.value;CQ.ui.sync()});
+$("#bAlpha").addEventListener("input",e=>{CQ.brush.a=+e.target.value;brushPreview()});
 
 /* ---------- couleur ---------- */
 const pal=$("#palette");
@@ -59,8 +74,8 @@ function renderEffParams(){
   if(t==="chrome"||t==="miroir"||t==="foil"){chips(Object.entries(N.METALS).map(([k,m])=>[k,m.n]),"m");if(t==="foil")range("Quantité","k",0,1,.05)}
   if(t==="glitter"){color("Couleur 1","c1");color("Couleur 2","c2");range("Quantité","k",0,1,.05)}
   if(t==="cateye"){
-    chips([["line","Ligne"],["wide","Large (velours)"],["double","Double"],["curve","Courbe"]],"style");
-    range("Angle","ang",-80,80,5);range("Position","pos",-40,40,1);range("Épaisseur","w",4,40,1);color("Reflet","c1");
+    chips([["line","Ligne"],["wide","Large (velours)"],["double","Double"],["curve","Courbe"],["spot","Rond"]],"style");
+    if(e.style==="spot")range("Horizontal","posx",-40,40,1);else range("Angle","ang",-80,80,5);range(e.style==="spot"?"Vertical":"Position","pos",-70,70,1);range("Épaisseur","w",4,40,1);color("Reflet","c1");
     box.appendChild(mk("p",null,"La couleur de fond (onglet Couleur → « Cet ongle ») sert de base à l'œil de chat.")).style.cssText="font-size:12px;color:var(--muted)";
     if(!e.c1){e.c1=N.light(n.base.c,.82)}
   }
@@ -113,6 +128,8 @@ $("#decoColor").addEventListener("input",e=>{CQ.decoColor=e.target.value;const d
 $("#decoSize").addEventListener("pointerdown",()=>CQ.snapshot());
 $("#decoSize").addEventListener("input",e=>{CQ.decoSize=+e.target.value;const d=nail().deco[CQ.decoSel];if(d)d.r=+e.target.value;CQ.refresh()});
 live($("#decoRot"),v=>{const d=nail().deco[CQ.decoSel];if(d)d.rot=+v});
+$("#decoAr").addEventListener("pointerdown",()=>CQ.snapshot());
+$("#decoAr").addEventListener("input",e=>{CQ.decoAr=+e.target.value;const d=nail().deco[CQ.decoSel];if(d)d.ar=+e.target.value;CQ.refresh()});
 $("#decoScatter").onclick=()=>{CQ.scatter=!CQ.scatter;CQ.ui.sync()};
 $("#decoDup").onclick=()=>{const n=nail(),d=n.deco[CQ.decoSel];if(!d)return;CQ.snapshot();n.deco.push({...d,x:d.x+4,y:d.y+4});CQ.decoSel=n.deco.length-1;CQ.refresh()};
 $("#decoDel").onclick=()=>{const n=nail();if(CQ.decoSel<0||!n.deco[CQ.decoSel])return;CQ.snapshot();n.deco.splice(CQ.decoSel,1);CQ.decoSel=-1;CQ.refresh()};
@@ -133,7 +150,7 @@ $("#fingerDraw").onclick=()=>{CQ.fingerDraw=!CQ.fingerDraw;CQ.ui.sync()};
 CQ.ui.sync=function(){
   const n=nail(),d=n.deco[CQ.decoSel];
   $$(".tool").forEach(b=>b.classList.toggle("on",b.dataset.tool===CQ.tool));
-  const sz=$("#size");sz.disabled=CQ.tool==="fill"||CQ.tool==="photo";sz.max=CQ.tool==="deco"?30:24;sz.min=CQ.tool==="deco"?2:1;sz.value=CQ.tool==="deco"?(d?d.r:CQ.decoSize):(CQ.sizes[CQ.tool]||3);
+  const sz=$("#size");sz.disabled=CQ.tool==="fill"||CQ.tool==="photo";sz.max=CQ.tool==="deco"?70:60;sz.min=CQ.tool==="deco"?2:1;sz.value=CQ.tool==="deco"?(d?d.r:CQ.decoSize):(CQ.sizes[CQ.tool]||3);
   $("#curColor").style.background=CQ.color;$("#colorInput").value=CQ.color;
   $$("#palette button").forEach(b=>b.classList.toggle("on",b.dataset.c===CQ.color));
   $$("#shapes .opt").forEach(b=>b.classList.toggle("on",b.dataset.shape===n.shape));$$("#lengths .opt").forEach(b=>b.classList.toggle("on",b.dataset.len===n.len));
@@ -143,9 +160,12 @@ CQ.ui.sync=function(){
   $$("#gloss .chip").forEach(b=>b.classList.toggle("on",b.dataset.g===n.gloss));
   $$("#decoGrid .opt").forEach(b=>b.classList.toggle("on",b.dataset.k===(d?d.k:CQ.decoKind)));
   $$("#decoFinish .chip").forEach(b=>b.classList.toggle("on",b.dataset.f===(d?d.f:CQ.decoFinish)));
-  $("#decoColor").value=d&&d.c?d.c:CQ.decoColor;$("#decoSize").value=d?d.r:CQ.decoSize;$("#decoRot").value=d?d.rot||0:0;
+  $("#decoColor").value=d&&d.c?d.c:CQ.decoColor;$("#decoSize").value=d?d.r:CQ.decoSize;$("#decoAr").value=d?d.ar||1:CQ.decoAr;$("#decoRot").value=d?d.rot||0:0;
   const ph=n.photo;$("#photoCtl").hidden=!ph;if(ph){$("#phS").value=ph.s||1;$("#phR").value=ph.rot||0;$("#phA").value=ph.a==null?1:ph.a}
   $("#decoScatter").textContent="Semis : "+(CQ.scatter?"oui":"non");$("#decoScatter").classList.toggle("on",CQ.scatter);
+  const bt=["pen","air","erase","relief"].includes(CQ.tool)?CQ.tool:"pen";$("#bSize").value=CQ.sizes[bt]||3;$("#bAlpha").value=CQ.brush.a;$("#bAlpha").disabled=bt!=="pen";
+  $$("#brushMat .chip").forEach(b=>b.classList.toggle("on",b.dataset.m===CQ.brush.m));$("#brushMetal").hidden=!(CQ.brush.m==="chrome"||CQ.brush.m==="miroir");$$("#brushMetal .chip").forEach(b=>b.classList.toggle("on",b.dataset.mk===CQ.brush.mk));
+  $$("#sizePre .chip").forEach(b=>b.classList.toggle("on",+b.dataset.v===(CQ.sizes[bt]||0)));brushPreview();
   $$("#skins button").forEach(b=>b.classList.toggle("on",b.dataset.c===CQ.skin));
   $("#fingerDraw").textContent="Dessiner au doigt : "+(CQ.fingerDraw?"oui":"non");$("#note").value=CQ.note;
   $("#metaName").value=CQ.meta.name||"";$("#metaTime").value=CQ.meta.time||"";$("#metaPrice").value=CQ.meta.price||"";
