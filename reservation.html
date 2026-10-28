@@ -20,6 +20,7 @@
 
 .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.formgrid label{font-size:13px;color:var(--soft)}.formgrid input{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:white;color:var(--ink);font:inherit}.consent{display:flex;gap:12px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px 15px;background:#fff;cursor:pointer}.consent:has(input:checked){border-color:var(--sage);background:var(--pale)}.consent input{margin-top:1px;flex:0 0 auto}.legal-explainer{margin-top:18px;padding:14px 15px;border-radius:14px;background:#f6f3ec;color:var(--ink);font-size:13px;line-height:1.55}.nail-help{margin:12px 0 2px;color:var(--soft);font-size:12px;line-height:1.5}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.secondary{border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:12px 19px;font:500 14px Jost;cursor:pointer}.review{background:#f6f3ec;border-radius:16px;padding:18px}.reviewline{display:flex;justify-content:space-between;gap:20px;padding:7px 0}.reviewline span:first-child{color:var(--soft)}.reviewline.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-weight:600}.error{margin-top:15px;padding:12px 14px;border-radius:12px;background:#f8e8e8;color:#8a3030;font-size:13px}.success{text-align:center;padding-top:45px;padding-bottom:45px}.successmark{margin:0 auto 18px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:26px}.success h2{font-size:38px;margin-top:8px}.linkbtn{display:inline-block;text-decoration:none;margin-top:10px}.calendar-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}.calendar-actions .secondary{text-decoration:none;display:inline-block}
 @media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}.calendar-weekdays,.calendar-grid{gap:4px}.day{min-height:56px;border-radius:12px;padding:7px 2px 5px}.day .daynote{font-size:7px}.day .badge{font-size:8px;padding:2px 4px}.calendar-title{font-size:21px}.calendar-legend{justify-content:flex-start;gap:10px}}
+.hp{position:absolute!important;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 </style>
 </head>
 <body>
@@ -74,6 +75,7 @@
   <label>E-mail *<input id="email" type="email" autocomplete="email" required></label>
   <label>Téléphone *<input id="phone" type="tel" autocomplete="tel" required></label>
   <label>Instagram <input id="instagram" placeholder="@..."></label>
+  <div class="hp" aria-hidden="true"><label>Ne pas remplir<input id="companySite" name="company_site" tabindex="-1" autocomplete="off"></label></div>
 </div>
 
 <label class="consent">
@@ -408,6 +410,15 @@ document.querySelector("#addCalendarBtn").onclick=downloadCalendarEvent;
 
 document.querySelector("#confirmBtn").onclick=async()=>{
  clearError("#bookingError");
+ if(document.querySelector("#companySite").value.trim()){
+   // champ piège rempli : c'est un robot. On affiche un faux succès sans rien enregistrer.
+   document.querySelector("#reviewPanel").classList.add("hidden");
+   document.querySelector("#contactPanel").classList.add("hidden");
+   document.querySelector("#summary").classList.add("hidden");
+   document.querySelector("#successText").textContent="Merci !";
+   document.querySelector("#successPanel").classList.remove("hidden");
+   return;
+ }
  const btn=document.querySelector("#confirmBtn");btn.disabled=true;btn.textContent="Confirmation…";
  const args={
    p_service_id:state.service.id,p_starts_at:state.slot.starts_at,p_options:rpcOptions(),
@@ -428,7 +439,14 @@ p_early_performance_requested:
  const {data,error}=await db.rpc("create_public_booking",args);
  if(error){
    console.error(error);
-   const unavailable=(error.message||"").includes("slot_unavailable");
+   const errMsg=(error.message||"");
+   const unavailable=errMsg.includes("slot_unavailable");
+   if(errMsg.includes("rate_limited")||errMsg.includes("too_many_active_bookings")){
+     showError("#bookingError",errMsg.includes("rate_limited")
+       ?"Trop de demandes en peu de temps. Patiente quelques minutes avant de réessayer, ou contacte-moi directement."
+       :"Tu as déjà plusieurs rendez-vous à venir. Contacte-moi directement pour en ajouter un.");
+     btn.disabled=false;btn.textContent="Confirmer avec obligation de paiement";return;
+   }
    showError("#bookingError",unavailable?"Oups, ce créneau vient d'être pris ou n'est plus disponible. Retourne au choix du créneau pour en sélectionner un autre.":"La réservation n'a pas pu être enregistrée. Vérifie tes informations ou réessaie dans un instant.");
    btn.disabled=false;btn.textContent="Confirmer avec obligation de paiement";return;
  }
