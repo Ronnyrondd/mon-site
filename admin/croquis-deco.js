@@ -81,10 +81,19 @@ function drawItem(ctx,d){
       ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));ctx.beginPath();ctx.ellipse(0,0,.3,.17,0,0,7);ctx.lineWidth=.1;ctx.strokeStyle=lin(ctx,P,-.3,-.2,.3,.2);ctx.stroke();ctx.restore()}break}
   }
 }
-function draw(ctx,d,sel){
-  ctx.save();ctx.translate(d.x,d.y);ctx.rotate((d.rot||0)*Math.PI/180);ctx.scale(d.r,d.r);drawItem(ctx,d);ctx.restore();
-  if(sel){ctx.save();ctx.setLineDash([2,2]);ctx.lineWidth=.7;ctx.strokeStyle="#76806d";ctx.beginPath();ctx.arc(d.x,d.y,d.r*(d.k==="chaine"?1.9:1.45),0,7);ctx.stroke();ctx.restore()}
+function handles(d){
+  const rad=x=>x*Math.PI/180,r=d.r,ar=d.ar||1,rot=d.rot||0,k=d.k==="chaine"?1.9:1.5;
+  return{rs:{x:d.x+Math.cos(rad(rot+45))*r*k*1.05,y:d.y+Math.sin(rad(rot+45))*r*k*1.05},st:{x:d.x+Math.cos(rad(rot))*r*ar*k,y:d.y+Math.sin(rad(rot))*r*ar*k}};
 }
-function hit(d,x,y){return Math.hypot(d.x-x,d.y-y)<=d.r*(d.k==="chaine"?1.8:1.3)}
-window.NailDeco={LIST,FINISHES,DEFAULTS,draw,hit,pal};
+function draw(ctx,d,sel){
+  ctx.save();ctx.translate(d.x,d.y);ctx.rotate((d.rot||0)*Math.PI/180);ctx.scale(d.r*(d.ar||1),d.r);drawItem(ctx,d);ctx.restore();
+  if(sel){
+    const hd=handles(d),k=d.k==="chaine"?1.9:1.5;ctx.save();ctx.setLineDash([2,2]);ctx.lineWidth=.7;ctx.strokeStyle="#76806d";
+    ctx.translate(d.x,d.y);ctx.rotate((d.rot||0)*Math.PI/180);ctx.beginPath();ctx.ellipse(0,0,d.r*(d.ar||1)*k,d.r*k,0,0,7);ctx.stroke();ctx.restore();
+    ctx.save();ctx.lineWidth=.9;[hd.rs,hd.st].forEach((q,i)=>{ctx.beginPath();ctx.arc(q.x,q.y,i?3:3.4,0,7);ctx.fillStyle=i?"#ffffff":"#76806d";ctx.fill();ctx.strokeStyle="#76806d";ctx.stroke()});ctx.restore();
+  }
+}
+function hit(d,x,y){return Math.hypot(d.x-x,d.y-y)<=Math.max(d.r*(d.ar||1),d.r)*(d.k==="chaine"?1.8:1.3)}
+window.NailDeco={LIST,FINISHES,DEFAULTS,draw,hit,pal,handles};
 })();
+ 
