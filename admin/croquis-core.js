@@ -1,6 +1,6 @@
 (function(){
 const S=4; // résolution du calque de traits (pixels par unité)
-const LENGTHS={court:120,moyen:150,long:185,xl:220};
+const LENGTHS={court:100,moyen:135,long:175,xl:215};
 const SHAPES=[["carre","Carré"],["squoval","Carré arrondi"],["rond","Rond"],["ovale","Ovale"],["amande","Amande"],["ballerine","Ballerine"],["stiletto","Stiletto"]];
 const LENGTH_LIST=[["court","Court"],["moyen","Moyen"],["long","Long"],["xl","Extra long"]];
 const FINGERS=[
@@ -35,9 +35,11 @@ function nailPath(shape,h){
     squoval:"L100 24 Q100 0 76 0 L24 0 Q0 0 0 24 Z",
     rond:`L100 ${f(.3)} C100 ${f(.08)} 76 0 50 0 C24 0 0 ${f(.08)} 0 ${f(.3)} Z`,
     ovale:`L100 ${f(.45)} C100 ${f(.12)} 78 0 50 0 C22 0 0 ${f(.12)} 0 ${f(.45)} Z`,
-    amande:`L100 ${f(.5)} C100 ${f(.3)} 74 ${f(.1)} 56 ${f(.012)} Q50 0 44 ${f(.012)} C26 ${f(.1)} 0 ${f(.3)} 0 ${f(.5)} Z`,
+    amande:(()=>{const t=Math.max(0,Math.min(1,(h-100)/70)),L=(u,v)=>u+(v-u)*t,
+      yS=L(.45,.5),y1=L(.2,.3),x2=L(88,83),y2=L(.03,.12),x3=L(72,63),y3=L(.004,.035),x4=L(63,57),y4=L(0,.012),x5=L(56,54),F=v=>(h*v).toFixed(2);
+      return `L100 ${F(yS)} C100 ${F(y1)} ${x2} ${F(y2)} ${x3} ${F(y3)} C${x4} ${F(y4)} ${x5} 0 50 0 C${100-x5} 0 ${100-x4} ${F(y4)} ${100-x3} ${F(y3)} C${100-x2} ${F(y2)} 0 ${F(y1)} 0 ${F(yS)} Z`})(),
     ballerine:`L100 ${f(.55)} L80 6 Q78 0 72 0 L28 0 Q22 0 20 6 L0 ${f(.55)} Z`,
-    stiletto:`L100 ${f(.55)} C96 ${f(.35)} 64 ${f(.12)} 50.8 0 L49.2 0 C36 ${f(.12)} 4 ${f(.35)} 0 ${f(.55)} Z`
+    stiletto:`L100 ${f(.4)} C95 ${f(.25)} 67 ${f(.1)} 50.7 0 L49.3 0 C33 ${f(.1)} 5 ${f(.25)} 0 ${f(.4)} Z`
   }[shape]||"Z";
   return new Path2D(bot+" "+top);
 }
@@ -51,12 +53,40 @@ function ensureLayer(n){
   }
   return n._layer;
 }
+function strokePath(ctx,p){ctx.beginPath();ctx.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length-1;i++){const mx=(p[i][0]+p[i+1][0])/2,my=(p[i][1]+p[i+1][1])/2;ctx.quadraticCurveTo(p[i][0],p[i][1],mx,my)}const l=p[p.length-1];ctx.lineTo(l[0],l[1])}
+let _tile=null;
+function glitterPattern(ctx,c){
+  if(!_tile){_tile=document.createElement("canvas");_tile.width=_tile.height=48;const x=_tile.getContext("2d"),R=rng(77);for(let i=0;i<120;i++){x.fillStyle=`rgba(255,255,255,${.5+R()*.5})`;x.fillRect(R()*48,R()*48,1+R()*2,1+R()*2)}}
+  const pt=ctx.createPattern(_tile,"repeat");if(pt.setTransform)pt.setTransform(new DOMMatrix().scale(.22));return pt;
+}
+function drawStroke(ctx,st,h){
+  const p=st.p;if(!p||!p.length)return;const a=st.a==null?1:st.a,m=st.m||"solid",c=st.c;
+  const avg=p.reduce((t,q)=>t+(q[2]==null?1:q[2]),0)/p.length,w=st.s*(.35+.65*avg);
+  ctx.save();ctx.lineCap=ctx.lineJoin="round";ctx.globalAlpha=a;
+  const one=(width,style)=>{ctx.lineWidth=width;ctx.strokeStyle=ctx.fillStyle=style;
+    if(p.length===1){ctx.beginPath();ctx.arc(p[0][0],p[0][1],width/2,0,7);ctx.fill()}else{strokePath(ctx,p);ctx.stroke()}};
+  if(m==="cateye"){one(w,dark(c,.4));one(w*.62,c);one(w*.2,light(c,.88))}
+  else if(m==="chrome"||m==="miroir"){one(w,metalGrad(ctx,h,st.mk,m==="miroir"?20:35));ctx.globalAlpha=a*(m==="miroir"?.5:.3);one(w*.35,"#ffffff")}
+  else if(m==="holo"){const g=ctx.createLinearGradient(0,0,100,h);["#ff9ad5","#9be7ff","#c3a6ff","#fff1a6","#a6ffd0"].forEach((s0,i)=>g.addColorStop(i/4,s0));one(w,g)}
+  else if(m==="glitter"){one(w,rgba(c,.85));one(w,glitterPattern(ctx,c))}
+  else if(a>=1&&p.length>1){ // trait uni avec pression
+    ctx.strokeStyle=ctx.fillStyle=c;for(let i=0;i<p.length;i++){const q=p[i],b=p[i-1]||q,ww=st.s*(.35+.65*(q[2]==null?1:q[2]));ctx.lineWidth=ww;if(i===0){ctx.beginPath();ctx.arc(q[0],q[1],ww/2,0,7);ctx.fill()}else{ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(q[0],q[1]);ctx.stroke()}}
+  }else one(w,c);
+  ctx.restore();
+}
+function drawLive(n,st){
+  const h=nailH(n);if(!n._live||n._live.height!==Math.round(h*S)){n._live=document.createElement("canvas");n._live.width=100*S;n._live.height=Math.round(h*S)}
+  const c=n._live.getContext("2d");c.clearRect(0,0,n._live.width,n._live.height);c.save();c.scale(S,S);drawStroke(c,st,h);c.restore();n._liveOn=true;
+}
+function commitLive(n,st){
+  const L=ensureLayer(n),c=L.getContext("2d");c.save();c.scale(S,S);drawStroke(c,st,nailH(n));c.restore();n._liveOn=false;
+}
 function replayLayer(n){
   const L=n._layer;if(!L)return;L.getContext("2d").clearRect(0,0,L.width,L.height);
-  n.strokes.forEach(st=>{for(let i=0;i<st.p.length;i++)paintSegment(n,st,i)});
+  const L2=L.getContext("2d");n.strokes.forEach(st=>{if(st.t==="pen"){L2.save();L2.scale(S,S);drawStroke(L2,st,nailH(n));L2.restore()}else for(let i=0;i<st.p.length;i++)paintSegment(n,st,i)});
 }
 function paintSegment(n,st,i){
-  if(st.t==="relief")return;
+  if(st.t==="relief"||st.t==="pen")return;
   const L=ensureLayer(n),c=L.getContext("2d"),p=st.p,a=p[i],b=p[i-1]||a,pr=a[2]==null?1:a[2];
   c.save();c.scale(S,S);
   if(st.t==="air"){
@@ -106,7 +136,8 @@ function drawBase(ctx,n,h){
       const r=(e.ang||25)*Math.PI/180,nx=Math.cos(r),ny=Math.sin(r),L=70;
       const mkb=(off,col,hw)=>{const g=ctx.createLinearGradient(50+nx*(off-L),h*.5+ny*(off-L),50+nx*(off+L),h*.5+ny*(off+L));const half=hw/(2*L);stops(g,.5,half,col);ctx.fillStyle=g;ctx.fillRect(-10,-10,120,h+20)};
       const sh=ctx.createLinearGradient(50-nx*L,h*.5-ny*L,50+nx*L,h*.5+ny*L);sh.addColorStop(0,rgba(c,.0));sh.addColorStop(1,rgba("#000000",.28));ctx.fillStyle=sh;ctx.fillRect(-10,-10,120,h+20);
-      if(st==="wide"){mkb(pos,bandC,w*2.2)}
+      if(st==="spot"){const px=50+(e.posx||0),py=h*.5+pos,R=Math.max(10,w*2.6),g=ctx.createRadialGradient(px,py,0,px,py,R);g.addColorStop(0,rgba(bandC,.98));g.addColorStop(.3,rgba(bandC,.6));g.addColorStop(1,rgba(bandC,0));ctx.fillStyle=g;ctx.fillRect(-10,-10,120,h+20)}
+      else if(st==="wide"){mkb(pos,bandC,w*2.2)}
       else if(st==="double"){mkb(pos-w*1.1,bandC,w*.9);mkb(pos+w*1.1,bandC,w*.9)}
       else mkb(pos,bandC,w);
     }
@@ -178,11 +209,11 @@ function renderNail(ctx,n,o){
   }
   ctx.save();ctx.clip(path);
   drawBase(ctx,n,h);drawPhoto(ctx,n,h);drawFrench(ctx,n,h);
-  const L=ensureLayer(n);ctx.drawImage(L,0,0,100,h);
+  const L=ensureLayer(n);ctx.drawImage(L,0,0,100,h);if(n._liveOn&&n._live)ctx.drawImage(n._live,0,0,100,h);
   drawGloss(ctx,n,h,path);drawRelief(ctx,n);
   ctx.restore();
   if(window.NailDeco)(n.deco||[]).forEach((d,i)=>window.NailDeco.draw(ctx,d,o.selDeco===i));
 }
 function clone(n){const c=JSON.parse(JSON.stringify(n,(k,v)=>k[0]==="_"?undefined:v));return c}
-window.NailArt={S,LENGTHS,SHAPES,LENGTH_LIST,FINGERS,METALS,EFFECTS,defaultNail,nailH,nailPath,ensureLayer,replayLayer,paintSegment,renderNail,clone,rgba,mix,light,dark,rng};
+window.NailArt={S,LENGTHS,SHAPES,LENGTH_LIST,FINGERS,METALS,EFFECTS,defaultNail,nailH,nailPath,ensureLayer,replayLayer,paintSegment,drawStroke,drawLive,commitLive,renderNail,clone,rgba,mix,light,dark,rng};
 })();
