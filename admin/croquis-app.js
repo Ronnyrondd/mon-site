@@ -2,8 +2,8 @@
 const N=window.NailArt,D=window.NailDeco,$=s=>document.querySelector(s);
 const SKINS=["#f6dccd","#f0cfc0","#e2b79c","#c78f6e","#8f5d44"];
 const CQ=window.CQ={
-  nails:Array.from({length:10},N.defaultNail),sel:1,tool:"pen",color:"#c0392b",sizes:{pen:2.5,air:10,erase:6,relief:4},recent:[],
-  skin:SKINS[1],same:true,note:"",decoSel:-1,decoKind:"gem_rond",decoFinish:"cristal",decoColor:"#ff7aa8",decoSize:7,scatter:false,fingerDraw:true,
+  nails:Array.from({length:10},N.defaultNail),sel:1,tool:"pen",color:"#c0392b",sizes:{pen:2.5,air:10,erase:6,relief:4},brush:{m:"solid",mk:"argent",a:1},recent:[],
+  skin:SKINS[1],same:true,note:"",decoSel:-1,decoKind:"gem_rond",decoFinish:"cristal",decoColor:"#ff7aa8",decoSize:7,decoAr:1,scatter:false,fingerDraw:true,
   apptId:"",clientId:null,sketchId:null,title:"",hist:[],redo:[],SKINS,ui:{}
 };
 const ed=$("#ed"),box=$("#stageBox"),ctx=ed.getContext("2d");
@@ -47,11 +47,15 @@ ed.addEventListener("pointerdown",e=>{
   const n=CQ.nail(),[x,y]=toNail(e),pr=e.pointerType==="pen"?Math.max(.15,e.pressure||.5):1;
   if(CQ.tool==="fill"){CQ.snapshot();n.base.c=CQ.color;CQ.addRecent(CQ.color);CQ.refresh();return}
   if(CQ.tool==="deco"){
+    const sd=n.deco[CQ.decoSel];
+    if(sd){const hd=D.handles(sd),tol=Math.max(5,26/geo().sc);
+      const which=Math.hypot(hd.rs.x-x,hd.rs.y-y)<=tol?"rs":Math.hypot(hd.st.x-x,hd.st.y-y)<=tol?"st":null;
+      if(which){CQ.snapshot();drag={handle:which};return}}
     let k=-1;for(let i=n.deco.length-1;i>=0;i--)if(D.hit(n.deco[i],x,y)){k=i;break}
     CQ.snapshot();
     if(k>=0){CQ.decoSel=k;drag={dx:n.deco[k].x-x,dy:n.deco[k].y-y}}
     else{
-      const base={k:CQ.decoKind,x,y,r:CQ.decoSize,rot:0,f:CQ.decoFinish,c:CQ.decoColor},R=Math.random;
+      const base={k:CQ.decoKind,x,y,r:CQ.decoSize,ar:CQ.decoAr,rot:0,f:CQ.decoFinish,c:CQ.decoColor},R=Math.random;
       if(CQ.scatter){for(let i=0;i<7;i++){const a=R()*6.283,d=R()*CQ.decoSize*2.6;n.deco.push({...base,x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,r:CQ.decoSize*(.45+R()*.45),rot:R()*360})}}
       else n.deco.push(base);
       CQ.decoSel=n.deco.length-1;drag={dx:0,dy:0};
@@ -63,21 +67,29 @@ ed.addEventListener("pointerdown",e=>{
     CQ.snapshot();drag={photo:true,dx:(n.photo.x||0)-x,dy:(n.photo.y||0)-y};return;
   }
   CQ.snapshot();if(CQ.tool!=="erase")CQ.addRecent(CQ.color);
-  stroke={t:CQ.tool,c:CQ.color,s:CQ.sizes[CQ.tool]||3,p:[[x,y,pr]]};n.strokes.push(stroke);N.paintSegment(n,stroke,0);CQ.render();
+  stroke={t:CQ.tool,c:CQ.color,s:CQ.sizes[CQ.tool]||3,p:[[x,y,pr]]};
+  if(CQ.tool==="pen"){const b=CQ.brush;if(b.m!=="solid")stroke.m=b.m;if(b.m==="chrome"||b.m==="miroir")stroke.mk=b.mk;if(b.a<1)stroke.a=b.a}
+  n.strokes.push(stroke);if(stroke.t==="pen")N.drawLive(n,stroke);else N.paintSegment(n,stroke,0);CQ.render();
 });
 ed.addEventListener("pointermove",e=>{
+  if(drag&&drag.handle){
+    const[x,y]=toNail(e),d=CQ.nail().deco[CQ.decoSel];if(!d)return;const dx=x-d.x,dy=y-d.y,dist=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI,k=d.k==="chaine"?1.9:1.5;
+    if(drag.handle==="rs"){d.r=Math.max(1.5,+(dist/(k*1.05)).toFixed(1));d.rot=Math.round(ang-45)}
+    else{d.ar=Math.max(.25,Math.min(4,+(dist/(d.r*k)).toFixed(2)));d.rot=Math.round(ang)}
+    CQ.render();CQ.ui.sync&&CQ.ui.sync();return;
+  }
   if(drag&&drag.photo){const[x,y]=toNail(e),p=CQ.nail().photo;if(p){p.x=+(x+drag.dx).toFixed(1);p.y=+(y+drag.dy).toFixed(1);CQ.render()}return}
   if(drag){const[x,y]=toNail(e),d=CQ.nail().deco[CQ.decoSel];if(d){d.x=x+drag.dx;d.y=y+drag.dy;CQ.render()}return}
   if(!stroke)return;e.preventDefault();
   const n=CQ.nail(),evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
   (evs.length?evs:[e]).forEach(ev=>{
     const[x,y]=toNail(ev),pr=ev.pointerType==="pen"?Math.max(.15,ev.pressure||.5):1,l=stroke.p[stroke.p.length-1];
-    if(Math.hypot(x-l[0],y-l[1])<.5)return;stroke.p.push([x,y,pr]);N.paintSegment(n,stroke,stroke.p.length-1);
+    if(Math.hypot(x-l[0],y-l[1])<.5)return;stroke.p.push([x,y,pr]);if(stroke.t!=="pen")N.paintSegment(n,stroke,stroke.p.length-1);
     if(stroke.t==="erase")n.strokes=n.strokes.filter(o=>o.t!=="relief"||!o.p.some(q=>Math.hypot(q[0]-x,q[1]-y)<=o.s*.9+stroke.s*.7));
-  });CQ.render();
+  });if(stroke.t==="pen")N.drawLive(CQ.nail(),stroke);CQ.render();
 });
 function endPointer(){
-  if(stroke){stroke.p=stroke.p.map(q=>[+q[0].toFixed(1),+q[1].toFixed(1),+(q[2]).toFixed(2)]);stroke=null;renderThumb(CQ.sel)}
+  if(stroke){stroke.p=stroke.p.map(q=>[+q[0].toFixed(1),+q[1].toFixed(1),+(q[2]).toFixed(2)]);if(stroke.t==="pen")N.commitLive(CQ.nail(),stroke);stroke=null;CQ.render();renderThumb(CQ.sel)}
   if(drag){drag=null;renderThumb(CQ.sel);CQ.ui.sync&&CQ.ui.sync()}
 }
 ed.addEventListener("pointerup",endPointer);ed.addEventListener("pointercancel",endPointer);
