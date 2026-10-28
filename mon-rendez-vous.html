@@ -38,7 +38,7 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 
 <details id="infoCard" class="card info-card hidden"><summary>ℹ️ Infos pratiques</summary><ul id="infoList" class="info-list"></ul></details>
 
-<section id="poseCard" class="card"><h2>🎨 Ma pose</h2><p class="sub">Tu as déjà une idée ? Tu peux me laisser quelques indications. Tout est facultatif.</p>
+<section id="poseCard" class="card"><h2>Ma pose</h2><p class="sub">Tu as déjà une idée ? Tu peux me laisser quelques indications. Tout est facultatif.</p>
 <p style="margin:20px 0 0"><strong>As-tu déjà une pose à retirer ?</strong></p><p class="sub" style="margin:3px 0 0;font-size:13px">Ça m'aide à prévoir le bon temps pour ton rendez-vous.</p>
 <div class="choices" id="depose">
 <button class="choice" type="button" data-v="none"><span class="choice-title">Non</span><span class="choice-note">Ongles naturels ou rien à retirer.</span></button><button class="choice" type="button" data-v="gel"><span class="choice-title">Oui, gel / semi</span><span class="choice-note">Gel, semi-permanent, vernis tenue longue.</span></button><button class="choice" type="button" data-v="other"><span class="choice-title">Oui, autre pose</span><span class="choice-note">Capsules, résine, acrylique…</span></button></div>
@@ -245,7 +245,7 @@ async function removeMedia(id,button){
 $("#photoInput").addEventListener("change",e=>uploadFiles(e.target.files||[]));
 
 /* ---------- Boissons ---------- */
-function beverageEmoji(name){const n=String(name||"").toLowerCase();if(/caf[eé]/.test(n))return "☕";if(n.includes("chocolat"))return "🍫";if(/infusion|tisane|menthe|verveine/.test(n))return "🌿";if(/\bth[eé]\b/.test(n))return "🍵";if(/\beau\b/.test(n))return "💧";if(n.includes("jus"))return "🧃";return "🥤"}
+function beverageEmoji(name){const n=String(name||"").toLowerCase();if(/caf[eé]/.test(n))return "☕";if(n.includes("chocolat"))return "🍫";if(/infusion|tisane|menthe|verveine/.test(n))return "🌿";if(/(^|[^a-zà-ÿ])th[eé]($|[^a-zà-ÿ])/.test(n))return "🍵";if(/\beau\b/.test(n))return "💧";if(n.includes("jus"))return "🧃";return "🥤"}
 function setBeverage(id,fromUser){selectedBeverageId=id||"";document.querySelectorAll("#beverageChoices .beverage-choice").forEach(b=>{const on=b.dataset.id===selectedBeverageId;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});$("#beverageDetailsField").classList.toggle("hidden",!selectedBeverageId);if(!selectedBeverageId)$("#beverageDetails").value="";if(fromUser)markDirty()}
 function renderBeverages(list,current){
   const box=$("#beverageChoices");box.innerHTML="";
