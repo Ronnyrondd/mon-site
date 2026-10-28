@@ -43,7 +43,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .hand-row{display:flex;gap:6px}.thumb{width:62px;border-radius:12px;border:2px solid transparent;background:transparent;padding:0;overflow:hidden}.thumb.on{border-color:var(--sage-dark);background:var(--sage-light)}.thumb canvas{display:block;width:100%}
 .thumb span{display:block;font-size:10px;color:var(--muted);padding-bottom:3px}
 .panel{background:var(--white);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.tabs{display:flex;border-bottom:1px solid var(--line)}.tabs button{flex:1;border:0;background:transparent;padding:13px 2px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent}.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}.tabs button{flex:1 1 auto;border:0;background:transparent;padding:13px 2px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent}.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
 .pbody{flex:1;overflow:auto;padding:14px 14px 30px;-webkit-overflow-scrolling:touch}.pbody section{display:none}.pbody section.on{display:block}
 .pbody h3{margin:18px 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}.pbody h3:first-child{margin-top:0}
 .grid{display:grid;gap:8px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
@@ -86,7 +86,7 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
       <button class="tool" data-tool="fill">Fond</button>
       <button class="tool" data-tool="photo">Photo</button>
       <button class="tool" data-tool="deco">Déco</button>
-      <label for="size">Taille</label><input id="size" type="range" min="1" max="24" step="0.5">
+      <label for="size">Taille</label><input id="size" type="range" min="1" max="60" step="0.5">
       <label>Couleur</label><button class="curcolor" id="curColor" aria-label="Couleur active"></button>
     </aside>
     <section class="stage">
@@ -95,7 +95,7 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
     </section>
     <aside class="panel">
       <nav class="tabs" id="tabs">
-        <button data-tab="forme">Forme</button><button data-tab="couleur">Couleur</button><button data-tab="effets">Effets</button><button data-tab="photo">Photo</button><button data-tab="deco">Déco</button><button data-tab="options">Options</button>
+        <button data-tab="forme">Forme</button><button data-tab="couleur">Couleur</button><button data-tab="pinceau">Pinceau</button><button data-tab="effets">Effets</button><button data-tab="photo">Photo</button><button data-tab="deco">Déco</button><button data-tab="options">Options</button>
       </nav>
       <div class="pbody">
         <section data-tab="forme">
@@ -111,6 +111,19 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
           <div id="palette"></div>
           <h3>Appliquer comme fond</h3>
           <div class="chips"><button class="chip" id="baseOne">Cet ongle</button><button class="chip" id="baseAll">Les 10 ongles</button></div>
+        </section>
+        <section data-tab="pinceau">
+          <h3>Aperçu du trait</h3>
+          <canvas id="brushPrev" width="640" height="150" style="width:100%;height:75px;border-radius:12px;background:#fff;border:1px solid var(--line)"></canvas>
+          <h3>Taille</h3>
+          <div class="row"><input type="range" id="bSize" min="1" max="60" step="0.5"></div>
+          <div class="chips" id="sizePre"></div>
+          <h3>Opacité</h3>
+          <div class="row"><input type="range" id="bAlpha" min="0.1" max="1" step="0.05"></div>
+          <h3>Matière du pinceau</h3>
+          <div class="chips" id="brushMat"></div>
+          <div class="chips" id="brushMetal" style="margin-top:8px" hidden></div>
+          <p style="font-size:12px;color:var(--muted)">Avec une matière (chrome, œil de chat, paillettes…), tu dessines directement avec cet effet : ça ne change que ton trait, pas le fond de l'ongle.</p>
         </section>
         <section data-tab="effets">
           <h3>Effet</h3><div class="chips" id="effects"></div>
@@ -143,10 +156,11 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
           <h3>Strass, bijoux, décorations</h3><div class="grid g4" id="decoGrid"></div>
           <h3>Finition</h3><div class="chips" id="decoFinish"></div>
           <div class="row"><span>Couleur</span><input type="color" id="decoColor"></div>
-          <div class="row"><span>Taille</span><input type="range" id="decoSize" min="2" max="30" step="0.5"></div>
+          <div class="row"><span>Taille</span><input type="range" id="decoSize" min="2" max="70" step="0.5"></div>
+          <div class="row"><span>Étirer</span><input type="range" id="decoAr" min="0.25" max="4" step="0.05"></div>
           <div class="row"><span>Rotation</span><input type="range" id="decoRot" min="-180" max="180" step="5"></div>
           <div class="chips"><button class="chip" id="decoScatter">Semis : non</button><button class="chip" id="decoDup">Dupliquer</button><button class="chip" id="decoDel">Supprimer</button></div>
-          <p style="font-size:12px;color:var(--muted)">Touche l'ongle pour poser. Touche une décoration pour la sélectionner, puis glisse pour la déplacer.</p>
+          <p style="font-size:12px;color:var(--muted)">Touche l'ongle pour poser. Touche une décoration pour la sélectionner : glisse-la pour la déplacer, tire la poignée pleine pour l'agrandir et la tourner, la poignée blanche pour l'étirer.</p>
         </section>
         <section data-tab="options">
           <h3>Fiche de pose</h3>
