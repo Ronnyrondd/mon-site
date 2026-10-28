@@ -4,48 +4,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--cream:#FAF7F0;--ink:#2B241F;--soft:#655b52;--sage:#748058;--pale:#eef0e5;--card:#fffefb;--line:rgba(43,36,31,.14);--danger:#9a4b4b}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Jost,sans-serif}.wrap{width:min(880px,calc(100% - 28px));margin:auto;padding:28px 0 60px}
-h1,h2{font-family:Fraunces,serif;font-weight:500}.hero{text-align:center;padding:28px 0}.hero h1{font-size:clamp(38px,7vw,58px);margin:7px}.eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:#56622f;font-weight:600}.sub{color:var(--soft)}
+:root{--cream:#FAF7F0;--ink:#2B241F;--soft:#655b52;--sage:#748058;--sage2:#56622f;--pale:#eef0e5;--card:#fffefb;--line:rgba(43,36,31,.14);--danger:#9a4b4b}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Jost,sans-serif}.wrap{width:min(880px,calc(100% - 28px));margin:auto;padding:28px 0 90px}
+h1,h2,h3{font-family:Fraunces,serif;font-weight:500}.hero{text-align:center;padding:28px 0}.hero h1{font-size:clamp(38px,7vw,58px);margin:7px}.eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--sage2);font-weight:600}.sub{color:var(--soft)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:23px;padding:clamp(20px,4vw,34px);margin:16px 0;box-shadow:0 18px 45px -32px #40372e}.card h2{font-size:28px;margin:0 0 5px}
 .appt{background:var(--ink);color:white}.appt .sub{color:#d7d0c8}.big{font:500 25px Fraunces;margin:12px 0}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:rgba(255,255,255,.12);padding:7px 10px;border-radius:999px;font-size:13px}
-.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.choice{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 34px 14px 14px;background:white;cursor:pointer;text-align:left;font:inherit;transition:.15s}.choice:hover{border-color:rgba(116,128,88,.45);background:#fbfcf7}.choice.on{border-color:var(--sage);background:var(--pale)}.choice.on::after{content:"✓";position:absolute;right:13px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:12px;font-weight:700}.choice-title{display:block;font-weight:600;color:var(--ink)}.choice-note{display:block;margin-top:3px;font-size:11px;color:var(--soft);line-height:1.35}.beverage-note{margin:18px 0 10px;padding:12px 14px;border-radius:13px;background:var(--pale);color:var(--sage2);font-size:13px}.beverage-choices{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.beverage-choice{position:relative;border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:10px 15px;font:500 13px Jost;cursor:pointer;transition:.15s}.beverage-choice:hover{border-color:rgba(116,128,88,.45);background:#fbfcf7}.beverage-choice.on{border-color:var(--sage);background:var(--pale);padding-right:34px}.beverage-choice.on::after{content:"✓";position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--sage);font-weight:700}.beverage-details.hidden{display:none}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.choice{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 34px 14px 14px;background:white;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:.15s}.choice:hover{border-color:rgba(116,128,88,.45);background:#fbfcf7}.choice.on{border-color:var(--sage);background:var(--pale)}.choice.on::after{content:"✓";position:absolute;right:13px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:12px;font-weight:700}.choice-title{display:block;font-weight:600;color:var(--ink)}.choice-note{display:block;margin-top:3px;font-size:11px;color:var(--soft);line-height:1.35}
+.beverage-note{margin:18px 0 10px;padding:12px 14px;border-radius:13px;background:var(--pale);color:var(--sage2);font-size:13px}.beverage-choices{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.beverage-choice{position:relative;border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:10px 15px;font:500 13px Jost;cursor:pointer;transition:.15s}.beverage-choice:hover{border-color:rgba(116,128,88,.45);background:#fbfcf7}.beverage-choice.on{border-color:var(--sage);background:var(--pale);padding-right:34px}.beverage-choice.on::after{content:"✓";position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--sage);font-weight:700}
 label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input,textarea,select{width:100%;font:inherit;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:white;margin-top:6px;color:var(--ink)}textarea{min-height:90px;resize:vertical}
-.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}.legal-info{margin-top:26px;padding:16px 18px;border-radius:16px;background:#f7f4ed;border:1px solid var(--line)}.legal-info summary{cursor:pointer;font-weight:600;color:var(--soft);list-style:none}.legal-info summary::-webkit-details-marker{display:none}.legal-info summary::after{content:"＋";float:right;color:var(--sage)}.legal-info[open] summary::after{content:"−"}.legal-info .legal-body{padding-top:10px}.legal-info .btn{background:transparent;color:var(--soft);border:1px solid var(--line)}
-.inspiration{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
-.inspiration-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.inspiration-count{font-size:12px;color:var(--soft);white-space:nowrap}
-.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}
-.photo-card{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:var(--pale);border:1px solid var(--line)}
-.photo-card img{width:100%;height:100%;object-fit:cover;display:block}
-.photo-remove{position:absolute;right:7px;top:7px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(43,36,31,.82);color:white;cursor:pointer;font-size:16px}
-.upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}
-.upload-label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;background:white;padding:11px 16px;font-weight:600;font-size:13px;cursor:pointer}
-.upload-label.disabled{opacity:.45;pointer-events:none}.upload-label input{display:none}
-.upload-status{font-size:12px;color:var(--soft)}
-.reschedule{border-top:1px solid var(--line);margin-top:22px;padding-top:22px}.reschedule-panel{margin-top:16px;padding:18px;background:var(--pale);border-radius:16px}.slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.slot{border:1px solid var(--line);border-radius:12px;background:white;padding:10px 8px;font:500 13px Jost;cursor:pointer;color:var(--ink)}.slot.on{border-color:var(--sage);background:#e3e8d5}.reschedule-summary{margin-top:15px;padding:14px;background:white;border:1px solid var(--line);border-radius:13px;font-size:14px;line-height:1.7}.secondary-btn{background:transparent;color:var(--sage);border:1px solid rgba(116,128,88,.45)}.reschedule-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:15px}.hidden{display:none!important}.loading{text-align:center;padding:80px 20px;color:var(--soft)}.error{background:#f7e8e8;color:#8a3030;padding:14px;border-radius:12px}
-@media(max-width:620px){.choices{grid-template-columns:1fr}.actions .btn{width:100%}.photo-grid{grid-template-columns:repeat(3,1fr)}}
+.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.btn:disabled{opacity:.55;cursor:default}.btn.danger-btn{background:var(--danger)}.calendar-btn{margin-top:18px;display:inline-flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;margin-top:20px}.msg{padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:15px;font-size:13px}
+.danger{border-top:1px solid var(--line);margin-top:25px;padding-top:22px}.danger .btn{background:transparent;color:var(--danger);border:1px solid rgba(154,75,75,.35)}
+.legal-info{margin-top:26px;padding:16px 18px;border-radius:16px;background:#f7f4ed;border:1px solid var(--line)}.legal-info summary{cursor:pointer;font-weight:600;color:var(--soft);list-style:none}.legal-info summary::-webkit-details-marker{display:none}.legal-info summary::after{content:"＋";float:right;color:var(--sage)}.legal-info[open] summary::after{content:"−"}.legal-info .legal-body{padding-top:10px}.legal-info .btn{background:transparent;color:var(--soft);border:1px solid var(--line)}
+.info-card summary{cursor:pointer;font:500 22px Fraunces,serif;list-style:none}.info-card summary::-webkit-details-marker{display:none}.info-card summary::after{content:"＋";float:right;color:var(--sage)}.info-card[open] summary::after{content:"−"}.info-list{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:11px}.info-list li{font-size:14px;line-height:1.5}.info-list strong{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage2)}.info-card a{color:var(--sage2)}
+.inspiration{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}.inspiration-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.inspiration-count{font-size:12px;color:var(--soft);white-space:nowrap}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px}.photo-card{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:var(--pale);border:1px solid var(--line)}.photo-card img{width:100%;height:100%;object-fit:cover;display:block}.photo-remove{position:absolute;right:7px;top:7px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(43,36,31,.82);color:white;cursor:pointer;font-size:16px}
+.upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}.upload-label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;background:white;padding:11px 16px;font-weight:600;font-size:13px;cursor:pointer}.upload-label.disabled{opacity:.45;pointer-events:none}.upload-label input{display:none}.upload-status{font-size:12px;color:var(--soft)}
+.reschedule{border-top:1px solid var(--line);margin-top:22px;padding-top:22px}.reschedule-panel{margin-top:16px;padding:18px;background:var(--pale);border-radius:16px}
+.day-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.daychip{border:1px solid var(--line);border-radius:999px;background:white;padding:9px 14px;font:500 13px Jost;cursor:pointer;color:var(--ink);text-transform:capitalize}.daychip.on{border-color:var(--sage);background:#e3e8d5}
+.slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.slot{border:1px solid var(--line);border-radius:12px;background:white;padding:10px 8px;font:500 13px Jost;cursor:pointer;color:var(--ink)}.slot.on{border-color:var(--sage);background:#e3e8d5}
+.reschedule-summary{margin-top:15px;padding:14px;background:white;border:1px solid var(--line);border-radius:13px;font-size:14px;line-height:1.7}.secondary-btn{background:transparent;color:var(--sage);border:1px solid rgba(116,128,88,.45)}.reschedule-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:15px}
+.hidden{display:none!important}.loading{text-align:center;padding:80px 20px;color:var(--soft)}.error{background:#f7e8e8;color:#8a3030;padding:14px;border-radius:12px}
+.savebar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:12px;background:var(--ink);color:white;border-radius:999px;padding:9px 9px 9px 18px;box-shadow:0 14px 34px -12px rgba(0,0,0,.45);font-size:13px;max-width:calc(100% - 24px)}.savebar .btn{padding:9px 16px}.savebar.err{background:#7d3a3a}
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:60;background:var(--ink);color:white;padding:11px 18px;border-radius:999px;font-size:13px;box-shadow:0 14px 34px -12px rgba(0,0,0,.45);max-width:calc(100% - 28px);text-align:center}
+.modal-bg{position:fixed;inset:0;z-index:50;background:rgba(43,36,31,.5);display:grid;place-items:center;padding:18px;backdrop-filter:blur(3px)}.modal{width:min(420px,100%);background:var(--card);border-radius:22px;padding:26px;box-shadow:0 30px 70px -20px rgba(0,0,0,.5)}.modal h3{margin:0 0 8px;font-size:24px}.modal p{margin:0;color:var(--soft);white-space:pre-line;line-height:1.55;font-size:14px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:22px}
+@media(max-width:620px){.choices{grid-template-columns:1fr}.actions .btn{width:100%}.slot-grid{grid-template-columns:repeat(3,1fr)}.modal-actions .btn{flex:1}}
 </style></head><body><main class="wrap">
 <section class="hero"><div class="eyebrow">Espace privé</div><h1>Mon rendez-vous</h1><p class="sub">Retrouve ton rendez-vous et personnalise ton moment.</p></section>
 <div id="loading" class="loading">Chargement de ton rendez-vous…</div>
 <div id="invalid" class="card hidden"><h2>Lien invalide</h2><p class="sub">Ce lien ne correspond à aucun rendez-vous. Vérifie le lien reçu ou contacte-moi.</p></div>
+<div id="netError" class="card hidden"><h2>Petit souci de connexion</h2><p class="sub">Je n'arrive pas à charger ton rendez-vous pour le moment. Vérifie ta connexion puis réessaie.</p><div class="actions" style="justify-content:flex-start"><button id="retry" class="btn" type="button">Réessayer</button></div></div>
 <div id="content" class="hidden">
 <section class="card appt"><div class="eyebrow" style="color:#dce3c9">Mon rendez-vous</div><div id="service" class="big"></div><div id="date"></div><div id="options" class="chips"></div><div id="price" style="margin-top:14px"></div><button id="addCalendarBtn" class="btn calendar-btn" type="button">📅 Ajouter à mon agenda</button></section>
 
+<details id="infoCard" class="card info-card hidden"><summary>ℹ️ Infos pratiques</summary><ul id="infoList" class="info-list"></ul></details>
+
 <section id="poseCard" class="card"><h2>🎨 Ma pose</h2><p class="sub">Tu as déjà une idée ? Tu peux me laisser quelques indications. Tout est facultatif.</p>
+<p style="margin:20px 0 0"><strong>As-tu déjà une pose à retirer ?</strong></p><p class="sub" style="margin:3px 0 0;font-size:13px">Ça m'aide à prévoir le bon temps pour ton rendez-vous.</p>
+<div class="choices" id="depose">
+<button class="choice" type="button" data-v="none"><span class="choice-title">Non</span><span class="choice-note">Ongles naturels ou rien à retirer.</span></button><button class="choice" type="button" data-v="gel"><span class="choice-title">Oui, gel / semi</span><span class="choice-note">Gel, semi-permanent, vernis tenue longue.</span></button><button class="choice" type="button" data-v="other"><span class="choice-title">Oui, autre pose</span><span class="choice-note">Capsules, résine, acrylique…</span></button></div>
 <label class="field">Forme souhaitée<input id="shape" placeholder="Amande, carré, coffin…"></label>
 <label class="field">Longueur souhaitée<input id="length" placeholder="Courte, moyenne, longue…"></label>
 <label class="field">Couleurs / envies<input id="colors" placeholder="Bordeaux, nude, chrome…"></label>
 <label class="field">Une idée ou un petit message pour ta pose<textarea id="designNote" placeholder="Pas de panique si tu ne sais pas encore, on pourra décider ensemble ♡"></textarea></label>
 <div class="inspiration">
   <div class="inspiration-head">
-    <div><strong>📎 Mes inspirations</strong><div class="sub" style="margin-top:4px">Ajoute jusqu’à 3 photos pour me montrer ce que tu imagines.</div></div>
-    <div id="photoCount" class="inspiration-count">0 / 3</div>
+    <div><strong>📎 Mes inspirations</strong><div class="sub" style="margin-top:4px">Ajoute jusqu’à 5 photos pour me montrer ce que tu imagines.</div></div>
+    <div id="photoCount" class="inspiration-count">0 / 5</div>
   </div>
   <div id="photoGrid" class="photo-grid"></div>
   <div class="upload-row">
-    <label id="uploadLabel" class="upload-label">＋ Ajouter une photo
-      <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif">
+    <label id="uploadLabel" class="upload-label">＋ Ajouter des photos
+      <input id="photoInput" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif">
     </label>
     <span id="uploadStatus" class="upload-status"></span>
   </div>
@@ -54,17 +63,26 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
 
 <section id="momentCard" class="card"><h2>Mon moment</h2><p class="sub">Comment as-tu envie de profiter de ton rendez-vous ? Tu peux aussi ne rien choisir.</p>
 <p><strong>Ambiance</strong></p><div class="choices" id="conversation">
-<button class="choice" data-v="quiet"><span class="choice-title">Moment calme</span><span class="choice-note">Un moment tranquille, pour profiter de ta pause.</span></button><button class="choice" data-v="chat"><span class="choice-title">On papote !</span><span class="choice-note">Avec plaisir, on papote pendant le rendez-vous.</span></button><button class="choice" data-v="no_preference"><span class="choice-title">Comme ça vient</span><span class="choice-note">On voit selon l’envie du moment.</span></button></div>
+<button class="choice" type="button" data-v="quiet"><span class="choice-title">Moment calme</span><span class="choice-note">Un moment tranquille, pour profiter de ta pause.</span></button><button class="choice" type="button" data-v="chat"><span class="choice-title">On papote !</span><span class="choice-note">Avec plaisir, on papote pendant le rendez-vous.</span></button><button class="choice" type="button" data-v="no_preference"><span class="choice-title">Comme ça vient</span><span class="choice-note">On voit selon l’envie du moment.</span></button></div>
 <p style="margin-top:22px"><strong>Musique</strong></p><div class="choices" id="music">
-<button class="choice" data-v="music"><span class="choice-title">Avec musique</span></button><button class="choice" data-v="no_music"><span class="choice-title">Sans musique</span></button><button class="choice" data-v="no_preference"><span class="choice-title">Peu importe</span></button></div>
+<button class="choice" type="button" data-v="music"><span class="choice-title">Avec musique</span></button><button class="choice" type="button" data-v="no_music"><span class="choice-title">Sans musique</span></button><button class="choice" type="button" data-v="no_preference"><span class="choice-title">Peu importe</span></button></div>
 <div class="beverage-note"><strong>Boisson offerte</strong><br>Une boisson t’est offerte pendant ton rendez-vous ☕ Choisis-la maintenant ou décide sur place.</div><div id="beverageChoices" class="beverage-choices"></div>
 <label id="beverageDetailsField" class="field beverage-details hidden">Une petite précision ?<input id="beverageDetails" placeholder="Ex. sans sucre, avec un peu de lait…"></label>
-<div id="saveMsg" class="msg hidden"></div><div class="actions"><button id="save" class="btn">Enregistrer mes préférences</button></div>
 </section>
 
-<section class="card"><h2>Gérer mon rendez-vous</h2><p class="sub">Un changement ou un imprévu ? Tu peux gérer ton rendez-vous ici.</p><div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button><div id="reschedulePanel" class="reschedule-panel hidden"><label class="field" style="margin-top:0">Nouvelle date<input id="rescheduleDate" type="date"></label><div id="slotStatus" class="sub" style="margin-top:14px">Choisis d’abord une date.</div><div id="slotGrid" class="slot-grid"></div><div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div><div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div></div></div><div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn">Annuler mon rendez-vous</button></div></div><div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div><div id="alreadyCancelled" class="msg hidden">
-  Ce rendez-vous est déjà annulé.
-</div>
+<section class="card"><h2>Gérer mon rendez-vous</h2><p class="sub">Un changement ou un imprévu ? Tu peux gérer ton rendez-vous ici.</p>
+<div id="rescheduleAllowed" class="reschedule hidden"><strong>Modifier mon rendez-vous</strong><p class="sub">Choisis une autre date et un créneau disponible. Tes inspirations et préférences seront conservées.</p><button id="openReschedule" class="btn secondary-btn" type="button">Modifier mon rendez-vous</button>
+ <div id="reschedulePanel" class="reschedule-panel hidden">
+  <div id="slotStatus" class="sub">Recherche des créneaux disponibles…</div>
+  <div id="dayChips" class="day-chips"></div>
+  <div class="actions" style="justify-content:flex-start;margin-top:10px"><button id="moreDays" class="btn secondary-btn hidden" type="button">Voir plus de dates</button></div>
+  <div id="slotGrid" class="slot-grid"></div>
+  <div id="rescheduleSummary" class="reschedule-summary hidden"></div><div id="rescheduleMsg" class="msg hidden"></div>
+  <div class="reschedule-actions"><button id="closeReschedule" class="btn secondary-btn" type="button">Fermer</button><button id="confirmReschedule" class="btn" type="button" disabled>Confirmer ce créneau</button></div>
+ </div></div>
+<div id="cancelAllowed" class="danger hidden"><p>Tu peux annuler ce rendez-vous en ligne jusqu'à 24 h avant.</p><label class="field">Motif (facultatif)<input id="reason"></label><div class="actions"><button id="cancel" class="btn" type="button">Annuler mon rendez-vous</button></div></div>
+<div id="cancelBlocked" class="msg hidden">À moins de 24 h du rendez-vous, la modification et l'annulation en ligne ne sont plus disponibles. Contacte-moi directement si tu as un imprévu.</div>
+<div id="alreadyCancelled" class="msg hidden">Ce rendez-vous est déjà annulé.</div>
 
 <details id="withdrawalBlock" class="legal-info hidden">
   <summary>Informations légales · droit de rétractation</summary>
@@ -76,42 +94,99 @@ label.field{display:block;margin-top:15px;font-size:13px;color:var(--soft)}input
     <div class="actions"><button id="withdraw" class="btn" type="button">Exercer mon droit de rétractation</button></div>
   </div>
 </details>
-
-<div id="alreadyWithdrawn" class="msg hidden">
-  Ton droit de rétractation a déjà été exercé pour ce rendez-vous.
-</div>
-
+<div id="alreadyWithdrawn" class="msg hidden">Ton droit de rétractation a déjà été exercé pour ce rendez-vous.</div>
 </section>
 </div></main>
+
+<div id="saveBar" class="savebar hidden" role="status"><span id="saveText"></span><button id="save" class="btn" type="button">Enregistrer</button></div>
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="modalBg" class="modal-bg hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><h3 id="modalTitle"></h3><p id="modalText"></p><div class="modal-actions"><button id="modalCancel" class="btn secondary-btn" type="button"></button><button id="modalOk" class="btn" type="button"></button></div></div></div>
+
 <script>
+/* ===== À COMPLÉTER : infos pratiques (laisse "" pour masquer une ligne) ===== */
+const INFO={
+  addressNote:"",
+  address:"",      // adresse exacte : uniquement pour l'agenda .ics (laisse vide pour ne pas l'exposer)
+  mapsUrl:"",      // inutilisé tant que l'adresse n'est pas affichée
+  late:"",         // ex. "Au-delà de 15 min de retard, le rendez-vous peut être raccourci ou reporté."
+  bring:"",
+  avoid:"",        // ex. "Évite les crèmes grasses sur les mains le jour même."
+  faqUrl:""        // lien vers ta FAQ
+};
+/* =========================================================================== */
 const db=supabase.createClient("https://zlmwytycgopowalfrjwf.supabase.co","sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG");
-const token=new URLSearchParams(location.search).get("token");let appt=null,conv=null,music=null,media=[],rescheduleSlots=[],selectedRescheduleSlot=null;
+const $=s=>document.querySelector(s);
+const token=new URLSearchParams(location.search).get("token");
+let appt=null,conv=null,music=null,depose=null,media=[],selectedBeverageId="",terminalStatus=false;
 const euro=c=>(c/100).toLocaleString("fr-BE",{style:"currency",currency:"EUR"});
-function select(group,val){document.querySelectorAll(`#${group} .choice`).forEach(b=>b.classList.toggle("on",b.dataset.v===val));if(group==="conversation")conv=val;else music=val}
-document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>select(b.parentElement.id,b.dataset.v));
+const TZ="Europe/Brussels";
+const DEPOSE_LABELS={none:"aucune",gel:"gel / semi-permanent",other:"autre pose (capsules, résine…)"};
 
-const MEDIA_FUNCTION="https://zlmwytycgopowalfrjwf.supabase.co/functions/v1/appointment-media";
-
-async function mediaRequest(body,isForm=false){
-  const headers={
-    "apikey":"sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG",
-  };
-  if(!isForm)headers["Content-Type"]="application/json";
-
-  const res=await fetch(MEDIA_FUNCTION,{
-    method:"POST",
-    headers,
-    body:isForm?body:JSON.stringify(body)
+/* ---------- Fenêtres et messages à ton style ---------- */
+function ask({title,text="",ok="OK",cancel="Annuler",danger=false}){
+  return new Promise(res=>{
+    const bg=$("#modalBg"),okb=$("#modalOk"),cb=$("#modalCancel");
+    $("#modalTitle").textContent=title;$("#modalText").textContent=text;
+    okb.textContent=ok;okb.classList.toggle("danger-btn",danger);
+    cb.textContent=cancel||"";cb.classList.toggle("hidden",!cancel);
+    bg.classList.remove("hidden");okb.focus();
+    const key=e=>{if(e.key==="Escape")done(false)};
+    const done=v=>{bg.classList.add("hidden");okb.onclick=cb.onclick=bg.onclick=null;document.removeEventListener("keydown",key);res(v)};
+    document.addEventListener("keydown",key);
+    okb.onclick=()=>done(true);cb.onclick=()=>done(false);bg.onclick=e=>{if(e.target===bg)done(false)};
   });
+}
+let toastTimer;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add("hidden"),3200)}
 
+/* ---------- Choix (ambiance, musique, dépose) : un 2e clic retire le choix ---------- */
+function select(group,val){
+  const cur=group==="conversation"?conv:group==="music"?music:depose;
+  const next=cur===val?null:val;
+  document.querySelectorAll(`#${group} .choice`).forEach(b=>{const on=b.dataset.v===next;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});
+  if(group==="conversation")conv=next;else if(group==="music")music=next;else depose=next;
+}
+document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{select(b.parentElement.id,b.dataset.v);markDirty()});
+document.querySelectorAll(".choice").forEach(b=>b.setAttribute("aria-pressed","false"));
+
+/* ---------- Enregistrement automatique ---------- */
+let dirty=false,saving=false,saveTimer=null;
+function showBar(text,{err=false,btn=true}={}){const b=$("#saveBar");b.classList.remove("hidden");b.classList.toggle("err",err);$("#saveText").textContent=text;$("#save").classList.toggle("hidden",!btn)}
+function markDirty(){if(terminalStatus)return;dirty=true;showBar("Modifications non enregistrées");clearTimeout(saveTimer);saveTimer=setTimeout(savePrefs,1500)}
+function composeNote(){
+  const t=$("#designNote").value.trim();
+  const out=((depose?`[Dépose : ${DEPOSE_LABELS[depose]}]\n`:"")+t).trim();
+  return out||null;
+}
+async function savePrefs(){
+  clearTimeout(saveTimer);
+  if(saving){dirty=true;return}
+  if(!dirty)return;
+  saving=true;dirty=false;showBar("Enregistrement…",{btn:false});
+  const v=id=>$(id).value.trim()||null;
+  const {data,error}=await db.rpc("save_private_appointment_preferences",{p_token:token,p_conversation_preference:conv,p_music_preference:music,p_beverage_id:selectedBeverageId||null,p_beverage_details:selectedBeverageId?v("#beverageDetails"):null,p_nail_shape:v("#shape"),p_nail_length:v("#length"),p_color_wishes:v("#colors"),p_client_design_note:composeNote()});
+  saving=false;
+  if(error||!data){console.error(error);dirty=true;showBar("Impossible d'enregistrer pour le moment",{err:true});return}
+  if(dirty){savePrefs();return}
+  showBar("C'est enregistré ♡",{btn:false});setTimeout(()=>{if(!dirty&&!saving)$("#saveBar").classList.add("hidden")},2200);
+}
+$("#save").onclick=savePrefs;
+["#shape","#length","#colors","#designNote","#beverageDetails"].forEach(s=>$(s).addEventListener("input",markDirty));
+window.addEventListener("beforeunload",e=>{if(dirty||saving){e.preventDefault();e.returnValue=""}});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&dirty)savePrefs()});
+
+/* ---------- Photos d'inspiration (réduites en JPEG avant envoi) ---------- */
+const MEDIA_FUNCTION="https://zlmwytycgopowalfrjwf.supabase.co/functions/v1/appointment-media";
+async function mediaRequest(body,isForm=false){
+  const headers={"apikey":"sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG"};
+  if(!isForm)headers["Content-Type"]="application/json";
+  const res=await fetch(MEDIA_FUNCTION,{method:"POST",headers,body:isForm?body:JSON.stringify(body)});
   const data=await res.json().catch(()=>({}));
   if(!res.ok)throw new Error(data.error||"media_error");
   return data;
 }
 function renderMedia(){
-  const grid=document.querySelector("#photoGrid"),count=document.querySelector("#photoCount"),
-        label=document.querySelector("#uploadLabel");
-  grid.innerHTML="";
+  const grid=$("#photoGrid");grid.innerHTML="";
   media.forEach(item=>{
     const card=document.createElement("div");card.className="photo-card";
     const img=document.createElement("img");img.src=item.url;img.alt="Photo d’inspiration";
@@ -120,207 +195,238 @@ function renderMedia(){
     del.onclick=()=>removeMedia(item.id,del);
     card.append(img,del);grid.appendChild(card);
   });
-  count.textContent=`${media.length} / 3`;
-  label.classList.toggle("disabled",media.length>=3);
+  $("#photoCount").textContent=`${media.length} / 5`;
+  $("#uploadLabel").classList.toggle("disabled",media.length>=5);
 }
 async function loadMedia(){
-  try{
-    const data=await mediaRequest({action:"list",token});
-    media=data.media||[];renderMedia();
-  }catch(e){
-    console.error(e);
-    document.querySelector("#uploadStatus").textContent="Impossible de charger les inspirations.";
-  }
+  try{const data=await mediaRequest({action:"list",token});media=data.media||[];renderMedia()}
+  catch(e){console.error(e);$("#uploadStatus").textContent="Impossible de charger les inspirations."}
 }
-async function uploadMedia(file){
-  const status=document.querySelector("#uploadStatus"),input=document.querySelector("#photoInput");
-  if(!file)return;
-  if(media.length>=3){status.textContent="Tu as déjà ajouté 3 photos.";return}
-  if(file.size>5*1024*1024){status.textContent="Cette photo dépasse 5 Mo.";input.value="";return}
-  const allowed=["image/jpeg","image/png","image/webp","image/heic","image/heif"];
-  if(file.type && !allowed.includes(file.type)){status.textContent="Format non accepté.";input.value="";return}
-  status.textContent="Envoi de la photo…";input.disabled=true;
-  const form=new FormData();form.append("action","upload");form.append("token",token);form.append("file",file);
+async function toBitmap(file){
+  try{return await createImageBitmap(file,{imageOrientation:"from-image"})}catch(e){}
+  try{return await createImageBitmap(file)}catch(e){}
+  return await new Promise((ok,ko)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=()=>{URL.revokeObjectURL(u);ko(new Error("decode"))};i.src=u});
+}
+async function prepareImage(file){
   try{
-    await mediaRequest(form,true);
-    status.textContent="Photo ajoutée ✓";
-    await loadMedia();
-  }catch(e){
-    console.error(e);
-    const messages={
-      maximum_files_reached:"Tu as déjà ajouté 3 photos.",
-      file_too_large:"Cette photo dépasse 5 Mo.",
-      invalid_file_type:"Ce format de photo n’est pas accepté.",
-      appointment_cancelled:"Ce rendez-vous est annulé."
-    };
-    status.textContent=messages[e.message]||"Impossible d’envoyer la photo pour le moment.";
-  }finally{
-    input.disabled=false;input.value="";
+    const bmp=await toBitmap(file),w=bmp.width||bmp.naturalWidth,h=bmp.height||bmp.naturalHeight;
+    const s=Math.min(1,1600/Math.max(w,h)),c=document.createElement("canvas");
+    c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));
+    c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);if(bmp.close)bmp.close();
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));
+    if(blob)return new File([blob],"inspiration.jpg",{type:"image/jpeg"});
+  }catch(e){console.warn("réduction impossible, envoi tel quel",e)}
+  return file;
+}
+const MEDIA_ERRORS={maximum_files_reached:"Tu as déjà ajouté 5 photos.",file_too_large:"Cette photo est trop lourde.",invalid_file_type:"Ce format de photo n’est pas accepté.",appointment_cancelled:"Ce rendez-vous est annulé.",appointment_closed:"Ce rendez-vous n'accepte plus de photos."};
+async function uploadFiles(list){
+  const status=$("#uploadStatus"),input=$("#photoInput");
+  const files=[...list].slice(0,Math.max(0,5-media.length));
+  if(!files.length){status.textContent="Tu as déjà ajouté 5 photos.";input.value="";return}
+  input.disabled=true;let ok=0,lastErr="";
+  for(let i=0;i<files.length;i++){
+    status.textContent=files.length>1?`Envoi de la photo ${i+1}/${files.length}…`:"Envoi de la photo…";
+    const f=await prepareImage(files[i]);
+    if(f.size>5*1024*1024){lastErr="Cette photo est trop lourde.";continue}
+    const form=new FormData();form.append("action","upload");form.append("token",token);form.append("file",f);
+    try{await mediaRequest(form,true);ok++}catch(e){console.error(e);lastErr=MEDIA_ERRORS[e.message]||"Impossible d’envoyer la photo pour le moment."}
   }
+  input.disabled=false;input.value="";
+  await loadMedia();
+  status.textContent=lastErr?lastErr:(ok>1?`${ok} photos ajoutées ✓`:"Photo ajoutée ✓");
+  if(list.length>files.length&&!lastErr)status.textContent+=" (5 photos maximum)";
 }
 async function removeMedia(id,button){
-  if(!confirm("Supprimer cette photo d’inspiration ?"))return;
-  button.disabled=true;
-  const status=document.querySelector("#uploadStatus");status.textContent="Suppression…";
-  try{
-    await mediaRequest({action:"delete",token,media_id:id});
-    media=media.filter(x=>x.id!==id);renderMedia();status.textContent="Photo supprimée.";
-  }catch(e){
-    console.error(e);button.disabled=false;status.textContent="Impossible de supprimer la photo.";
-  }
+  if(!await ask({title:"Supprimer cette photo ?",text:"Elle ne sera plus visible pour moi.",ok:"Supprimer",danger:true}))return;
+  button.disabled=true;const status=$("#uploadStatus");status.textContent="Suppression…";
+  try{await mediaRequest({action:"delete",token,media_id:id});media=media.filter(x=>x.id!==id);renderMedia();status.textContent="Photo supprimée."}
+  catch(e){console.error(e);button.disabled=false;status.textContent="Impossible de supprimer la photo."}
 }
-document.querySelector("#photoInput").addEventListener("change",e=>uploadMedia(e.target.files?.[0]));
+$("#photoInput").addEventListener("change",e=>uploadFiles(e.target.files||[]));
 
-let selectedBeverageId="";
-function beverageEmoji(name){const n=String(name||"").toLowerCase();if(n.includes("café")||n.includes("cafe"))return "☕";if(n.includes("chocolat"))return "🍫";if(n.includes("thé")||n.includes("the"))return "🍵";if(n.includes("infusion")||n.includes("tisane"))return "🌿";if(n.includes("eau"))return "💧";if(n.includes("jus"))return "🧃";return "🥤"}
-function setBeverage(id){selectedBeverageId=id||"";document.querySelectorAll("#beverageChoices .beverage-choice").forEach(b=>b.classList.toggle("on",b.dataset.id===selectedBeverageId));document.querySelector("#beverageDetailsField").classList.toggle("hidden",!selectedBeverageId);if(!selectedBeverageId)document.querySelector("#beverageDetails").value=""}
-function renderBeverages(list,current){const box=document.querySelector("#beverageChoices");box.innerHTML="";const later=document.createElement("button");later.type="button";later.className="beverage-choice";later.dataset.id="";later.textContent="Je choisirai sur place";later.addEventListener("click",()=>setBeverage(""));box.appendChild(later);(list||[]).forEach(b=>{const btn=document.createElement("button");btn.type="button";btn.className="beverage-choice";btn.dataset.id=b.id;btn.textContent=`${beverageEmoji(b.name)} ${b.name}`;if(b.description)btn.title=b.description;btn.addEventListener("click",()=>setBeverage(b.id));box.appendChild(btn)});setBeverage(current||"")}
+/* ---------- Boissons ---------- */
+function beverageEmoji(name){const n=String(name||"").toLowerCase();if(/caf[eé]/.test(n))return "☕";if(n.includes("chocolat"))return "🍫";if(/infusion|tisane|menthe|verveine/.test(n))return "🌿";if(/\bth[eé]\b/.test(n))return "🍵";if(/\beau\b/.test(n))return "💧";if(n.includes("jus"))return "🧃";return "🥤"}
+function setBeverage(id,fromUser){selectedBeverageId=id||"";document.querySelectorAll("#beverageChoices .beverage-choice").forEach(b=>{const on=b.dataset.id===selectedBeverageId;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});$("#beverageDetailsField").classList.toggle("hidden",!selectedBeverageId);if(!selectedBeverageId)$("#beverageDetails").value="";if(fromUser)markDirty()}
+function renderBeverages(list,current){
+  const box=$("#beverageChoices");box.innerHTML="";
+  const later=document.createElement("button");later.type="button";later.className="beverage-choice";later.dataset.id="";later.textContent="Je choisirai sur place";later.addEventListener("click",()=>setBeverage("",true));box.appendChild(later);
+  (list||[]).forEach(b=>{const btn=document.createElement("button");btn.type="button";btn.className="beverage-choice";btn.dataset.id=b.id;btn.textContent=`${beverageEmoji(b.name)} ${b.name}`;if(b.description)btn.title=b.description;btn.addEventListener("click",()=>setBeverage(b.id,true));box.appendChild(btn)});
+  setBeverage(current||"",false);
+}
+
+/* ---------- Infos pratiques ---------- */
+function renderInfo(){
+  const list=$("#infoList");list.innerHTML="";let n=0;
+  const add=(label,node)=>{const li=document.createElement("li"),s=document.createElement("strong");s.textContent=label;li.append(s,node);list.appendChild(li);n++};
+  const txt=t=>document.createTextNode(t);
+  if(INFO.addressNote)add("Adresse",txt(INFO.addressNote));
+  if(INFO.address&&!INFO.addressNote){const w=document.createElement("span");w.append(txt(INFO.address));if(INFO.mapsUrl){const a=document.createElement("a");a.href=INFO.mapsUrl;a.target="_blank";a.rel="noopener";a.textContent=" · Itinéraire";w.appendChild(a)}add("Adresse",w)}
+  if(INFO.late)add("Retard",txt(INFO.late));
+  if(INFO.bring)add("À apporter",txt(INFO.bring));
+  if(INFO.avoid)add("À éviter",txt(INFO.avoid));
+  if(INFO.faqUrl){const a=document.createElement("a");a.href=INFO.faqUrl;a.target="_blank";a.rel="noopener";a.textContent="Voir toutes les questions fréquentes";add("Une question ?",a)}
+  $("#infoCard").classList.toggle("hidden",!n);
+}
+
+/* ---------- Chargement ---------- */
+function showOnly(id){["loading","invalid","netError","content"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id))}
+const fmtFull=v=>new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:TZ}).format(new Date(v));
 async function init(){
- if(!token){bad();return}
- const [{data,error},{data:bev}]=await Promise.all([db.rpc("get_private_appointment",{p_token:token}),db.rpc("get_public_beverages")]);
- if(error||!data?.length){console.error(error);bad();return}appt=data[0];
- document.querySelector("#service").textContent=appt.service_name;
- document.querySelector("#date").textContent=new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(appt.starts_at));
- document.querySelector("#price").textContent=`Total prévu · ${euro(appt.expected_price_cents)}`;
- const opts=document.querySelector("#options");(appt.options||[]).forEach(o=>{const s=document.createElement("span");s.className="chip";s.textContent=o.name+(o.quantity>1?` × ${o.quantity}`:"");opts.appendChild(s)});
- document.querySelector("#shape").value=appt.nail_shape||"";document.querySelector("#length").value=appt.nail_length||"";document.querySelector("#colors").value=appt.color_wishes||"";document.querySelector("#designNote").value=appt.client_design_note||"";document.querySelector("#beverageDetails").value=appt.beverage_details||"";
- renderBeverages(bev||[],appt.beverage_id||"");
- if(appt.conversation_preference)select("conversation",appt.conversation_preference);if(appt.music_preference)select("music",appt.music_preference);
- const terminalStatus=appt.status==="withdrawn" || ["cancelled_by_client","cancelled_by_admin"].includes(appt.status);
- if(appt.status==="withdrawn"){
-  document.querySelector("#alreadyWithdrawn").classList.remove("hidden");setTerminalUI();
-}
-else if(["cancelled_by_client","cancelled_by_admin"].includes(appt.status)){
-  document.querySelector("#alreadyCancelled").classList.remove("hidden");setTerminalUI();
-}
-else{
-  if(appt.cancellation_allowed){
-    document.querySelector("#rescheduleAllowed").classList.remove("hidden");
-    document.querySelector("#cancelAllowed").classList.remove("hidden");
-  }else{
-    document.querySelector("#cancelBlocked").classList.remove("hidden");
+  if(!token){showOnly("invalid");return}
+  showOnly("loading");
+  let res;
+  try{res=await Promise.all([db.rpc("get_private_appointment",{p_token:token}),db.rpc("get_public_beverages")])}
+  catch(e){console.error(e);showOnly("netError");return}
+  const [{data,error},{data:bev}]=res;
+  if(error){console.error(error);showOnly("netError");return}
+  if(!data?.length){showOnly("invalid");return}
+  appt=data[0];
+  $("#service").textContent=appt.service_name;
+  $("#date").textContent=fmtFull(appt.starts_at);
+  $("#price").textContent=`Total prévu · ${euro(appt.expected_price_cents)}`;
+  const opts=$("#options");opts.innerHTML="";(appt.options||[]).forEach(o=>{const s=document.createElement("span");s.className="chip";s.textContent=o.name+(o.quantity>1?` × ${o.quantity}`:"");opts.appendChild(s)});
+  $("#shape").value=appt.nail_shape||"";$("#length").value=appt.nail_length||"";$("#colors").value=appt.color_wishes||"";$("#beverageDetails").value=appt.beverage_details||"";
+  let note=appt.client_design_note||"";
+  const m=note.match(/^\[Dépose : (.+?)\]\n?/);
+  if(m){const key=Object.keys(DEPOSE_LABELS).find(k=>DEPOSE_LABELS[k]===m[1]);if(key)select("depose",key);note=note.slice(m[0].length)}
+  $("#designNote").value=note;
+  renderBeverages(bev||[],appt.beverage_id||"");
+  if(appt.conversation_preference)select("conversation",appt.conversation_preference);
+  if(appt.music_preference)select("music",appt.music_preference);
+  renderInfo();
+  terminalStatus=appt.status==="withdrawn"||["cancelled_by_client","cancelled_by_admin"].includes(appt.status);
+  if(appt.status==="withdrawn"){$("#alreadyWithdrawn").classList.remove("hidden");setTerminalUI()}
+  else if(terminalStatus){$("#alreadyCancelled").classList.remove("hidden");setTerminalUI()}
+  else{
+    if(appt.cancellation_allowed){$("#rescheduleAllowed").classList.remove("hidden");$("#cancelAllowed").classList.remove("hidden")}
+    else $("#cancelBlocked").classList.remove("hidden");
+    if(appt.withdrawal_allowed){
+      $("#withdrawalBlock").classList.remove("hidden");
+      $("#withdrawalDeadline").textContent="Tu peux exercer ce droit jusqu'au "+new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:TZ}).format(new Date(new Date(appt.withdrawal_deadline).getTime()-1000))+" inclus.";
+    }
   }
-
-  if(appt.withdrawal_allowed){
-    document.querySelector("#withdrawalBlock").classList.remove("hidden");
-
-    document.querySelector("#withdrawalDeadline").textContent =
-      "Tu peux exercer ce droit jusqu'au " +
-      new Intl.DateTimeFormat("fr-BE",{
-        weekday:"long",
-        day:"numeric",
-        month:"long",
-        year:"numeric",
-        timeZone:"Europe/Brussels"
-      }).format(new Date(new Date(appt.withdrawal_deadline).getTime()-1000)) +
-      " inclus.";
+  showOnly("content");
+  if(!terminalStatus)await loadMedia();
+  if(!terminalStatus&&new URLSearchParams(location.search).get("calendar")==="1"){
+    const u=new URL(location.href);u.searchParams.delete("calendar");history.replaceState(null,"",u.toString());setTimeout(downloadCalendarEvent,250);
   }
 }
- document.querySelector("#loading").classList.add("hidden");document.querySelector("#content").classList.remove("hidden");
- if(!terminalStatus)await loadMedia();
- if(!terminalStatus && new URLSearchParams(location.search).get("calendar")==="1"){
-   const cleanUrl=new URL(location.href);
-   cleanUrl.searchParams.delete("calendar");
-   history.replaceState(null,"",cleanUrl.toString());
-   setTimeout(downloadCalendarEvent,250);
- }
+$("#retry").onclick=init;
+
+/* ---------- Déplacer le rendez-vous : jours disponibles + créneaux ---------- */
+const fmtRDV=v=>new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:TZ}).format(new Date(v));
+const fmtHour=v=>new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:TZ}).format(new Date(v));
+function localISODate(d){const a=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),g=t=>a.find(x=>x.type===t).value;return `${g("year")}-${g("month")}-${g("day")}`}
+function addDays(iso,n){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+let dayCache={},availDays=[],dayCursor="",dayMax="",dayInit=false,selectedDay="",selectedSlot=null;
+function resetSelection(){selectedSlot=null;$("#confirmReschedule").disabled=true;$("#rescheduleSummary").classList.add("hidden");$("#rescheduleMsg").classList.add("hidden")}
+async function fetchDay(iso){
+  if(dayCache[iso])return dayCache[iso];
+  const {data,error}=await db.rpc("get_private_reschedule_slots",{p_token:token,p_date:iso});
+  if(error){console.error(error);throw error}
+  return dayCache[iso]=data||[];
 }
+function renderDays(){
+  const box=$("#dayChips");box.innerHTML="";
+  availDays.forEach(d=>{
+    const b=document.createElement("button");b.type="button";b.className="daychip"+(d===selectedDay?" on":"");b.setAttribute("aria-pressed",d===selectedDay);
+    b.textContent=new Intl.DateTimeFormat("fr-BE",{weekday:"short",day:"numeric",month:"short",timeZone:TZ}).format(new Date(d+"T12:00:00Z"));
+    b.onclick=()=>selectDay(d);box.appendChild(b);
+  });
+}
+function selectDay(d){
+  selectedDay=d;resetSelection();renderDays();
+  const grid=$("#slotGrid");grid.innerHTML="";
+  (dayCache[d]||[]).forEach(slot=>{
+    const b=document.createElement("button");b.type="button";b.className="slot";b.textContent=fmtHour(slot.starts_at);
+    b.onclick=()=>{
+      document.querySelectorAll("#slotGrid .slot").forEach(x=>x.classList.remove("on"));b.classList.add("on");selectedSlot=slot;
+      const r=$("#rescheduleSummary");r.innerHTML=`<strong>Nouveau rendez-vous</strong><br>${fmtRDV(slot.starts_at)}<br><span class="sub">Tes inspirations et préférences seront conservées.</span>`;r.classList.remove("hidden");
+      $("#confirmReschedule").disabled=false;
+    };
+    grid.appendChild(b);
+  });
+}
+async function loadMoreDays(){
+  const btn=$("#moreDays"),status=$("#slotStatus");
+  btn.disabled=true;status.textContent="Recherche des créneaux disponibles…";
+  const dates=[];let c=dayCursor;
+  for(let i=0;i<10&&c<=dayMax;i++){dates.push(c);c=addDays(c,1)}
+  dayCursor=c;
+  try{await Promise.all(dates.map(fetchDay))}
+  catch(e){status.textContent="Impossible de charger les créneaux pour le moment.";dayCursor=dates[0]||dayCursor;btn.disabled=false;return}
+  dates.forEach(d=>{if(dayCache[d].length&&!availDays.includes(d))availDays.push(d)});
+  renderDays();
+  const more=dayCursor<=dayMax;
+  btn.classList.toggle("hidden",!more);btn.disabled=false;
+  status.textContent=availDays.length?"Choisis un jour, puis un horaire.":(more?"Aucun créneau sur ces dates, regarde plus loin.":"Aucun créneau disponible dans les prochaines semaines. Contacte-moi directement.");
+}
+function initDays(){
+  dayCache={};availDays=[];selectedDay="";$("#slotGrid").innerHTML="";$("#dayChips").innerHTML="";resetSelection();
+  const now=Date.now();dayCursor=localISODate(new Date(now+24*3600*1000));dayMax=localISODate(new Date(now+31*24*3600*1000));
+  dayInit=true;loadMoreDays();
+}
+$("#openReschedule").onclick=()=>{const p=$("#reschedulePanel");p.classList.toggle("hidden");if(!p.classList.contains("hidden")&&!dayInit)initDays()};
+$("#closeReschedule").onclick=()=>{$("#reschedulePanel").classList.add("hidden")};
+$("#moreDays").onclick=loadMoreDays;
+$("#confirmReschedule").onclick=async()=>{
+  if(!selectedSlot)return;
+  if(!await ask({title:"Confirmer le déplacement ?",text:`Ancien : ${fmtRDV(appt.starts_at)}\nNouveau : ${fmtRDV(selectedSlot.starts_at)}`,ok:"Confirmer"}))return;
+  const btn=$("#confirmReschedule"),msg=$("#rescheduleMsg");
+  btn.disabled=true;msg.classList.remove("hidden");msg.textContent="Modification en cours…";
+  const {data,error}=await db.rpc("reschedule_private_appointment",{p_token:token,p_new_start:selectedSlot.starts_at});
+  if(error||!data?.success){console.error(error);
+    if(String(error?.message||"").includes("reschedule_limit")){msg.textContent="Tu as déjà modifié ce rendez-vous le nombre de fois autorisé. Contacte-moi directement pour un nouveau changement.";btn.disabled=true;return}
+    msg.textContent="Ce créneau n’est plus disponible ou la modification n’a pas pu être effectuée.";dayCache={};btn.disabled=false;initDays();return}
+  appt.starts_at=data.starts_at;appt.ends_at=data.ends_at;
+  $("#date").textContent=fmtFull(appt.starts_at);
+  msg.textContent="Ton rendez-vous a bien été modifié ✓";toast("Rendez-vous modifié ✓");
+  dayInit=false;selectedSlot=null;$("#slotGrid").innerHTML="";$("#dayChips").innerHTML="";$("#rescheduleSummary").classList.add("hidden");
+  setTimeout(()=>$("#reschedulePanel").classList.add("hidden"),1400);
+};
 
-function fmtRDV(v){return new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(v))}
-function localISODate(d){const a=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Brussels",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),g=t=>a.find(x=>x.type===t).value;return `${g("year")}-${g("month")}-${g("day")}`}
-function resetReschedule(){selectedRescheduleSlot=null;document.querySelector("#confirmReschedule").disabled=true;document.querySelector("#rescheduleSummary").classList.add("hidden");document.querySelector("#rescheduleMsg").classList.add("hidden")}
-function setDateBounds(){const i=document.querySelector("#rescheduleDate"),min=new Date(Date.now()+24*60*60*1000),max=new Date();max.setDate(max.getDate()+31);i.min=localISODate(min);i.max=localISODate(max)}
-async function loadSlots(){const date=document.querySelector("#rescheduleDate").value,grid=document.querySelector("#slotGrid"),status=document.querySelector("#slotStatus");grid.innerHTML="";resetReschedule();if(!date){status.textContent="Choisis d’abord une date.";return}status.textContent="Recherche des créneaux disponibles…";const {data,error}=await db.rpc("get_private_reschedule_slots",{p_token:token,p_date:date});if(error){console.error(error);status.textContent="Impossible de charger les créneaux pour le moment.";return}rescheduleSlots=data||[];if(!rescheduleSlots.length){status.textContent="Aucun créneau disponible pour cette date.";return}status.textContent=`${rescheduleSlots.length} créneau${rescheduleSlots.length>1?"x":""} disponible${rescheduleSlots.length>1?"s":""}.`;rescheduleSlots.forEach(slot=>{const b=document.createElement("button");b.type="button";b.className="slot";b.textContent=new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(slot.starts_at));b.onclick=()=>{document.querySelectorAll("#slotGrid .slot").forEach(x=>x.classList.remove("on"));b.classList.add("on");selectedRescheduleSlot=slot;const r=document.querySelector("#rescheduleSummary");r.innerHTML=`<strong>Nouveau rendez-vous</strong><br>${fmtRDV(slot.starts_at)}<br><span class="sub">Tes inspirations et préférences seront conservées.</span>`;r.classList.remove("hidden");document.querySelector("#confirmReschedule").disabled=false};grid.appendChild(b)})}
-document.querySelector("#openReschedule").onclick=()=>{const p=document.querySelector("#reschedulePanel");p.classList.toggle("hidden");if(!p.classList.contains("hidden")){setDateBounds();document.querySelector("#rescheduleDate").focus()}};document.querySelector("#closeReschedule").onclick=()=>{document.querySelector("#reschedulePanel").classList.add("hidden");document.querySelector("#slotGrid").innerHTML="";document.querySelector("#rescheduleDate").value="";document.querySelector("#slotStatus").textContent="Choisis d’abord une date.";resetReschedule()};document.querySelector("#rescheduleDate").addEventListener("change",loadSlots);
-document.querySelector("#confirmReschedule").onclick=async()=>{if(!selectedRescheduleSlot)return;if(!confirm(`Confirmer le déplacement ?\n\nAncien : ${fmtRDV(appt.starts_at)}\nNouveau : ${fmtRDV(selectedRescheduleSlot.starts_at)}`))return;const btn=document.querySelector("#confirmReschedule"),msg=document.querySelector("#rescheduleMsg");btn.disabled=true;msg.classList.remove("hidden");msg.textContent="Modification en cours…";const {data,error}=await db.rpc("reschedule_private_appointment",{p_token:token,p_new_start:selectedRescheduleSlot.starts_at});if(error||!data?.success){console.error(error);msg.textContent="Ce créneau n’est plus disponible ou la modification n’a pas pu être effectuée.";btn.disabled=false;return}appt.starts_at=data.starts_at;appt.ends_at=data.ends_at;document.querySelector("#date").textContent=new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(appt.starts_at));msg.textContent="Ton rendez-vous a bien été modifié ✓";document.querySelector("#slotGrid").innerHTML="";document.querySelector("#rescheduleSummary").classList.add("hidden");document.querySelector("#rescheduleDate").value="";selectedRescheduleSlot=null;setTimeout(()=>document.querySelector("#reschedulePanel").classList.add("hidden"),1200)};
-
+/* ---------- Agenda (.ics) ---------- */
 function icsEscape(v){return String(v||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
 function icsUtc(date){return new Date(date).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/,"Z")}
 function downloadCalendarEvent(){
   if(!appt)return;
   const start=new Date(appt.starts_at);
-  const end=appt.ends_at ? new Date(appt.ends_at) : new Date(start.getTime()+(appt.duration_minutes||60)*60000);
+  const end=appt.ends_at?new Date(appt.ends_at):new Date(start.getTime()+(appt.duration_minutes||60)*60000);
   const optionNames=(appt.options||[]).map(o=>o.name+(o.quantity>1?` × ${o.quantity}`:"")).join(", ");
-  const description=[
-    appt.service_name,
-    optionNames ? `Options : ${optionNames}` : "",
-    "Rendez-vous chez Thab's Lab."
-  ].filter(Boolean).join("\\n");
-  const ics=[
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Thabs Lab//Rendez-vous//FR",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    `UID:${appt.id||token}@thabslab.be`,
-    `DTSTAMP:${icsUtc(new Date())}`,
-    `DTSTART:${icsUtc(start)}`,
-    `DTEND:${icsUtc(end)}`,
-    `SUMMARY:${icsEscape("Rendez-vous – Thab's Lab")}`,
-    `DESCRIPTION:${icsEscape(description)}`,
-    "END:VEVENT",
-    "END:VCALENDAR"
-  ].join("\\r\\n");
-  const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download="rendez-vous-thabslab.ics";
-  document.body.appendChild(a);a.click();a.remove();
+  const description=[appt.service_name,optionNames?`Options : ${optionNames}`:"","Rendez-vous chez Thab's Lab."].filter(Boolean).join("\n");
+  const lines=[
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Thabs Lab//Rendez-vous//FR","CALSCALE:GREGORIAN","METHOD:PUBLISH",
+    "BEGIN:VEVENT",`UID:${appt.id||token}@thabslab.be`,`DTSTAMP:${icsUtc(new Date())}`,`DTSTART:${icsUtc(start)}`,`DTEND:${icsUtc(end)}`,
+    `SUMMARY:${icsEscape("Rendez-vous – Thab's Lab")}`,`DESCRIPTION:${icsEscape(description)}`
+  ];
+  if(INFO.address)lines.push(`LOCATION:${icsEscape(INFO.address)}`);
+  lines.push("BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY",`DESCRIPTION:${icsEscape("Rendez-vous demain – Thab's Lab")}`,"END:VALARM","END:VEVENT","END:VCALENDAR");
+  const blob=new Blob([lines.join("\r\n")],{type:"text/calendar;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="rendez-vous-thabslab.ics";document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-document.querySelector("#addCalendarBtn").onclick=downloadCalendarEvent;
+$("#addCalendarBtn").onclick=downloadCalendarEvent;
 
+/* ---------- Annulation / rétractation ---------- */
 function setTerminalUI(){
- document.querySelector("#poseCard")?.classList.add("hidden");
- document.querySelector("#momentCard")?.classList.add("hidden");
- document.querySelector("#addCalendarBtn")?.classList.add("hidden");
- document.querySelector("#rescheduleAllowed")?.classList.add("hidden");
- document.querySelector("#cancelAllowed")?.classList.add("hidden");
- document.querySelector("#cancelBlocked")?.classList.add("hidden");
- document.querySelector("#withdrawalBlock")?.classList.add("hidden");
+  ["#poseCard","#momentCard","#addCalendarBtn","#rescheduleAllowed","#cancelAllowed","#cancelBlocked","#withdrawalBlock","#saveBar"].forEach(s=>$(s)?.classList.add("hidden"));
+  dirty=false;clearTimeout(saveTimer);
 }
-function bad(){document.querySelector("#loading").classList.add("hidden");document.querySelector("#invalid").classList.remove("hidden")}
-document.querySelector("#save").onclick=async()=>{const btn=document.querySelector("#save");btn.disabled=true;
- const {data,error}=await db.rpc("save_private_appointment_preferences",{p_token:token,p_conversation_preference:conv,p_music_preference:music,p_beverage_id:selectedBeverageId||null,p_beverage_details:selectedBeverageId?(document.querySelector("#beverageDetails").value||null):null,p_nail_shape:document.querySelector("#shape").value||null,p_nail_length:document.querySelector("#length").value||null,p_color_wishes:document.querySelector("#colors").value||null,p_client_design_note:document.querySelector("#designNote").value||null});
- const m=document.querySelector("#saveMsg");m.classList.remove("hidden");m.textContent=(!error&&data)?"C'est enregistré ♡":"Impossible d'enregistrer pour le moment.";if(error)console.error(error);btn.disabled=false};
-document.querySelector("#cancel").onclick=async()=>{if(!confirm("Confirmer l'annulation de ce rendez-vous ?"))return;const btn=document.querySelector("#cancel");btn.disabled=true;
- const {data,error}=await db.rpc("cancel_private_appointment",{p_token:token,p_reason:document.querySelector("#reason").value||null});
- if(error||!data){console.error(error);alert("L'annulation n'a pas pu être effectuée. Le délai de 24 h est peut-être dépassé.");btn.disabled=false;return}
- appt.status="cancelled_by_client";setTerminalUI();document.querySelector("#alreadyCancelled").classList.remove("hidden");};
-  document.querySelector("#withdraw").onclick=async()=>{
-  if(!confirm(
-    "Confirmer l'exercice de ton droit de rétractation ?\n\n" +
-    "Cette action annulera ton rendez-vous."
-  ))return;
-
-  const btn=document.querySelector("#withdraw");
-  const msg=document.querySelector("#withdrawalMsg");
-
-  btn.disabled=true;
-  msg.classList.remove("hidden");
-  msg.textContent="Rétractation en cours…";
-
-  const {data,error}=await db.rpc(
-    "withdraw_private_appointment",
-    {
-      p_token:token,
-      p_reason:document.querySelector("#withdrawalReason").value.trim()||null
-    }
-  );
-
-  if(error||!data){
-    console.error(error);
-    msg.textContent=
-      "La rétractation n'a pas pu être enregistrée. Le délai légal est peut-être expiré ou le rendez-vous n'est plus éligible.";
-    btn.disabled=false;
-    return;
-  }
-
-  appt.status="withdrawn";
-
-  setTerminalUI();
-  document.querySelector("#alreadyWithdrawn").classList.remove("hidden");
+$("#cancel").onclick=async()=>{
+  if(!await ask({title:"Annuler ce rendez-vous ?",text:"Cette action est définitive. Tu pourras toujours reprendre un nouveau rendez-vous plus tard.",ok:"Oui, annuler",cancel:"Non, le garder",danger:true}))return;
+  const btn=$("#cancel");btn.disabled=true;
+  const {data,error}=await db.rpc("cancel_private_appointment",{p_token:token,p_reason:$("#reason").value||null});
+  if(error||!data){console.error(error);await ask({title:"Annulation impossible",text:"L'annulation n'a pas pu être effectuée. Le délai de 24 h est peut-être dépassé : contacte-moi directement.",ok:"OK",cancel:null});btn.disabled=false;return}
+  appt.status="cancelled_by_client";terminalStatus=true;setTerminalUI();$("#alreadyCancelled").classList.remove("hidden");toast("Rendez-vous annulé");
+};
+$("#withdraw").onclick=async()=>{
+  if(!await ask({title:"Exercer ton droit de rétractation ?",text:"Cette action annulera ton rendez-vous.",ok:"Confirmer",cancel:"Retour",danger:true}))return;
+  const btn=$("#withdraw"),msg=$("#withdrawalMsg");
+  btn.disabled=true;msg.classList.remove("hidden");msg.textContent="Rétractation en cours…";
+  const {data,error}=await db.rpc("withdraw_private_appointment",{p_token:token,p_reason:$("#withdrawalReason").value.trim()||null});
+  if(error||!data){console.error(error);msg.textContent="La rétractation n'a pas pu être enregistrée. Le délai légal est peut-être expiré ou le rendez-vous n'est plus éligible.";btn.disabled=false;return}
+  appt.status="withdrawn";terminalStatus=true;setTerminalUI();$("#alreadyWithdrawn").classList.remove("hidden");toast("Rétractation enregistrée");
 };
 init();
 </script></body></html>
