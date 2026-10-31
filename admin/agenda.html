@@ -64,6 +64,17 @@
 
     /* VUE SEMAINE — PLANNING HORAIRE */
     .timeline-week { min-width:1050px; }
+    .timeline-week.one-day { min-width:0; }
+    .one-day .timeline-head,.one-day .timeline-body { grid-template-columns:52px 1fr; }
+    .one-day .timeline-day-head { cursor:default; }
+    .one-day .timeline-day-head .day-number { font-size:22px; }
+    .one-day .timeline-appointment { left:8px; right:8px; padding:9px 11px; }
+    .one-day .timeline-appointment .appointment-time { font-size:13px; }
+    .one-day .timeline-appointment .appointment-client { font-size:14px; margin-top:3px; }
+    .one-day .timeline-appointment .appointment-service { font-size:12px; margin-top:2px; }
+    .one-day .timeline-appointment .appointment-price { font-size:12px; }
+    .one-day .time-label { font-size:11px; }
+    .timeline-day-head[data-day] { cursor:pointer; }
     .timeline-head {
       display:grid;
       grid-template-columns:64px repeat(7,minmax(135px,1fr));
@@ -293,7 +304,7 @@
     @media(max-width:760px) {
       .app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}
       .nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}
-      .content{padding:30px 20px 60px}.topbar{flex-direction:column}.period-title{min-width:150px}.toolbar{align-items:flex-start}
+      .content{padding:30px 20px 60px}.topbar{flex-direction:column}.period-title{min-width:0;flex:1 0 100%;order:5;text-align:left;font-size:20px;margin-top:4px}.period-nav{flex-wrap:wrap}.toolbar{align-items:flex-start}
     }
   
 
@@ -363,6 +374,7 @@
           <div id="period-title" class="period-title"></div>
         </div>
         <div class="view-switch">
+          <button id="day-view" class="view-button" type="button">Jour</button>
           <button id="week-view" class="view-button active" type="button">Semaine</button>
           <button id="month-view" class="view-button" type="button">Mois</button>
         </div>
@@ -406,7 +418,11 @@
     const timeFormat = new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,hour:"2-digit",minute:"2-digit"});
 
     let currentDate = new Date();
-    let currentView = localStorage.getItem("adminAgendaView") || "week";
+    const isPhone = () => window.matchMedia("(max-width:760px)").matches;
+    const viewKey = () => isPhone() ? "adminAgendaViewMobile" : "adminAgendaView";
+    let currentView = localStorage.getItem(viewKey()) || (isPhone() ? "day" : "week");
+    if(!["day","week","month"].includes(currentView)) currentView = isPhone() ? "day" : "week";
+    function setView(v){ currentView=v; try{localStorage.setItem(viewKey(),v)}catch(e){} }
     let appointments = [];
 
     function escapeHtml(value) {
@@ -443,6 +459,14 @@
     Les dates utilisées pour construire l'affichage restent à midi,
     mais la requête Supabase doit couvrir les journées entières.
   */
+  if(currentView==="day"){
+    const d=dateFromKey(localKey(currentDate));
+    return {
+      start:brusselsLocalToDate(localKey(d),"00:00"),
+      end:brusselsLocalToDate(localKey(addDays(d,1)),"00:00")
+    };
+  }
+
   if(currentView==="week"){
     const displayStart=startOfWeek(currentDate);
     const displayEnd=addDays(displayStart,7);
@@ -504,11 +528,13 @@
     }
 
     function renderWeek(){
+      const oneDay=currentView==="day";
       const start=startOfWeek(currentDate), map=grouped(), todayKey=localKey(new Date());
-      const days=Array.from({length:7},(_,i)=>addDays(start,i));
+      const days=oneDay ? [dateFromKey(localKey(currentDate))] : Array.from({length:7},(_,i)=>addDays(start,i));
 
-      document.getElementById("period-title").textContent =
-        `${days[0].getDate()} ${days[0].toLocaleDateString("fr-BE",{month:"short"})} – ${days[6].getDate()} ${days[6].toLocaleDateString("fr-BE",{month:"short",year:"numeric"})}`;
+      document.getElementById("period-title").textContent = oneDay
+        ? capitalize(fullDate.format(days[0]))
+        : `${days[0].getDate()} ${days[0].toLocaleDateString("fr-BE",{month:"short"})} – ${days[6].getDate()} ${days[6].toLocaleDateString("fr-BE",{month:"short",year:"numeric"})}`;
 
       /*
         La grille couvre 07:00 → 22:00.
@@ -535,7 +561,7 @@
 
       const heads=days.map(d=>{
         const key=localKey(d);
-        return `<div class="timeline-day-head ${key===todayKey?"today":""}">
+        return `<div class="timeline-day-head ${key===todayKey?"today":""}" ${oneDay?"":`data-day="${key}"`}>
           <div class="day-name">${escapeHtml(dayName.format(d))}</div>
           <div class="day-number">${d.getDate()}</div>
         </div>`;
@@ -585,7 +611,7 @@
       }).join("");
 
       document.getElementById("calendar").innerHTML=`
-        <div class="timeline-week">
+        <div class="timeline-week ${oneDay?"one-day":""}">
           <div class="timeline-head">
             <div class="timeline-head-spacer"></div>
             ${heads}
@@ -620,9 +646,10 @@
     }
 
     function render(){
+      document.getElementById("day-view").classList.toggle("active",currentView==="day");
       document.getElementById("week-view").classList.toggle("active",currentView==="week");
       document.getElementById("month-view").classList.toggle("active",currentView==="month");
-      currentView==="week" ? renderWeek() : renderMonth();
+      currentView==="month" ? renderMonth() : renderWeek();
       bindCalendarClicks();
     }
 
@@ -638,8 +665,16 @@
         document.querySelectorAll(".month-cell[data-day]").forEach(cell=>{
           cell.addEventListener("click",()=>{
             currentDate=dateFromKey(cell.dataset.day);
-            currentView="week";
-            localStorage.setItem("adminAgendaView","week");
+            setView(isPhone()?"day":"week");
+            loadAppointments();
+          });
+        });
+      }
+      if(currentView==="week"){
+        document.querySelectorAll(".timeline-day-head[data-day]").forEach(h=>{
+          h.addEventListener("click",()=>{
+            currentDate=dateFromKey(h.dataset.day);
+            setView("day");
             loadAppointments();
           });
         });
@@ -1697,11 +1732,14 @@
 
     document.getElementById("close-modal").addEventListener("click",closeModal);
     document.getElementById("modal-backdrop").addEventListener("click",e=>{if(e.target.id==="modal-backdrop")closeModal()});
-    document.getElementById("week-view").addEventListener("click",()=>{currentView="week";localStorage.setItem("adminAgendaView","week");loadAppointments()});
-    document.getElementById("month-view").addEventListener("click",()=>{currentView="month";localStorage.setItem("adminAgendaView","month");loadAppointments()});
+    document.getElementById("day-view").addEventListener("click",()=>{if(currentView==="month")currentDate=new Date();setView("day");loadAppointments()});
+    document.getElementById("week-view").addEventListener("click",()=>{setView("week");loadAppointments()});
+    document.getElementById("month-view").addEventListener("click",()=>{setView("month");loadAppointments()});
     document.getElementById("today").addEventListener("click",()=>{currentDate=new Date();loadAppointments()});
     document.getElementById("previous").addEventListener("click",()=>{
-      if(currentView==="week"){
+      if(currentView==="day"){
+        currentDate=addDays(dateFromKey(localKey(currentDate)),-1);
+      }else if(currentView==="week"){
         const visibleWeekStart=startOfWeek(currentDate);
         currentDate=addDays(visibleWeekStart,-7);
       }else{
@@ -1710,7 +1748,9 @@
       loadAppointments();
     });
     document.getElementById("next").addEventListener("click",()=>{
-      if(currentView==="week"){
+      if(currentView==="day"){
+        currentDate=addDays(dateFromKey(localKey(currentDate)),1);
+      }else if(currentView==="week"){
         const visibleWeekStart=startOfWeek(currentDate);
         currentDate=addDays(visibleWeekStart,7);
       }else{
@@ -1718,6 +1758,17 @@
       }
       loadAppointments();
     });
+    (function(){
+      const cal=document.getElementById("calendar"); let sx=0,sy=0,st=0;
+      cal.addEventListener("touchstart",e=>{if(e.touches.length!==1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()},{passive:true});
+      cal.addEventListener("touchend",e=>{
+        if(currentView!=="day"||!e.changedTouches.length)return;
+        const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+        if(Date.now()-st<700&&Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*2){
+          document.getElementById(dx<0?"next":"previous").click();
+        }
+      },{passive:true});
+    })();
     document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
     async function init(){
@@ -1733,6 +1784,7 @@
     document.addEventListener("keydown",e=>{
       if(e.key==="Escape") closeInspirationLightbox();
     });
+
 </script>
 <script src="./admin-nav.js"></script>
 </body>
