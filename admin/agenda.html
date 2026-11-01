@@ -914,9 +914,9 @@
     async function loadSketchPreview(appointmentId){
       const target=document.getElementById("sketch-card"),btn=document.getElementById("open-sketch");
       if(!target)return;
-      const {data,error}=await supabaseClient.from("appointment_sketches").select("id,title,preview,updated_at,client_status")
+      const {data,error}=await supabaseClient.from("appointment_sketches").select("id,title,preview,updated_at")
         .eq("appointment_id",appointmentId).order("updated_at",{ascending:false}).limit(1);
-      if(error){console.error(error);target.innerHTML='<div class="prep-media-empty">Impossible de charger le croquis.</div>';return;}
+      if(error){console.error(error);target.innerHTML='<div class="prep-media-empty">Impossible de charger le croquis.'+(error.message?' ('+escapeHtml(error.message)+')':'')+'</div>';return;}
       const sk=data&&data[0];
       if(!sk){target.innerHTML='<div class="prep-media-empty">Pas encore de croquis pour ce rendez-vous.</div>';if(btn)btn.textContent="Créer un croquis";return;}
       const when=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(sk.updated_at));
