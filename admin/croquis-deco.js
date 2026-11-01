@@ -1,3 +1,4 @@
+/* Croquis d'ongles — strass, perles, bijoux et décorations (dessinés en vectoriel). */
 (function(){
 const A=()=>window.NailArt;
 const LIST=[
@@ -96,4 +97,3 @@ function draw(ctx,d,sel){
 function hit(d,x,y){return Math.hypot(d.x-x,d.y-y)<=Math.max(d.r*(d.ar||1),d.r)*(d.k==="chaine"?1.8:1.3)}
 window.NailDeco={LIST,FINISHES,DEFAULTS,draw,hit,pal,handles};
 })();
- 
