@@ -318,8 +318,8 @@ const fmtRDV=v=>new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",mo
 const fmtHour=v=>new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:TZ}).format(new Date(v));
 function localISODate(d){const a=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),g=t=>a.find(x=>x.type===t).value;return `${g("year")}-${g("month")}-${g("day")}`}
 function addDays(iso,n){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
-let dayCache={},availDays=[],dayCursor="",dayMax="",dayInit=false,selectedDay="",selectedSlot=null;
-function resetSelection(){selectedSlot=null;$("#confirmReschedule").disabled=true;$("#rescheduleSummary").classList.add("hidden");$("#rescheduleMsg").classList.add("hidden")}
+let dayCache={},availDays=[],dayCursor="",dayMax="",dayInit=false,selectedDay="",selectedSlot=null,selectedQuote=null;
+function resetSelection(){selectedSlot=null;selectedQuote=null;$("#confirmReschedule").disabled=true;$("#rescheduleSummary").classList.add("hidden");$("#rescheduleMsg").classList.add("hidden")}
 async function fetchDay(iso){
   if(dayCache[iso])return dayCache[iso];
   const {data,error}=await db.rpc("get_private_reschedule_slots",{p_token:token,p_date:iso});
@@ -341,8 +341,19 @@ function selectDay(d){
     const b=document.createElement("button");b.type="button";b.className="slot";b.textContent=fmtHour(slot.starts_at);
     b.onclick=()=>{
       document.querySelectorAll("#slotGrid .slot").forEach(x=>x.classList.remove("on"));b.classList.add("on");selectedSlot=slot;
-      const r=$("#rescheduleSummary");r.innerHTML=`<strong>Nouveau rendez-vous</strong><br>${fmtRDV(slot.starts_at)}<br><span class="sub">Tes inspirations et préférences seront conservées.</span>`;r.classList.remove("hidden");
+      const r=$("#rescheduleSummary");selectedQuote=null;
+      const base=`<strong>Nouveau rendez-vous</strong><br>${fmtRDV(slot.starts_at)}<br><span class="sub">Tes inspirations et préférences seront conservées.</span>`;
+      r.innerHTML=base;r.classList.remove("hidden");
       $("#confirmReschedule").disabled=false;
+      db.rpc("get_private_reschedule_quote",{p_token:token,p_new_start:slot.starts_at}).then(({data:q,error:qe})=>{
+        if(qe||!q||selectedSlot!==slot)return;
+        selectedQuote=q;
+        if(q.price_changed&&q.new_price_cents!=null){
+          const pct=Number(q.surcharge_percent||0),pl=pct.toLocaleString("fr-BE",{maximumFractionDigits:2});
+          const why=pct>0?`Ce jour comporte une majoration de ${pl} %${q.special_label?` (${q.special_label})`:""}.`:"La majoration ne s’applique pas à ce jour.";
+          r.innerHTML=base+`<br><strong>Total prévu : ${euro(q.old_price_cents)} → ${euro(q.new_price_cents)}</strong><br><span class="sub">${why}</span>`;
+        }
+      });
     };
     grid.appendChild(b);
   });
@@ -371,14 +382,14 @@ $("#closeReschedule").onclick=()=>{$("#reschedulePanel").classList.add("hidden")
 $("#moreDays").onclick=loadMoreDays;
 $("#confirmReschedule").onclick=async()=>{
   if(!selectedSlot)return;
-  if(!await ask({title:"Confirmer le déplacement ?",text:`Ancien : ${fmtRDV(appt.starts_at)}\nNouveau : ${fmtRDV(selectedSlot.starts_at)}`,ok:"Confirmer"}))return;
+  if(!await ask({title:"Confirmer le déplacement ?",text:`Ancien : ${fmtRDV(appt.starts_at)}\nNouveau : ${fmtRDV(selectedSlot.starts_at)}`+(selectedQuote&&selectedQuote.price_changed&&selectedQuote.new_price_cents!=null?`\nTotal prévu : ${euro(selectedQuote.old_price_cents)} → ${euro(selectedQuote.new_price_cents)}`:""),ok:"Confirmer"}))return;
   const btn=$("#confirmReschedule"),msg=$("#rescheduleMsg");
   btn.disabled=true;msg.classList.remove("hidden");msg.textContent="Modification en cours…";
   const {data,error}=await db.rpc("reschedule_private_appointment",{p_token:token,p_new_start:selectedSlot.starts_at});
   if(error||!data?.success){console.error(error);
     if(String(error?.message||"").includes("reschedule_limit")){msg.textContent="Tu as déjà modifié ce rendez-vous le nombre de fois autorisé. Contacte-moi directement pour un nouveau changement.";btn.disabled=true;return}
     msg.textContent="Ce créneau n’est plus disponible ou la modification n’a pas pu être effectuée.";dayCache={};btn.disabled=false;initDays();return}
-  appt.starts_at=data.starts_at;appt.ends_at=data.ends_at;
+  appt.starts_at=data.starts_at;appt.ends_at=data.ends_at;if(data.expected_price_cents!=null){appt.expected_price_cents=data.expected_price_cents;$("#price").textContent=`Total prévu · ${euro(appt.expected_price_cents)}`}
   $("#date").textContent=fmtFull(appt.starts_at);
   msg.textContent="Ton rendez-vous a bien été modifié ✓";toast("Rendez-vous modifié ✓");
   dayInit=false;selectedSlot=null;$("#slotGrid").innerHTML="";$("#dayChips").innerHTML="";$("#rescheduleSummary").classList.add("hidden");
