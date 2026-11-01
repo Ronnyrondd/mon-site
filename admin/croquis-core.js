@@ -1,3 +1,5 @@
+/* Croquis d'ongles — moteur de rendu (formes, fonds, effets, traits).
+   Tout est dessiné dans un repère "ongle" : largeur 100, pointe en y=0, cuticule en y=hauteur. */
 (function(){
 const S=4; // résolution du calque de traits (pixels par unité)
 const LENGTHS={court:100,moyen:135,long:175,xl:215};
@@ -200,7 +202,7 @@ function renderNail(ctx,n,o){
   o=o||{};const h=nailH(n),path=nailPath(n.shape,h);
   if(o.outline){
     const tipY=h-118;ctx.save();ctx.lineJoin="round";ctx.lineWidth=1.3;ctx.strokeStyle="#292824";
-    ctx.beginPath();ctx.moveTo(-14,h+40);ctx.lineTo(-14,tipY+62);ctx.arc(50,tipY+62,64,Math.PI,0);ctx.lineTo(114,h+40);ctx.stroke();
+    if(!o.nailOnly){ctx.beginPath();ctx.moveTo(-14,h+40);ctx.lineTo(-14,tipY+62);ctx.arc(50,tipY+62,64,Math.PI,0);ctx.lineTo(114,h+40);ctx.stroke()}
     ctx.fillStyle="#ffffff";ctx.fill(path);ctx.lineWidth=1.8;ctx.stroke(path);ctx.restore();return;
   }
   if(o.finger){
