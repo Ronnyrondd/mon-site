@@ -914,13 +914,13 @@
     async function loadSketchPreview(appointmentId){
       const target=document.getElementById("sketch-card"),btn=document.getElementById("open-sketch");
       if(!target)return;
-      const {data,error}=await supabaseClient.from("appointment_sketches").select("id,title,preview,updated_at")
+      const {data,error}=await supabaseClient.from("appointment_sketches").select("id,title,preview,updated_at,client_status,client_comment")
         .eq("appointment_id",appointmentId).order("updated_at",{ascending:false}).limit(1);
       if(error){console.error(error);target.innerHTML='<div class="prep-media-empty">Impossible de charger le croquis.'+(error.message?' ('+escapeHtml(error.message)+')':'')+'</div>';return;}
       const sk=data&&data[0];
       if(!sk){target.innerHTML='<div class="prep-media-empty">Pas encore de croquis pour ce rendez-vous.</div>';if(btn)btn.textContent="Créer un croquis";return;}
       const when=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(sk.updated_at));
-      target.innerHTML=`<button type="button" class="sketch-thumb" id="sketch-thumb" title="Ouvrir le croquis">${sk.preview?`<img src="${escapeHtml(sk.preview)}" alt="Aperçu du croquis">`:""}</button><div class="prep-media-empty" style="margin-top:6px">${escapeHtml(sk.title||"Croquis")} · modifié le ${when}</div>`;
+      target.innerHTML=`<button type="button" class="sketch-thumb" id="sketch-thumb" title="Ouvrir le croquis">${sk.preview?`<img src="${escapeHtml(sk.preview)}" alt="Aperçu du croquis">`:""}</button><div class="prep-media-empty" style="margin-top:6px">${escapeHtml(sk.title||"Croquis")} · modifié le ${when}</div>${({sent:'<div class="prep-media-empty" style="margin-top:4px">📨 Envoyé à la cliente, en attente de réponse</div>',approved:'<div class="prep-media-empty" style="margin-top:4px;color:#56622F;font-weight:600">✓ Validé par la cliente</div>',changes_requested:`<div class="prep-media-empty" style="margin-top:4px;color:#4a2441;font-weight:600">✏️ Modifications demandées${sk.client_comment?` : « ${escapeHtml(sk.client_comment)} »`:""}</div>`})[sk.client_status]||""}`;
       document.getElementById("sketch-thumb")?.addEventListener("click",()=>openSketchOverlay(appointmentId));
       if(btn)btn.textContent="Ouvrir le croquis";
     }
