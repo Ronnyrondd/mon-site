@@ -32,7 +32,7 @@ const cs=r=>[Math.cos(r),Math.sin(r)];
 const w2s=(x,y,v)=>{v=v||V;const[c,s]=cs(v.r);return[(x*c-y*s)*v.s+v.tx,(x*s+y*c)*v.s+v.ty]};
 const s2w=(px,py,v)=>{v=v||V;const[c,s]=cs(v.r),ux=(px-v.tx)/v.s,uy=(py-v.ty)/v.s;return[ux*c+uy*s,-ux*s+uy*c]};
 function placing(P,s,r,cx,cy){const[c,sn]=cs(r);return{s,r,tx:cx-s*(P[0]*c-P[1]*sn),ty:cy-s*(P[0]*sn+P[1]*c)}}
-function usable(){const W=geom.W,H=geom.H,rm=(CQ.sheetOpen&&W>900)?350:0,lm=W>900?84:0;const mh=(geom.mh||0);return{W,H,mh,cx:(lm+W-rm)/2,cy:(H-mh)/2+6,uw:W-rm-lm}}
+function usable(){const W=geom.W,H=geom.H,rm=(CQ.sheetOpen&&W>=600)?(W>900?350:312):0,lm=W>=600?84:0;const mh=(geom.mh||0);return{W,H,mh,cx:(lm+W-rm)/2,cy:(H-mh)/2+6,uw:W-rm-lm}}
 function targetHands(){const u=usable(),B=SC.BOX;return placing([B.x+B.w/2,B.y+B.h/2],Math.min((u.uw-90)/B.w,(u.H-130)/B.h),0,u.cx,u.cy+16)}
 function targetNail(i){
   const u=usable(),n=CQ.nails[i],h=N.nailH(n),g=SC.G[i],sl=Math.min((u.H-u.mh-215)/(h+30),(u.uw*.4)/108,8);
@@ -46,7 +46,7 @@ function step(){
   if(Math.abs(T.s-V.s)<.0008&&Math.abs(T.tx-V.tx)<.4&&Math.abs(T.ty-V.ty)<.4&&Math.abs(dr)<.002){Object.assign(V,T);T=null}else anim=requestAnimationFrame(step);
   draw();
 }
-CQ.refit=function(animate){if(!geom)return;goTo(CQ.mode==="hands"?targetHands():targetNail(CQ.sel),animate)};
+CQ.refit=function(animate){if(!geom)return;box.style.setProperty("--cx",usable().cx+"px");goTo(CQ.mode==="hands"?targetHands():targetNail(CQ.sel),animate)};
 CQ.setMode=function(m){CQ.mode=m;CQ.refit(true);CQ.refresh()};
 CQ.selectNail=function(i,zoom){CQ.sel=i;CQ.decoSel=-1;if(zoom!==false)CQ.mode="nail";CQ.refit(true);CQ.refresh()};
 CQ.stepNail=function(d){const k=ORDER.indexOf(CQ.sel);CQ.selectNail(ORDER[(k+d+10)%10])};
@@ -57,7 +57,7 @@ function zoomAt(px,py,k){CQ.moved=true;const s=Math.max(.15,Math.min(14,V.s*k)),
 function layout(){
   const dpr=Math.min(2.5,window.devicePixelRatio||1),W=box.clientWidth,H=box.clientHeight;
   if(!W||!H)return;ed.width=Math.round(W*dpr);ed.height=Math.round(H*dpr);const first=!geom;geom={W,H,dpr};
-  const mw=Math.max(200,Math.min(660,W>900?W-84-380:W-24));box.style.setProperty("--mh",Math.round(mw*SC.BOX.h/SC.BOX.w+30)+"px");geom.mh=Math.round(mw*SC.BOX.h/SC.BOX.w+30);mini.style.width=mw+"px";mini.style.height=mw*SC.BOX.h/SC.BOX.w+"px";mini.width=Math.round(mw*dpr);mini.height=Math.round(mw*SC.BOX.h/SC.BOX.w*dpr);
+  const mw=Math.max(200,Math.min(660,W>=600?W-84-340:W-24));box.style.setProperty("--mh",Math.round(mw*SC.BOX.h/SC.BOX.w+30)+"px");geom.mh=Math.round(mw*SC.BOX.h/SC.BOX.w+30);mini.style.width=mw+"px";mini.style.height=mw*SC.BOX.h/SC.BOX.w+"px";mini.width=Math.round(mw*dpr);mini.height=Math.round(mw*SC.BOX.h/SC.BOX.w*dpr);
   CQ.refit(false);draw();if(first)CQ.refresh();
 }
 function draw(){
