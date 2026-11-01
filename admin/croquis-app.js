@@ -274,4 +274,3 @@ CQ.composite=function(w,opt){
 };
 CQ.init=function(){layout();CQ.mode="hands";CQ.refit(false);CQ.refresh()};
 })();
- 
