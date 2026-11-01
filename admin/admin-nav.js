@@ -9,7 +9,7 @@
   var page = (location.pathname.split("/").pop() || "dashboard.html").toLowerCase();
   if (page === "" || page === "index.html") return; // pas sur la page de connexion
 
-  var MORE_PAGES = ["prestations.html", "stock.html", "horaires.html", "finances.html"];
+  var MORE_PAGES = ["prestations.html", "stock.html", "horaires.html", "finances.html", "croquis.html"];
 
   var icons = {
     today:   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg>',
@@ -26,6 +26,18 @@
     { href: "clientes.html",   label: "Clientes",    icon: icons.clients, match: ["clientes.html"] },
     { more: true,              label: "Plus",        icon: icons.more,    match: MORE_PAGES }
   ];
+
+  // Ordinateur / tablette : ajoute « Croquis » dans le menu latéral (après Stock & matériel)
+  try {
+    var sideNav = document.querySelector(".sidebar .nav");
+    if (sideNav && !sideNav.querySelector('a[href$="croquis.html"]')) {
+      var a = document.createElement("a");
+      a.className = "nav-item" + (page === "croquis.html" ? " active" : "");
+      a.href = "./croquis.html"; a.textContent = "Croquis";
+      var stock = sideNav.querySelector('a[href$="stock.html"]');
+      if (stock && stock.nextSibling) sideNav.insertBefore(a, stock.nextSibling); else sideNav.appendChild(a);
+    }
+  } catch (e) {}
 
   var css = [
     ".tl-nav,.tl-sheet,.tl-sheet-bg{display:none}",
@@ -88,6 +100,7 @@
   var items = [
     ["prestations.html", "Prestations"],
     ["stock.html", "Stock & matériel"],
+    ["croquis.html", "Croquis"],
     ["horaires.html", "Horaires"],
     ["finances.html", "Finances"]
   ];
