@@ -262,6 +262,12 @@
     .prep-media-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
     .prep-media-card:hover img{transform:scale(1.02)}
     .prep-media-empty{color:var(--muted);font-size:12px;line-height:1.5}
+    .sketch-thumb{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:white;cursor:pointer}
+    .sketch-thumb img{display:block;width:100%;height:auto}
+    #sketch-overlay{position:fixed;inset:0;z-index:95;background:var(--cream,#f7f3ec);display:flex;flex-direction:column}
+    #sketch-overlay iframe{flex:1;width:100%;border:0;min-height:0}
+    .sketch-overlay-bar{padding:8px 12px;background:var(--white,#fffdf9);border-bottom:1px solid var(--line)}
+    .sketch-overlay-bar button{min-height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:500;cursor:pointer}
     /* CROQUIS NAIL ART — éditeur simple sur image */
     .sketch-shell{margin-top:10px}
     .sketch-stage{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#f3eee7;touch-action:none;user-select:none}
@@ -849,87 +855,16 @@
         <div class="prep-section"><div class="prep-label">📎 Inspirations</div>
         <div id="prep-media" class="prep-media-empty">Chargement des inspirations…</div></div>
         <div class="prep-section"><div class="prep-label">✏️ Mon croquis</div>
-          <div class="sketch-shell">
-            <div class="sketch-stage"><canvas id="sketch-canvas" width="1200" height="900"></canvas></div>
-            <div class="sketch-template-picker">
-              <span class="sketch-palette-title">Template</span>
-              <button class="sketch-choice active" id="sketch-template-almond" type="button">Amande</button>
-              <button class="sketch-choice" id="sketch-template-square" type="button">Carré</button>
-              <button class="sketch-choice" id="sketch-template-hands" type="button">Vue mains</button>
-              <button class="sketch-choice" id="sketch-template-photo" type="button">Photo perso</button>
-            </div>
-            <div class="sketch-toolbar">
-              <button class="action-button sketch-tool active" id="sketch-draw" type="button">✏️ Dessiner</button>
-              <button class="action-button sketch-tool" id="sketch-chrome" type="button">✨ Chrome</button>
-              <button class="action-button sketch-tool" id="sketch-rhinestone" type="button">💎 Strass</button>
-              <button class="action-button sketch-tool" id="sketch-deco" type="button">✦ Décos</button>
-              <input id="sketch-color" type="color" value="#7f6b62" aria-label="Couleur">
-              <label class="sketch-range">Taille <input id="sketch-size" type="range" min="2" max="42" value="10"></label>
-              <button class="action-button sketch-tool" id="sketch-eraser" type="button">Gomme</button>
-            </div>
-
-            <div id="chrome-palette" class="sketch-palette">
-              <div class="sketch-palette-title">Chrome</div>
-              <div class="sketch-swatches">
-                <button class="sketch-choice active" type="button" data-chrome="silver">Argent</button>
-                <button class="sketch-choice" type="button" data-chrome="gold">Or</button>
-                <button class="sketch-choice" type="button" data-chrome="champagne">Champagne</button>
-                <button class="sketch-choice" type="button" data-chrome="rose">Rose gold</button>
-                <button class="sketch-choice" type="button" data-chrome="aurora">Aurora</button>
-                <button class="sketch-choice" type="button" data-chrome="color">Coloré</button>
-              </div>
-            </div>
-
-            <div id="rhinestone-palette" class="sketch-palette">
-              <div class="sketch-palette-title">Finition du strass</div>
-              <div class="sketch-swatches">
-                <button class="sketch-choice active" type="button" data-gem="crystal">Cristal</button>
-                <button class="sketch-choice" type="button" data-gem="ab">AB irisé</button>
-                <button class="sketch-choice" type="button" data-gem="pearl">Perle</button>
-                <button class="sketch-choice" type="button" data-gem="gold">Doré</button>
-                <button class="sketch-choice" type="button" data-gem="silver">Argenté</button>
-                <button class="sketch-choice" type="button" data-gem="color">Coloré</button>
-              </div>
-              <div class="sketch-palette-title" style="margin-top:12px">Forme</div>
-              <div class="sketch-shapes">
-                <button class="sketch-choice active" type="button" data-gem-shape="round">● Rond</button>
-                <button class="sketch-choice" type="button" data-gem-shape="drop">◊ Goutte</button>
-                <button class="sketch-choice" type="button" data-gem-shape="marquise">◇ Marquise</button>
-                <button class="sketch-choice" type="button" data-gem-shape="square">◆ Carré</button>
-              </div>
-            </div>
-
-            <div id="deco-palette" class="sketch-palette">
-              <div class="sketch-palette-title">Décoration</div>
-              <div class="sketch-shapes">
-                <button class="sketch-choice active" type="button" data-deco="star">★ Étoile</button>
-                <button class="sketch-choice" type="button" data-deco="sparkle">✦ Éclat</button>
-                <button class="sketch-choice" type="button" data-deco="heart">♥ Cœur</button>
-                <button class="sketch-choice" type="button" data-deco="flower">✿ Fleur</button>
-                <button class="sketch-choice" type="button" data-deco="bow">୨୧ Nœud</button>
-                <button class="sketch-choice" type="button" data-deco="cross">✚ Croix</button>
-                <button class="sketch-choice" type="button" data-deco="dot">● Pois</button>
-              </div>
-            </div>
-
-            <div class="sketch-actions">
-              <input id="sketch-background-input" class="sketch-upload" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif">
-              <button id="sketch-background" class="action-button" type="button">Ajouter / changer le fond</button>
-              <button id="sketch-undo" class="action-button" type="button">↶ Annuler</button>
-              <button id="sketch-redo" class="action-button" type="button">↷ Rétablir</button>
-              <button id="sketch-clear" class="action-button" type="button">Effacer les décos</button>
-              <button id="sketch-save" class="action-button primary" type="button">Enregistrer le croquis</button>
-              <span id="sketch-status" class="sketch-status"></span>
-            </div>
-            <div class="sketch-help">Choisis Amande, Carré ou Vue mains — Amande s’ouvre automatiquement. Ajoute ensuite couleurs, chromes, strass et décos, ou utilise une photo perso.</div>
-          </div>
+          <div id="sketch-card" class="sketch-card"><div class="prep-media-empty">Chargement du croquis…</div></div>
+          <div class="prep-note-actions"><button id="open-sketch" class="action-button" type="button">Ouvrir le croquis</button></div>
         </div>
         <div class="prep-section"><div class="prep-label">Notes de préparation privées</div>
         <textarea id="private-preparation-notes" class="prep-note" placeholder="Ex. préparer une couleur, prévoir du temps pour un motif, détail à vérifier…">${escapeHtml(data?.private_preparation_notes||"")}</textarea>
         <div class="prep-note-actions"><button id="save-preparation-notes" class="action-button" type="button">Enregistrer la note</button><span id="prep-note-message" class="prep-note-message"></span></div></div>`;
       document.getElementById("save-preparation-notes")?.addEventListener("click",()=>savePreparationNotes(a.id));
       await loadAppointmentInspirations(a.id);
-      await initSimpleSketch(a.id);
+      document.getElementById("open-sketch")?.addEventListener("click",()=>openSketchOverlay(a.id));
+      await loadSketchPreview(a.id);
     }
 
     function openInspirationLightbox(url){
@@ -976,6 +911,30 @@
     }
 
 
+    async function loadSketchPreview(appointmentId){
+      const target=document.getElementById("sketch-card"),btn=document.getElementById("open-sketch");
+      if(!target)return;
+      const {data,error}=await supabaseClient.from("appointment_sketches").select("id,title,preview,updated_at,client_status")
+        .eq("appointment_id",appointmentId).order("updated_at",{ascending:false}).limit(1);
+      if(error){console.error(error);target.innerHTML='<div class="prep-media-empty">Impossible de charger le croquis.</div>';return;}
+      const sk=data&&data[0];
+      if(!sk){target.innerHTML='<div class="prep-media-empty">Pas encore de croquis pour ce rendez-vous.</div>';if(btn)btn.textContent="Créer un croquis";return;}
+      const when=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(sk.updated_at));
+      target.innerHTML=`<button type="button" class="sketch-thumb" id="sketch-thumb" title="Ouvrir le croquis">${sk.preview?`<img src="${escapeHtml(sk.preview)}" alt="Aperçu du croquis">`:""}</button><div class="prep-media-empty" style="margin-top:6px">${escapeHtml(sk.title||"Croquis")} · modifié le ${when}</div>`;
+      document.getElementById("sketch-thumb")?.addEventListener("click",()=>openSketchOverlay(appointmentId));
+      if(btn)btn.textContent="Ouvrir le croquis";
+    }
+    function openSketchOverlay(appointmentId){
+      if(document.getElementById("sketch-overlay"))return;
+      const ov=document.createElement("div");ov.id="sketch-overlay";
+      ov.innerHTML=`<div class="sketch-overlay-bar"><button type="button" id="sketch-overlay-close">← Retour au rendez-vous</button></div><iframe title="Croquis" src="./croquis.html?appointment=${encodeURIComponent(appointmentId)}&embed=1"></iframe>`;
+      document.body.appendChild(ov);document.body.style.overflow="hidden";
+      document.getElementById("sketch-overlay-close").addEventListener("click",async()=>{
+        const w=ov.querySelector("iframe").contentWindow;
+        try{if(w.CQ&&w.CQ.dirty&&!confirm("Des modifications ne sont pas enregistrées. Fermer quand même ?"))return}catch(e){}
+        ov.remove();document.body.style.overflow="";await loadSketchPreview(appointmentId);
+      });
+    }
     async function initSimpleSketch(appointmentId){
       const canvas=document.getElementById("sketch-canvas"); if(!canvas)return;
       const ctx=canvas.getContext("2d"),status=document.getElementById("sketch-status");
