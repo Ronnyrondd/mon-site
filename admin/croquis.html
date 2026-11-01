@@ -36,13 +36,13 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .rail{position:absolute;left:10px;top:10px;bottom:10px;width:66px;border-radius:20px;padding:7px;display:flex;flex-direction:column;gap:6px;overflow:auto;z-index:5}
 .tool{flex:0 0 auto;min-height:48px;border-radius:14px;border:1px solid transparent;background:transparent;font-size:11.5px;font-weight:500;padding:3px 2px;line-height:1.15}
 .tool.on{background:var(--ink);color:#fff}.tool.sep{margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 14px 14px}
-.nailtag{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;border-radius:999px;padding:3px;z-index:4}
+.nailtag{position:absolute;top:10px;left:var(--cx,50%);transform:translateX(-50%);display:flex;align-items:center;gap:2px;border-radius:999px;padding:3px;z-index:4}
 .nailtag button{width:40px;height:40px;border-radius:50%;border:0;background:transparent;font-size:22px;line-height:1}
 .nailtag span{min-width:150px;text-align:center;font-weight:500;font-size:14px;padding:0 4px}
 .viewbtns{position:absolute;left:88px;top:10px;display:flex;gap:6px;z-index:4}
 .pill{height:40px;padding:0 15px;border-radius:999px;font-size:13px;font-weight:500;color:var(--ink)}
-.minibox{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;border-radius:16px;padding:6px;z-index:4}.minibox canvas{display:block;border-radius:10px;background:#fbf8f2}
-.dock{position:absolute;left:50%;bottom:calc(var(--mh,0px) + 14px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;border-radius:999px;padding:7px 14px;z-index:4;max-width:calc(100% - 420px)}
+.minibox{position:absolute;left:var(--cx,50%);transform:translateX(-50%);bottom:10px;border-radius:16px;padding:6px;z-index:4}.minibox canvas{display:block;border-radius:10px;background:#fbf8f2}
+.dock{position:absolute;left:var(--cx,50%);bottom:calc(var(--mh,0px) + 14px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;border-radius:999px;padding:7px 14px;z-index:4;max-width:calc(100% - 420px)}
 .dock .curcolor{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:3px solid #fff;outline:1px solid var(--line);padding:0}
 .dock .rc{display:flex;gap:6px}.dock .rc button{width:30px;height:30px;border-radius:50%;border:2px solid #fff;outline:1px solid var(--line);padding:0}
 .dock input[type=range]{width:170px;accent-color:#5f6b57;height:34px}.dock small{font-size:11px;color:var(--muted)}
@@ -64,8 +64,10 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
 .skc{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;text-align:left;padding:0}.skc img{width:100%;display:block;background:var(--cream)}.skc div{padding:8px 10px;font-size:12px}.skc b{display:block;font-size:13px}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:13px;z-index:95;max-width:calc(100% - 28px)}
 [hidden]{display:none!important}
-@media(min-width:901px){.sheet-on .minibox{left:calc(50% - 175px)}.sheet-on .dock{left:calc(50% - 175px);max-width:calc(100% - 560px)}}
-@media(max-width:900px){.sheet{left:10px;width:auto;top:auto;height:56%}.dock{max-width:calc(100% - 24px)}.viewbtns{top:62px}}
+@media(min-width:901px){.sheet-on .dock{max-width:calc(100% - 560px)}}
+@media(max-width:900px){.dock{max-width:calc(100% - 24px)}.viewbtns{top:62px}}
+@media(min-width:600px) and (max-width:900px){.sheet{width:296px}.sheet-on .dock{max-width:calc(100% - 440px)}.sheet-on .dock #dockRecent{display:none}}
+@media(max-width:599px){.sheet{left:10px;width:auto;top:auto;height:56%}}
 </style>
 </head>
 <body>
