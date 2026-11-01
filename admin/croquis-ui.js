@@ -204,4 +204,3 @@ CQ.ui.sync=function(){
 window.addEventListener("beforeunload",e=>{if(CQ.dirty){e.preventDefault();e.returnValue=""}});
 window.CQ.db=db;window.CQ.confirmBox=confirmBox;window.CQ.modal=modal;window.CQ.closeModal=closeModal;
 })();
- 
