@@ -1,3 +1,4 @@
+/* Croquis d'ongles v5 — état, scène des deux mains, zoom/déplacement, dessin au Pencil, historique, fiche. */
 (function(){
 const N=window.NailArt,D=window.NailDeco,SC=window.NailScene,$=s=>document.querySelector(s);
 const SKINS=["#f6dccd","#f0cfc0","#e2b79c","#c78f6e","#8f5d44"];
@@ -12,10 +13,10 @@ const CQ=window.CQ={
 const ed=$("#ed"),box=$("#stageBox"),ctx=ed.getContext("2d"),mini=$("#mini"),mctx=mini.getContext("2d");
 let geom=null,raf=0,lastPen=0,drag=null,stroke=null,holdT=0,anim=0;
 const V={s:1,tx:0,ty:0,r:0};let T=null;
- 
+
 N.onImg=()=>CQ.refresh();
 CQ.toast=function(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(CQ._tt);CQ._tt=setTimeout(()=>t.hidden=true,2600)};
-CQ.nail=()=>CQ.nails[CQ.sel];
+CQ.nail=()=>CQ.nails[CQ.sel]||CQ.nails[1];
 CQ.nailName=i=>(i<5?"Main gauche":"Main droite")+" · "+NAMES[i%5];
 const snap=()=>JSON.stringify(CQ.nails.map(N.clone));
 CQ.snapshot=function(){CQ.dirty=true;CQ.hist.push(snap());if(CQ.hist.length>60)CQ.hist.shift();CQ.redo.length=0;CQ.ui.updateUndo&&CQ.ui.updateUndo()};
@@ -25,7 +26,7 @@ CQ.undo=function(){if(!CQ.hist.length)return;CQ.redo.push(snap());restore(CQ.his
 CQ.redoOp=function(){if(!CQ.redo.length)return;CQ.hist.push(snap());restore(CQ.redo.pop());CQ.ui.updateUndo()};
 CQ.setNails=function(arr){CQ.nails=arr;CQ.hist=[];CQ.redo=[];CQ.decoSel=-1;CQ.refresh();CQ.ui.updateUndo();CQ.dirty=false};
 CQ.addRecent=function(c){CQ.recent=[c,...CQ.recent.filter(x=>x!==c)].slice(0,10);CQ.ui.renderRecent&&CQ.ui.renderRecent()};
- 
+
 /* ---------- vue : zoom, déplacement, rotation ---------- */
 const cs=r=>[Math.cos(r),Math.sin(r)];
 const w2s=(x,y,v)=>{v=v||V;const[c,s]=cs(v.r);return[(x*c-y*s)*v.s+v.tx,(x*s+y*c)*v.s+v.ty]};
@@ -51,7 +52,7 @@ CQ.selectNail=function(i,zoom){CQ.sel=i;CQ.decoSel=-1;if(zoom!==false)CQ.mode="n
 CQ.stepNail=function(d){const k=ORDER.indexOf(CQ.sel);CQ.selectNail(ORDER[(k+d+10)%10])};
 CQ.nailScreen=i=>{const n=CQ.nails[i],w=SC.toWorld(i,n,50,N.nailH(n)*.5),p=w2s(w[0],w[1]),r=ed.getBoundingClientRect();return[p[0]+r.left,p[1]+r.top]};
 function zoomAt(px,py,k){CQ.moved=true;const s=Math.max(.15,Math.min(14,V.s*k)),w=s2w(px,py);T=null;V.s=s;const[c,sn]=cs(V.r);V.tx=px-s*(w[0]*c-w[1]*sn);V.ty=py-s*(w[0]*sn+w[1]*c);CQ.render()}
- 
+
 /* ---------- affichage ---------- */
 function layout(){
   const dpr=Math.min(2.5,window.devicePixelRatio||1),W=box.clientWidth,H=box.clientHeight;
@@ -83,7 +84,7 @@ new ResizeObserver(layout).observe(box);
 const rel=e=>{const r=ed.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
 function toNail(e){const[px,py]=rel(e),[wx,wy]=s2w(px,py);return SC.toLocal(CQ.sel,CQ.nail(),wx,wy)}
 const nailScale=()=>V.s*SC.G[CQ.sel].ki;
- 
+
 /* ---------- entrées : Pencil, doigts, souris ---------- */
 const touches=new Map();let gest=null,tinfo=null;
 function startGesture(){
@@ -208,7 +209,7 @@ function endPointer(e){
 ed.addEventListener("pointerup",endPointer);ed.addEventListener("pointercancel",endPointer);
 ed.addEventListener("contextmenu",e=>e.preventDefault());
 ed.addEventListener("wheel",e=>{e.preventDefault();const[px,py]=rel(e);zoomAt(px,py,Math.exp(-e.deltaY*(e.ctrlKey?.01:.0016)))},{passive:false});
- 
+
 /* boutons de vue + mini-mains */
 $("#vMode").onclick=()=>CQ.setMode(CQ.mode==="hands"?"nail":"hands");
 $("#vFit").onclick=()=>CQ.refit(true);
@@ -218,14 +219,14 @@ mini.addEventListener("pointerdown",e=>{
   let best=-1,bd=1e9;for(let i=0;i<10;i++){const n=CQ.nails[i],c=SC.toWorld(i,n,50,N.nailH(n)*.5),d=Math.hypot(c[0]-x,c[1]-y);if(d<bd){bd=d;best=i}}
   if(best>=0&&bd<110)CQ.selectNail(best);
 });
- 
+
 /* ---------- compat. : vignettes pour la fiche ---------- */
 function drawCell(c,n,fi,x,y,k){
   const s=N.FINGERS[fi%5].w*.9,h=N.nailH(n);
   c.save();c.translate(x,y);c.scale(k,k);c.translate(14+(100*(1-s))/2,210-h*s);c.scale(s,s);N.renderNail(c,n,{finger:true,skin:CQ.skin});c.restore();
 }
 CQ.drawCell=drawCell;CQ.renderThumbs=()=>CQ.refresh();CQ.markSel=()=>{};
- 
+
 /* ---------- image composite (aperçu enregistré + export) ---------- */
 function palette(){
   const m=new Map(),eff=new Set(),dec=new Set(),lab=Object.fromEntries(N.EFFECTS),dl=Object.fromEntries(D.LIST);
