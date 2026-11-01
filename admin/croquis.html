@@ -29,23 +29,28 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .bar-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
 .btn{min-height:42px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:500}
 .btn:disabled{opacity:.4}.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}.btn.small{min-height:36px;padding:0 12px;font-size:13px}
-.work{flex:1;min-height:0;display:grid;grid-template-columns:92px minmax(0,1fr) 340px;gap:0}
-.rail{padding:12px 10px;background:var(--white);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:8px;overflow:auto}
-.tool{min-height:54px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:500;padding:4px}
-.tool.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.rail label{font-size:11px;color:var(--muted);text-align:center;margin-top:6px}.rail input[type=range]{width:100%}
-.curcolor{height:44px;border-radius:14px;border:2px solid var(--white);outline:1px solid var(--line);cursor:pointer}
-.stage{min-width:0;min-height:0;display:flex;flex-direction:column}
-#stageBox{flex:1;min-height:0;position:relative;background:radial-gradient(circle at 50% 35%,#fffdf9,#efe9de)}
-#ed{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.strip{display:flex;gap:18px;justify-content:center;padding:8px 10px 12px;background:var(--white);border-top:1px solid var(--line);overflow-x:auto}
-.hand{display:flex;flex-direction:column;align-items:center;gap:4px}.hand small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.hand-row{display:flex;gap:6px}.thumb{width:62px;border-radius:12px;border:2px solid transparent;background:transparent;padding:0;overflow:hidden}.thumb.on{border-color:var(--sage-dark);background:var(--sage-light)}.thumb canvas{display:block;width:100%}
-.thumb span{display:block;font-size:10px;color:var(--muted);padding-bottom:3px}
-.panel{background:var(--white);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}.tabs button{flex:1 1 auto;border:0;background:transparent;padding:13px 2px;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent}.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
-.pbody{flex:1;overflow:auto;padding:14px 14px 30px;-webkit-overflow-scrolling:touch}.pbody section{display:none}.pbody section.on{display:block}
-.pbody h3{margin:18px 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}.pbody h3:first-child{margin-top:0}
+.work{flex:1;min-height:0;position:relative}
+#stageBox{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 40%,#fffdf9,#ebe4d8)}
+#ed{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.glass{background:rgba(255,253,249,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 6px 22px rgba(41,40,36,.12)}
+.rail{position:absolute;left:10px;top:10px;bottom:10px;width:66px;border-radius:20px;padding:7px;display:flex;flex-direction:column;gap:6px;overflow:auto;z-index:5}
+.tool{flex:0 0 auto;min-height:48px;border-radius:14px;border:1px solid transparent;background:transparent;font-size:11.5px;font-weight:500;padding:3px 2px;line-height:1.15}
+.tool.on{background:var(--ink);color:#fff}.tool.sep{margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 14px 14px}
+.nailtag{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;border-radius:999px;padding:3px;z-index:4}
+.nailtag button{width:40px;height:40px;border-radius:50%;border:0;background:transparent;font-size:22px;line-height:1}
+.nailtag span{min-width:150px;text-align:center;font-weight:500;font-size:14px;padding:0 4px}
+.viewbtns{position:absolute;left:88px;top:10px;display:flex;gap:6px;z-index:4}
+.pill{height:40px;padding:0 15px;border-radius:999px;font-size:13px;font-weight:500;color:var(--ink)}
+.minibox{position:absolute;left:88px;bottom:12px;border-radius:16px;padding:6px;z-index:4}.minibox canvas{display:block;border-radius:10px;background:#fbf8f2}
+.dock{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;border-radius:999px;padding:7px 14px;z-index:4;max-width:calc(100% - 420px)}
+.dock .curcolor{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:3px solid #fff;outline:1px solid var(--line);padding:0}
+.dock .rc{display:flex;gap:6px}.dock .rc button{width:30px;height:30px;border-radius:50%;border:2px solid #fff;outline:1px solid var(--line);padding:0}
+.dock input[type=range]{width:170px;accent-color:#5f6b57;height:34px}.dock small{font-size:11px;color:var(--muted)}
+.sheet{position:absolute;right:10px;top:10px;bottom:10px;width:336px;border-radius:22px;display:flex;flex-direction:column;z-index:6;overflow:hidden}
+.sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 6px 16px;font:500 20px "Playfair Display",serif}
+.sheet header button{width:40px;height:40px;border-radius:50%;border:0;background:var(--sage-light);font-size:18px}
+.pbody{display:flex;flex-direction:column;flex:1;overflow:auto;padding:4px 14px 30px;-webkit-overflow-scrolling:touch}.pbody section[data-tab=pinceau]{order:-1}.pbody section{display:none;flex:0 0 auto}.pbody section.on{display:block}
+.pbody h3{margin:18px 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}.pbody h3:first-child{margin-top:8px}
 .grid{display:grid;gap:8px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
 .opt{min-height:48px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:12.5px;padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .opt.on{border-color:var(--sage-dark);background:var(--sage-light);font-weight:600}.opt canvas{display:block}
@@ -57,9 +62,10 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
 .modal-bg{position:fixed;inset:0;z-index:80;background:rgba(41,40,36,.5);display:grid;place-items:center;padding:16px}.modal{width:min(620px,100%);max-height:86vh;overflow:auto;background:var(--white);border-radius:22px;padding:22px}
 .modal h2{margin:0 0 12px;font:500 24px "Playfair Display",serif}.skl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .skc{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;text-align:left;padding:0}.skc img{width:100%;display:block;background:var(--cream)}.skc div{padding:8px 10px;font-size:12px}.skc b{display:block;font-size:13px}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:13px;z-index:95;max-width:calc(100% - 28px)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:13px;z-index:95;max-width:calc(100% - 28px)}
 [hidden]{display:none!important}
-@media(max-width:1000px){.work{grid-template-columns:1fr;grid-template-rows:auto minmax(300px,1fr) auto;overflow:auto}.rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);order:0}.rail .tool{min-width:76px}.rail label,.rail input[type=range]{min-width:90px}.stage{order:1;min-height:60vh}.panel{order:2;border-left:0;border-top:1px solid var(--line);max-height:none}.app{height:auto;min-height:100dvh}}
+@media(min-width:901px){.sheet-on .dock{left:calc(50% - 175px);max-width:calc(100% - 560px)}}
+@media(max-width:900px){.sheet{left:10px;width:auto;top:auto;height:56%}.dock{max-width:calc(100% - 100px);bottom:70px}.minibox{display:none}.viewbtns{top:62px}}
 </style>
 </head>
 <body>
@@ -78,26 +84,32 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
     </div>
   </header>
   <main class="work">
-    <aside class="rail" id="rail">
-      <button class="tool" data-tool="pen">Pinceau</button>
-      <button class="tool" data-tool="air">Diffus</button>
-      <button class="tool" data-tool="erase">Gomme</button>
-      <button class="tool" data-tool="relief">Relief 3D</button>
-      <button class="tool" data-tool="fill">Fond</button>
-      <button class="tool" data-tool="photo">Photo</button>
-      <button class="tool" data-tool="deco">Déco</button>
-      <label for="size">Taille</label><input id="size" type="range" min="1" max="60" step="0.5">
-      <label>Couleur</label><button class="curcolor" id="curColor" aria-label="Couleur active"></button>
-    </aside>
-    <section class="stage">
-      <div id="stageBox"><canvas id="ed"></canvas></div>
-      <div class="strip" id="strip"></div>
-    </section>
-    <aside class="panel">
-      <nav class="tabs" id="tabs">
-        <button data-tab="forme">Forme</button><button data-tab="couleur">Couleur</button><button data-tab="pinceau">Pinceau</button><button data-tab="effets">Effets</button><button data-tab="photo">Photo</button><button data-tab="deco">Déco</button><button data-tab="options">Options</button>
-      </nav>
-      <div class="pbody">
+    <div id="stageBox">
+      <canvas id="ed"></canvas>
+      <div class="nailtag glass"><button id="vPrev" aria-label="Doigt précédent">‹</button><span id="nailLabel"></span><button id="vNext" aria-label="Doigt suivant">›</button></div>
+      <div class="viewbtns"><button class="pill glass" id="vMode">Zoomer sur l'ongle</button><button class="pill glass" id="vFit" hidden>Recentrer</button></div>
+      <div class="minibox glass" hidden><canvas id="mini" aria-label="Les deux mains : touche un ongle pour le choisir"></canvas></div>
+      <aside class="rail glass" id="rail">
+        <button class="tool" data-tool="pen">Pinceau</button>
+        <button class="tool" data-tool="air">Diffus</button>
+        <button class="tool" data-tool="erase">Gomme</button>
+        <button class="tool" data-tool="relief">Relief 3D</button>
+        <button class="tool" data-tool="fill">Fond</button>
+        <button class="tool" data-tool="magnet">Œil de chat</button>
+        <button class="tool" data-tool="deco">Déco</button>
+        <button class="tool" data-tool="photo">Photo</button>
+        <button class="tool sep" data-open="effets">Effets</button>
+        <button class="tool" data-open="forme">Forme</button>
+        <button class="tool" data-open="options">Réglages</button>
+      </aside>
+      <div class="dock glass" id="dock" hidden>
+        <button class="curcolor" id="curColor" aria-label="Couleur active"></button>
+        <div class="rc" id="dockRecent"></div>
+        <input id="size" type="range" min="1" max="60" step="0.5" aria-label="Taille">
+      </div>
+      <aside class="sheet glass" id="sheet" hidden>
+        <header><span id="sheetTitle">Options</span><button id="sheetClose" aria-label="Fermer">✕</button></header>
+        <div class="pbody">
         <section data-tab="forme">
           <h3>Forme</h3><div class="grid g4" id="shapes"></div>
           <h3>Longueur</h3><div class="grid g4" id="lengths"></div>
@@ -152,6 +164,14 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
             <div class="chips"><button class="chip" id="phAll">Même photo sur les 10 ongles</button></div>
           </div>
         </section>
+        <section data-tab="aimant">
+          <h3>Œil de chat</h3>
+          <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px;line-height:1.5">Choisis la couleur de base ci-dessous, puis <b>glisse sur l'ongle</b> dans le sens de l'aimant : la ligne suit ton Pencil ou ton doigt. Un simple toucher pose un rond.</p>
+          <div class="chips" id="magStyle"></div>
+          <div class="row"><span>Épaisseur</span><input type="range" id="magW" min="4" max="40" step="1"></div>
+          <div class="row"><span>Reflet</span><input type="color" id="magC1"></div>
+          <div class="chips"><button class="chip" id="magAll">Même œil de chat sur les 10 ongles</button></div>
+        </section>
         <section data-tab="deco">
           <h3>Strass, bijoux, décorations</h3><div class="grid g4" id="decoGrid"></div>
           <h3>Finition</h3><div class="chips" id="decoFinish"></div>
@@ -175,17 +195,20 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
           <h3>Note</h3><textarea id="note" placeholder="Remarques pour cette pose…"></textarea>
           <h3>Nettoyage</h3>
           <div class="chips"><button class="chip" id="clearNail">Vider cet ongle</button><button class="chip" id="clearAll">Tout réinitialiser</button></div>
-          <h3>Doigt</h3>
+          <h3>Gestes</h3>
           <div class="chips"><button class="chip" id="fingerDraw">Dessiner au doigt : oui</button></div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.5">Apple Pencil : dessine. Pause d'une demi-seconde en fin de trait = ligne droite.<br>Un doigt : déplace la vue. Deux doigts : zoom et rotation. Tapote à deux doigts : annuler, à trois : rétablir.</p>
         </section>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </div>
   </main>
 </div>
 <div class="modal-bg" id="modalBg" hidden><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast" hidden></div>
 <script src="./croquis-core.js"></script>
 <script src="./croquis-deco.js"></script>
+<script src="./croquis-scene.js"></script>
 <script src="./croquis-app.js"></script>
 <script src="./croquis-ui.js"></script>
 <script src="./croquis-save.js"></script>
