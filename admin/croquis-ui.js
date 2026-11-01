@@ -1,3 +1,4 @@
+/* Croquis d'ongles — panneaux, outils et sauvegarde Supabase. */
 (function(){
 const N=window.NailArt,D=window.NailDeco,CQ=window.CQ,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const db=supabase.createClient("https://zlmwytycgopowalfrjwf.supabase.co","sb_publishable_oN_GBtiyokchMsnKNLu-1A_Cz_dtDrG");
@@ -17,12 +18,12 @@ const nail=()=>CQ.nail();
 function pickColor(c){CQ.color=c;if(CQ.tool==="magnet"&&nail().effect.t==="cateye"){CQ.snapshot();nail().base.c=c;CQ.refresh()}}
 function mk(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 function live(el,fn){el.addEventListener("pointerdown",()=>CQ.snapshot());el.addEventListener("input",()=>{fn(el.value);CQ.refresh()})}
- 
+
 /* ---------- fenêtres ---------- */
 function modal(html){const bg=$("#modalBg"),m=$("#modal");m.innerHTML=html;bg.hidden=false;bg.onclick=e=>{if(e.target===bg)bg.hidden=true};return m}
 function closeModal(){$("#modalBg").hidden=true}
 function confirmBox(title,text,ok){return new Promise(res=>{const m=modal(`<h2>${title}</h2><p style="color:var(--muted)">${text}</p><div class="chips" style="justify-content:flex-end;margin-top:16px"><button class="btn" id="cNo">Annuler</button><button class="btn primary" id="cYes">${ok||"Confirmer"}</button></div>`);m.querySelector("#cNo").onclick=()=>{closeModal();res(false)};m.querySelector("#cYes").onclick=()=>{closeModal();res(true)}})}
- 
+
 /* ---------- panneau flottant et outils ---------- */
 const SECTIONS={magnet:["aimant","couleur"],pen:["pinceau","couleur"],air:["pinceau","couleur"],relief:["pinceau","couleur"],erase:["pinceau"],fill:["couleur"],deco:["deco"],photo:["photo"],effets:["effets"],forme:["forme"],options:["options"],couleur:["couleur"]};
 const TITLES={magnet:"Œil de chat",pen:"Pinceau",air:"Diffus",relief:"Relief 3D",erase:"Gomme",fill:"Couleur de fond",deco:"Déco",photo:"Photo",effets:"Effets",forme:"Forme",options:"Réglages",couleur:"Couleurs"};
@@ -49,7 +50,7 @@ $("#size").addEventListener("input",e=>{const v=+e.target.value;if(CQ.tool==="ma
 $("#curColor").onclick=()=>{if(sheetKey==="couleur")closeSheet(true);else openSheet("couleur")};
 $("#undo").onclick=()=>CQ.undo();$("#redo").onclick=()=>CQ.redoOp();
 CQ.ui.updateUndo=()=>{$("#undo").disabled=!CQ.hist.length;$("#redo").disabled=!CQ.redo.length};
- 
+
 /* ---------- forme, longueur ---------- */
 N.SHAPES.forEach(([id,label])=>{
   const b=mk("button","opt");b.dataset.shape=id;const c=mk("canvas");c.width=44;c.height=64;b.append(c,label);
@@ -58,7 +59,7 @@ N.SHAPES.forEach(([id,label])=>{
 });
 N.LENGTH_LIST.forEach(([id,label])=>{const b=mk("button","opt",label);b.dataset.len=id;b.onclick=()=>{CQ.snapshot();(CQ.same?CQ.nails:[nail()]).forEach(n=>n.len=id);CQ.refresh(true)};$("#lengths").appendChild(b)});
 $("#sameShape").onclick=()=>{CQ.same=!CQ.same;CQ.ui.sync()};
- 
+
 /* ---------- pinceau ---------- */
 function brushPreview(){
   const c=$("#brushPrev"),x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);x.save();x.scale(4,4);
@@ -73,7 +74,7 @@ Object.entries(N.METALS).filter(([k])=>k!=="noir").forEach(([k,m])=>{const b=mk(
 [2,5,10,20,35,55].forEach(v=>{const b=mk("button","chip",String(v));b.dataset.v=v;b.onclick=()=>{CQ.sizes[CQ.tool==="deco"||CQ.tool==="fill"||CQ.tool==="photo"?"pen":CQ.tool]=v;CQ.ui.sync()};$("#sizePre").appendChild(b)});
 $("#bSize").addEventListener("input",e=>{const t=["pen","air","erase","relief"].includes(CQ.tool)?CQ.tool:"pen";CQ.sizes[t]=+e.target.value;CQ.ui.sync()});
 $("#bAlpha").addEventListener("input",e=>{CQ.brush.a=+e.target.value;brushPreview()});
- 
+
 /* ---------- couleur ---------- */
 const pal=$("#palette");
 PALETTE.forEach(([name,cols])=>{pal.appendChild(mk("h3",null,name));const w=mk("div","sw");cols.forEach(c=>{const b=mk("button");b.style.background=c;b.dataset.c=c;b.setAttribute("aria-label",c);b.onclick=()=>{pickColor(c);CQ.addRecent(c);CQ.ui.sync()};w.appendChild(b)});pal.appendChild(w)});
@@ -82,7 +83,7 @@ const DOCK_DEF=["#f6dccd","#e8c1b0","#c0392b","#a61e2e","#f4a6bd","#2b4f8f","#1a
 CQ.ui.renderRecent=()=>{const dr=$("#dockRecent");dr.innerHTML="";[...CQ.recent,...DOCK_DEF.filter(c=>!CQ.recent.includes(c))].slice(0,7).forEach(c=>{const b=mk("button");b.style.background=c;b.setAttribute("aria-label",c);b.onclick=()=>{pickColor(c);CQ.ui.sync()};dr.appendChild(b)});const r=$("#recent");r.innerHTML="";CQ.recent.forEach(c=>{const b=mk("button");b.style.background=c;b.onclick=()=>{pickColor(c);CQ.ui.sync()};r.appendChild(b)});if(!CQ.recent.length)r.innerHTML='<span style="font-size:12px;color:var(--muted)">Tes couleurs utilisées apparaîtront ici.</span>'};
 $("#baseOne").onclick=()=>{CQ.snapshot();nail().base.c=CQ.color;CQ.addRecent(CQ.color);CQ.refresh()};
 $("#baseAll").onclick=()=>{CQ.snapshot();CQ.nails.forEach(n=>n.base.c=CQ.color);CQ.addRecent(CQ.color);CQ.refresh(true)};
- 
+
 /* ---------- effets, french, finition ---------- */
 N.EFFECTS.forEach(([id,label])=>{const b=mk("button","chip",label);b.dataset.eff=id;b.onclick=()=>{CQ.snapshot();const n=nail();n.effect={t:id,seed:n.effect.seed||Math.floor(Math.random()*9999)+1,...EFFECT_DEF[id]};CQ.refresh()};$("#effects").appendChild(b)});
 function renderEffParams(){
@@ -106,7 +107,7 @@ live($("#frColor"),v=>nail().french.c=v);live($("#frDepth"),v=>nail().french.dep
 [["curve","Courbe"],["straight","Droite"],["v","En V"]].forEach(([v,l])=>{const b=mk("button","chip",l);b.dataset.fs=v;b.onclick=()=>{CQ.snapshot();nail().french.style=v;CQ.refresh()};$("#frStyle").appendChild(b)});
 [["brillant","Brillant"],["mat","Mat"]].forEach(([v,l])=>{const b=mk("button","chip",l);b.dataset.g=v;b.onclick=()=>{CQ.snapshot();nail().gloss=v;CQ.refresh()};$("#gloss").appendChild(b)});
 $("#effAll").onclick=()=>{CQ.snapshot();const s=N.clone(nail());CQ.nails.forEach(n=>{n.effect=JSON.parse(JSON.stringify(s.effect));n.french=JSON.parse(JSON.stringify(s.french));n.gloss=s.gloss;n.base.c=s.base.c});CQ.refresh(true);CQ.toast("Appliqué aux 10 ongles")};
- 
+
 /* ---------- œil de chat (aimant) ---------- */
 [["line","Ligne"],["wide","Large"],["double","Double"],["curve","Courbe"],["spot","Rond"]].forEach(([v,l])=>{const b=mk("button","chip",l);b.dataset.ms=v;b.onclick=()=>{CQ.magStyle=v;const e=nail().effect;if(e.t==="cateye"){CQ.snapshot();e.style=v;CQ.refresh()}else CQ.ui.sync()};$("#magStyle").appendChild(b)});
 $("#magW").addEventListener("pointerdown",()=>CQ.snapshot());
@@ -114,7 +115,7 @@ $("#magW").addEventListener("input",e=>{CQ.sizes.magnet=+e.target.value;const ef
 $("#magC1").addEventListener("pointerdown",()=>CQ.snapshot());
 $("#magC1").addEventListener("input",e=>{const ef=nail().effect;if(ef.t==="cateye"){ef.c1=e.target.value;CQ.refresh()}});
 $("#magAll").onclick=()=>{const s=nail();if(s.effect.t!=="cateye"){CQ.toast("Pose d'abord l'aimant sur cet ongle");return}CQ.snapshot();CQ.nails.forEach(n=>{n.effect=JSON.parse(JSON.stringify(s.effect));n.base.c=s.base.c});CQ.refresh();CQ.toast("Appliqué aux 10 ongles")};
- 
+
 /* ---------- photo sur l'ongle ---------- */
 function shrinkToDataURL(src,max){
   return new Promise((ok,ko)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>{const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.82))};im.onerror=()=>ko(new Error("img"));im.src=src});
@@ -143,7 +144,7 @@ CQ.ui.loadInspirations=async function(){
     for(const m of data){try{const{data:sg}=await db.storage.from("appointment-media").createSignedUrl(m.storage_path,3600);if(!sg)continue;const r=await fetch(sg.signedUrl),bl=await r.blob();CQ.inspo.push(await createImageBitmap(bl))}catch(e){console.warn("inspiration non chargée",e)}}
   }catch(e){console.error(e)}
 };
- 
+
 /* ---------- décorations ---------- */
 D.LIST.forEach(([id,label])=>{
   const b=mk("button","opt");b.dataset.k=id;const c=mk("canvas");c.width=c.height=52;c.style.background="#e9e4dc";c.style.borderRadius="8px";b.append(c);b.appendChild(mk("span",null,label)).style.cssText="font-size:10.5px;line-height:1.1";
@@ -159,9 +160,9 @@ live($("#decoRot"),v=>{const d=nail().deco[CQ.decoSel];if(d)d.rot=+v});
 $("#decoAr").addEventListener("pointerdown",()=>CQ.snapshot());
 $("#decoAr").addEventListener("input",e=>{CQ.decoAr=+e.target.value;const d=nail().deco[CQ.decoSel];if(d)d.ar=+e.target.value;CQ.refresh()});
 $("#decoScatter").onclick=()=>{CQ.scatter=!CQ.scatter;CQ.ui.sync()};
-$("#decoDup").onclick=()=>{const n=nail(),d=n.deco[CQ.decoSel];if(!d)return;CQ.snapshot();n.deco.push({...d,x:d.x+4,y:d.y+4});CQ.decoSel=n.deco.length-1;CQ.refresh()};
+$("#decoDup").onclick=()=>{if(!CQ.nails[CQ.sel])CQ.sel=1;const n=nail(),d=n.deco[CQ.decoSel];if(!d)return;CQ.snapshot();n.deco.push({...d,x:d.x+4,y:d.y+4});CQ.decoSel=n.deco.length-1;CQ.refresh()};
 $("#decoDel").onclick=()=>{const n=nail();if(CQ.decoSel<0||!n.deco[CQ.decoSel])return;CQ.snapshot();n.deco.splice(CQ.decoSel,1);CQ.decoSel=-1;CQ.refresh()};
- 
+
 /* ---------- options ---------- */
 CQ.SKINS.forEach(c=>{const b=mk("button");b.style.background=c;b.dataset.c=c;b.onclick=()=>{CQ.skin=c;CQ.refresh(true)};$("#skins").appendChild(b)});
 const NAMES=["Pouce","Index","Majeur","Annul.","Auric."];
@@ -173,10 +174,10 @@ $("#note").addEventListener("input",e=>{CQ.note=e.target.value;CQ.dirty=true});
 $("#clearNail").onclick=async()=>{if(!await confirmBox("Vider cet ongle ?","Fond, effets, traits et décorations de cet ongle seront effacés (la forme est conservée).","Vider"))return;CQ.snapshot();const n=nail(),f=N.defaultNail();f.shape=n.shape;f.len=n.len;CQ.nails[CQ.sel]=f;CQ.decoSel=-1;CQ.refresh()};
 $("#clearAll").onclick=async()=>{if(!await confirmBox("Tout réinitialiser ?","Les 10 ongles repartent à zéro.","Réinitialiser"))return;CQ.snapshot();const s=nail().shape,l=nail().len;CQ.nails=Array.from({length:10},()=>{const f=N.defaultNail();f.shape=s;f.len=l;return f});CQ.decoSel=-1;CQ.refresh(true)};
 $("#fingerDraw").onclick=()=>{CQ.fingerDraw=!CQ.fingerDraw;CQ.ui.sync()};
- 
+
 /* ---------- synchronisation de l'interface ---------- */
 CQ.ui.sync=function(){
-  const n=nail(),d=n.deco[CQ.decoSel];
+  if(!CQ.nails[CQ.sel])CQ.sel=1;const n=nail(),d=n.deco[CQ.decoSel];
   $$(".tool").forEach(b=>b.classList.toggle("on",b.dataset.tool===CQ.tool));
   $("#dock").hidden=CQ.mode!=="nail";const sz=$("#size");
   {const ef=n.effect,ce=ef.t==="cateye";$$("#magStyle .chip").forEach(b=>b.classList.toggle("on",b.dataset.ms===(ce?ef.style||"line":CQ.magStyle||"line")));$("#magW").value=ce?ef.w:CQ.sizes.magnet;$("#magC1").value=(ce&&ef.c1)||"#e8e0f4"}sz.disabled=CQ.tool==="fill"||CQ.tool==="photo";sz.max=CQ.tool==="deco"?70:60;sz.min=CQ.tool==="deco"?2:1;sz.value=CQ.tool==="deco"?(d?d.r:CQ.decoSize):(CQ.sizes[CQ.tool]||3);
