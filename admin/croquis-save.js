@@ -1,3 +1,4 @@
+/* Croquis d'ongles — accès admin, rendez-vous liés, enregistrement, ouverture, export. */
 (function(){
 const N=window.NailArt,CQ=window.CQ,db=CQ.db,$=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -80,7 +81,7 @@ CQ.getTitle=()=>title();
 if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed");
 (async function start(){
   if(!await guard())return;
-  CQ.ui.renderRecent();CQ.showTab("forme");
+  CQ.ui.renderRecent();
   $("#loading").hidden=true;$("#app").hidden=false;CQ.init();CQ.ui.sync();
   await loadAppts();
   const q=new URLSearchParams(location.search);
