@@ -40,19 +40,48 @@ $("#apptSel").addEventListener("change",async e=>{
 });
 
 async function save(){
+  let ok=false;
   const btn=$("#saveBtn");btn.disabled=true;btn.textContent="Enregistrement…";
   try{
-    const preview=CQ.composite(760).toDataURL("image/jpeg",.82);
+    const preview=CQ.composite(1100).toDataURL("image/jpeg",.84);
     const row={appointment_id:CQ.apptId||null,client_id:CQ.clientId||null,title:title(),note:CQ.note||null,preview,updated_at:new Date().toISOString(),data:{v:1,nails:CQ.nails.map(N.clone),skin:CQ.skin,same:CQ.same,meta:CQ.meta}};
     let res;
     if(CQ.sketchId)res=await db.from("appointment_sketches").update(row).eq("id",CQ.sketchId).select("id").single();
     else res=await db.from("appointment_sketches").insert(row).select("id").single();
     if(res.error)throw res.error;
-    CQ.sketchId=res.data.id;CQ.title=row.title;CQ.dirty=false;CQ.toast("Croquis enregistré ✓");
+    CQ.sketchId=res.data.id;CQ.title=row.title;CQ.dirty=false;ok=true;CQ.toast("Croquis enregistré ✓");
   }catch(err){console.error(err);CQ.toast("Impossible d'enregistrer (la table existe-t-elle ?)")}
-  btn.disabled=false;btn.textContent="Enregistrer";
+  btn.disabled=false;btn.textContent="Enregistrer";return ok;
 }
 $("#saveBtn").onclick=save;
+
+/* ---------- partage avec la cliente (lien privé de validation) ---------- */
+const ST={draft:"Pas encore envoyé",sent:"Envoyé, en attente de réponse",approved:"Validé par la cliente ✓",changes_requested:"Modifications demandées"};
+$("#shareBtn").onclick=async()=>{
+  if(!CQ.sketchId||CQ.dirty){if(!await save())return}
+  let{data:r,error}=await db.from("appointment_sketches").select("share_token,client_status,client_comment,responded_at").eq("id",CQ.sketchId).single();
+  if(error||!r){CQ.toast("Partage impossible");return}
+  if(r.client_status==="draft"){const u=await db.from("appointment_sketches").update({client_status:"sent",sent_at:new Date().toISOString()}).eq("id",CQ.sketchId);if(!u.error)r.client_status="sent"}
+  const link=new URL("croquis-client.html",location.href).href+"?t="+r.share_token;
+  const m=CQ.modal(`<h2>Partager avec la cliente</h2>
+    <p style="margin:0 0 8px">Statut : <b>${ST[r.client_status]||r.client_status}</b></p>
+    ${r.client_comment?`<p style="margin:0 0 10px;padding:10px 12px;border-radius:12px;background:#e9dce6;color:#4a2441">« ${esc(r.client_comment)} »</p>`:""}
+    <p style="margin:0 0 6px;color:var(--muted);font-size:13px">Envoie-lui ce lien privé : elle verra le croquis et pourra le valider ou demander des changements.</p>
+    <input id="shLink" readonly value="${esc(link)}" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;font-size:13px">
+    <div class="chips" style="margin-top:12px;justify-content:space-between">
+      <button class="btn small" id="shReset">Renvoyer pour validation</button>
+      <span><button class="btn small" id="mClose">Fermer</button> <button class="btn small primary" id="shCopy">${navigator.share?"Partager le lien":"Copier le lien"}</button></span>
+    </div>`);
+  m.querySelector("#mClose").onclick=CQ.closeModal;
+  m.querySelector("#shCopy").onclick=async()=>{
+    if(navigator.share){try{await navigator.share({title:"Ton croquis",text:"Voici le croquis de ton prochain rendez-vous 🌿",url:link});return}catch(e){if(e&&e.name==="AbortError")return}}
+    try{await navigator.clipboard.writeText(link);CQ.toast("Lien copié ✓")}catch(e){const i=m.querySelector("#shLink");i.select();CQ.toast("Copie le lien affiché")}
+  };
+  m.querySelector("#shReset").onclick=async()=>{
+    const u=await db.from("appointment_sketches").update({client_status:"sent",client_comment:null,responded_at:null,sent_at:new Date().toISOString()}).eq("id",CQ.sketchId);
+    CQ.toast(u.error?"Impossible de réinitialiser":"Remis en attente de validation ✓");CQ.closeModal();
+  };
+};
 
 $("#openBtn").onclick=async()=>{
   const{data,error}=await db.from("appointment_sketches").select("id,title,updated_at,preview,appointment_id,client_id,note,data").order("updated_at",{ascending:false}).limit(40);
