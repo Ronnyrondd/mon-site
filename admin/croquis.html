@@ -39,7 +39,12 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .nailtag{position:absolute;top:10px;left:var(--cx,50%);transform:translateX(-50%);display:flex;align-items:center;gap:2px;border-radius:999px;padding:3px;z-index:4}
 .nailtag button{width:40px;height:40px;border-radius:50%;border:0;background:transparent;font-size:22px;line-height:1}
 .nailtag span{min-width:150px;text-align:center;font-weight:500;font-size:14px;padding:0 4px}
-.viewbtns{position:absolute;left:88px;top:10px;display:flex;gap:6px;z-index:4}
+.inspo-panel{position:absolute;left:88px;top:100px;width:min(260px,calc(100% - 100px));max-height:60%;overflow:auto;border-radius:16px;padding:10px;z-index:5}
+.ip-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.ip-g{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ip-g img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:zoom-in}
+.inspo-big{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}.inspo-big img{max-width:100%;max-height:100%;border-radius:12px}
+.inspo-panel[hidden],.inspo-big[hidden]{display:none}
+@media(max-width:900px){.inspo-panel{left:12px;top:108px;width:min(260px,calc(100% - 24px))}}
+.viewbtns{position:absolute;left:88px;top:10px;display:flex;flex-wrap:wrap;gap:6px;z-index:4;max-width:250px}
 .pill{height:40px;padding:0 15px;border-radius:999px;font-size:13px;font-weight:500;color:var(--ink)}
 .minibox{position:absolute;left:var(--cx,50%);transform:translateX(-50%);bottom:10px;border-radius:16px;padding:6px;z-index:4}.minibox canvas{display:block;border-radius:10px;background:#fbf8f2}
 .dock{position:absolute;left:var(--cx,50%);bottom:calc(var(--mh,0px) + 14px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;border-radius:999px;padding:7px 14px;z-index:4;max-width:calc(100% - 420px)}
@@ -90,7 +95,9 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
     <div id="stageBox">
       <canvas id="ed"></canvas>
       <div class="nailtag glass"><button id="vPrev" aria-label="Doigt précédent">‹</button><span id="nailLabel"></span><button id="vNext" aria-label="Doigt suivant">›</button></div>
-      <div class="viewbtns"><button class="pill glass" id="vMode">Zoomer sur l'ongle</button><button class="pill glass" id="vFit" hidden>Recentrer</button></div>
+      <div class="viewbtns"><button class="pill glass" id="vMode">Zoomer sur l'ongle</button><button class="pill glass" id="vFit" hidden>Recentrer</button><button class="pill glass" id="vInspo" hidden>Inspirations</button></div>
+      <div class="inspo-panel glass" id="inspoPanel" hidden><div class="ip-h"><b>Inspirations</b><button id="inspoClose" class="pill">Fermer</button></div><div class="ip-g" id="inspoGrid"></div></div>
+      <div class="inspo-big" id="inspoBigWrap" hidden><img id="inspoBig" alt=""></div>
       <div class="minibox glass" hidden><canvas id="mini" aria-label="Les deux mains : touche un ongle pour le choisir"></canvas></div>
       <aside class="rail glass" id="rail">
         <button class="tool" data-tool="pen">Pinceau</button>
@@ -141,6 +148,10 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
           <p style="font-size:12px;color:var(--muted)">Avec une matière (chrome, œil de chat, paillettes…), tu dessines directement avec cet effet : ça ne change que ton trait, pas le fond de l'ongle.</p>
         </section>
         <section data-tab="effets">
+          <h3>Couleur de base</h3>
+          <div class="row"><span>Cet ongle</span><input type="color" id="baseColor"></div>
+          <div class="sw" id="baseSw"></div>
+          <p style="font-size:12px;color:var(--muted);margin:6px 0 0">Touche une couleur (ici ou dans la barre du bas) : elle devient le fond de l'ongle, l'effet se pose dessus.</p>
           <h3>Effet</h3><div class="chips" id="effects"></div>
           <div id="effParams"></div>
           <h3>French</h3>
@@ -209,12 +220,12 @@ textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:1
 </div>
 <div class="modal-bg" id="modalBg" hidden><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast" hidden></div>
-<script src="./croquis-core.js?v=20261101b"></script>
-<script src="./croquis-deco.js?v=20261101b"></script>
-<script src="./croquis-scene.js?v=20261101b"></script>
-<script src="./croquis-app.js?v=20261101b"></script>
-<script src="./croquis-ui.js?v=20261101b"></script>
-<script src="./croquis-save.js?v=20261101b"></script>
-<script src="./admin-nav.js?v=20261101b"></script>
+<script src="./croquis-core.js?v=20261106"></script>
+<script src="./croquis-deco.js?v=20261106"></script>
+<script src="./croquis-scene.js?v=20261106"></script>
+<script src="./croquis-app.js?v=20261106"></script>
+<script src="./croquis-ui.js?v=20261106"></script>
+<script src="./croquis-save.js?v=20261106"></script>
+<script src="./admin-nav.js?v=20261106"></script>
 </body>
 </html>
