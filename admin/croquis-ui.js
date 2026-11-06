@@ -15,7 +15,7 @@ const PALETTE=[
 ];
 const EFFECT_DEF={none:{},ombre:{c1:"#f4b6c8",c2:"#b388eb",dir:"v"},babyboomer:{c1:"#f6e3dc",c2:"#fffaf6",dir:"v"},chrome:{m:"argent"},miroir:{m:"argent"},foil:{m:"or",k:.6},glitter:{c1:"#ffffff",c2:"#ffe9a8",k:.6},cateye:{ang:25,w:16,pos:0,style:"line"},velours:{},sucre:{},aurora:{k:.6}};
 const nail=()=>CQ.nail();
-function pickColor(c){CQ.color=c;if(CQ.tool==="magnet"&&nail().effect.t==="cateye"){CQ.snapshot();nail().base.c=c;CQ.refresh()}}
+function pickColor(c){CQ.color=c;if(sheetKey==="effets"||(CQ.tool==="magnet"&&nail().effect.t==="cateye")){CQ.snapshot();nail().base.c=c;CQ.refresh()}}
 function mk(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 function live(el,fn){el.addEventListener("pointerdown",()=>CQ.snapshot());el.addEventListener("input",()=>{fn(el.value);CQ.refresh()})}
 
@@ -80,7 +80,8 @@ const pal=$("#palette");
 PALETTE.forEach(([name,cols])=>{pal.appendChild(mk("h3",null,name));const w=mk("div","sw");cols.forEach(c=>{const b=mk("button");b.style.background=c;b.dataset.c=c;b.setAttribute("aria-label",c);b.onclick=()=>{pickColor(c);CQ.addRecent(c);CQ.ui.sync()};w.appendChild(b)});pal.appendChild(w)});
 $("#colorInput").addEventListener("input",e=>{pickColor(e.target.value);CQ.ui.sync()});$("#colorInput").addEventListener("change",e=>CQ.addRecent(e.target.value));
 const DOCK_DEF=["#f6dccd","#e8c1b0","#c0392b","#a61e2e","#f4a6bd","#2b4f8f","#1a1917","#ffffff"];
-CQ.ui.renderRecent=()=>{const dr=$("#dockRecent");dr.innerHTML="";[...CQ.recent,...DOCK_DEF.filter(c=>!CQ.recent.includes(c))].slice(0,7).forEach(c=>{const b=mk("button");b.style.background=c;b.setAttribute("aria-label",c);b.onclick=()=>{pickColor(c);CQ.ui.sync()};dr.appendChild(b)});const r=$("#recent");r.innerHTML="";CQ.recent.forEach(c=>{const b=mk("button");b.style.background=c;b.onclick=()=>{pickColor(c);CQ.ui.sync()};r.appendChild(b)});if(!CQ.recent.length)r.innerHTML='<span style="font-size:12px;color:var(--muted)">Tes couleurs utilisées apparaîtront ici.</span>'};
+CQ.ui.renderRecent=()=>{const dr=$("#dockRecent");dr.innerHTML="";[...CQ.recent,...DOCK_DEF.filter(c=>!CQ.recent.includes(c))].slice(0,7).forEach(c=>{const b=mk("button");b.style.background=c;b.setAttribute("aria-label",c);b.onclick=()=>{pickColor(c);CQ.ui.sync()};dr.appendChild(b)});const bs=$("#baseSw");bs.innerHTML="";[...CQ.recent,...DOCK_DEF.filter(c=>!CQ.recent.includes(c))].slice(0,12).forEach(c=>{const b=mk("button");b.style.background=c;b.setAttribute("aria-label",c);b.onclick=()=>{CQ.snapshot();nail().base.c=c;CQ.color=c;CQ.addRecent(c);CQ.refresh()};bs.appendChild(b)});const r=$("#recent");r.innerHTML="";CQ.recent.forEach(c=>{const b=mk("button");b.style.background=c;b.onclick=()=>{pickColor(c);CQ.ui.sync()};r.appendChild(b)});if(!CQ.recent.length)r.innerHTML='<span style="font-size:12px;color:var(--muted)">Tes couleurs utilisées apparaîtront ici.</span>'};
+live($("#baseColor"),v=>{nail().base.c=v;CQ.color=v});$("#baseColor").addEventListener("change",e=>CQ.addRecent(e.target.value));
 $("#baseOne").onclick=()=>{CQ.snapshot();nail().base.c=CQ.color;CQ.addRecent(CQ.color);CQ.refresh()};
 $("#baseAll").onclick=()=>{CQ.snapshot();CQ.nails.forEach(n=>n.base.c=CQ.color);CQ.addRecent(CQ.color);CQ.refresh(true)};
 
@@ -97,7 +98,7 @@ function renderEffParams(){
   if(t==="cateye"){
     chips([["line","Ligne"],["wide","Large (velours)"],["double","Double"],["curve","Courbe"],["spot","Rond"]],"style");
     if(e.style==="spot")range("Horizontal","posx",-40,40,1);else range("Angle","ang",-80,80,5);range(e.style==="spot"?"Vertical":"Position","pos",-70,70,1);range("Épaisseur","w",4,40,1);color("Reflet","c1");
-    box.appendChild(mk("p",null,"La couleur de fond (onglet Couleur → « Cet ongle ») sert de base à l'œil de chat.")).style.cssText="font-size:12px;color:var(--muted)";
+    box.appendChild(mk("p",null,"La couleur de fond se choisit en haut de cet onglet (« Couleur de base »).")).style.cssText="font-size:12px;color:var(--muted)";
     if(!e.c1){e.c1=N.light(n.base.c,.82)}
   }
   if(t==="aurora")range("Intensité","k",0,1,.05);
@@ -128,8 +129,16 @@ $("#photoFile").addEventListener("change",e=>{const f=e.target.files&&e.target.f
 $("#photoRemove").onclick=()=>{if(!nail().photo)return;CQ.snapshot();delete nail().photo;nail()._img=null;nail()._imgSrc=null;CQ.refresh()};
 live($("#phS"),v=>{if(nail().photo)nail().photo.s=+v});live($("#phR"),v=>{if(nail().photo)nail().photo.rot=+v});live($("#phA"),v=>{if(nail().photo)nail().photo.a=+v});
 $("#phAll").onclick=()=>{const p=nail().photo;if(!p)return;CQ.snapshot();CQ.nails.forEach(n=>{n.photo={...p}});CQ.refresh(true);CQ.toast("Photo copiée sur les 10 ongles — ajuste chaque ongle avec l'outil Photo")};
+CQ.ui.setInspoUrls=function(urls){
+  const btn=$("#vInspo"),pan=$("#inspoPanel"),grid=$("#inspoGrid");grid.innerHTML="";pan.hidden=true;btn.hidden=!urls.length;
+  btn.textContent="Inspirations ("+urls.length+")";
+  urls.forEach(u=>{const i=mk("img");i.src=u;i.alt="";i.onclick=()=>{$("#inspoBig").src=u;$("#inspoBigWrap").hidden=false};grid.appendChild(i)});
+};
+$("#vInspo").onclick=()=>{$("#inspoPanel").hidden=!$("#inspoPanel").hidden};
+$("#inspoClose").onclick=()=>{$("#inspoPanel").hidden=true};
+$("#inspoBigWrap").onclick=()=>{$("#inspoBigWrap").hidden=true};
 CQ.ui.loadInspirations=async function(){
-  const box=$("#inspoBox"),list=$("#inspoList");list.innerHTML="";box.hidden=true;CQ.inspo=[];if(!CQ.apptId)return;
+  const box=$("#inspoBox"),list=$("#inspoList"),urls=[];list.innerHTML="";box.hidden=true;CQ.inspo=[];CQ.ui.setInspoUrls([]);if(!CQ.apptId)return;
   try{
     const{data,error}=await db.from("appointment_media").select("id,storage_path").eq("appointment_id",CQ.apptId).eq("media_type","inspiration").order("display_order",{ascending:true});
     if(error||!data||!data.length)return;
@@ -137,9 +146,9 @@ CQ.ui.loadInspirations=async function(){
       const{data:sg}=await db.storage.from("appointment-media").createSignedUrl(m.storage_path,3600);if(!sg||!sg.signedUrl)continue;
       const b=mk("button");b.style.cssText="width:64px;height:64px;border-radius:12px;background:#eee center/cover no-repeat;border:1px solid var(--line);padding:0";b.style.backgroundImage=`url("${sg.signedUrl}")`;
       b.onclick=async()=>{try{const r=await fetch(sg.signedUrl),bl=await r.blob(),u=URL.createObjectURL(bl);await setPhoto(u);URL.revokeObjectURL(u)}catch(e){console.error(e);CQ.toast("Impossible de charger cette inspiration")}};
-      list.appendChild(b);
+      list.appendChild(b);urls.push(sg.signedUrl);
     }
-    box.hidden=!list.children.length;
+    box.hidden=!list.children.length;CQ.ui.setInspoUrls(urls);
     CQ.inspo=[];
     for(const m of data){try{const{data:sg}=await db.storage.from("appointment-media").createSignedUrl(m.storage_path,3600);if(!sg)continue;const r=await fetch(sg.signedUrl),bl=await r.blob();CQ.inspo.push(await createImageBitmap(bl))}catch(e){console.warn("inspiration non chargée",e)}}
   }catch(e){console.error(e)}
@@ -182,7 +191,7 @@ CQ.ui.sync=function(){
   $("#dock").hidden=CQ.mode!=="nail";const sz=$("#size");
   {const ef=n.effect,ce=ef.t==="cateye";$$("#magStyle .chip").forEach(b=>b.classList.toggle("on",b.dataset.ms===(ce?ef.style||"line":CQ.magStyle||"line")));$("#magW").value=ce?ef.w:CQ.sizes.magnet;$("#magC1").value=(ce&&ef.c1)||"#e8e0f4"}sz.disabled=CQ.tool==="fill"||CQ.tool==="photo";sz.max=CQ.tool==="deco"?70:60;sz.min=CQ.tool==="deco"?2:1;sz.value=CQ.tool==="deco"?(d?d.r:CQ.decoSize):(CQ.sizes[CQ.tool]||3);
   if(CQ.tool==="magnet"){sz.disabled=false;sz.max=40;sz.min=4;sz.value=(n.effect.t==="cateye"?n.effect.w:CQ.sizes.magnet)||16}
-  $("#curColor").style.background=CQ.color;$("#colorInput").value=CQ.color;
+  $("#curColor").style.background=CQ.color;$("#colorInput").value=CQ.color;$("#baseColor").value=n.base.c;
   $$("#palette button").forEach(b=>b.classList.toggle("on",b.dataset.c===CQ.color));
   $$("#shapes .opt").forEach(b=>b.classList.toggle("on",b.dataset.shape===n.shape));$$("#lengths .opt").forEach(b=>b.classList.toggle("on",b.dataset.len===n.len));
   $("#sameShape").classList.toggle("on",CQ.same);$("#sameShape").textContent="Même forme sur les 10 ongles : "+(CQ.same?"oui":"non");
