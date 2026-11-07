@@ -65,6 +65,7 @@ h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px
 .appointment{padding:16px 22px;display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:14px;align-items:start;border-bottom:1px solid var(--line)}
 .appointment:last-child{border-bottom:0}
 .appointment.past{opacity:.58}
+.tap{cursor:pointer}.appointment.tap:active,.next-card.tap:active{background:var(--sage-light)}
 .appointment.now{background:linear-gradient(90deg,var(--sage-light),rgba(231,234,223,0) 75%)}
 .a-start{font-family:"Playfair Display",serif;font-size:21px;line-height:1}
 .a-end{margin-top:6px;color:var(--muted);font-size:11px}
@@ -163,7 +164,7 @@ h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px
 }
 @media(max-width:760px){
   .app{display:block}
-  .sidebar{display:none}
+  .sidebar{position:static;height:auto;min-height:auto;padding:16px}.brand{padding:0 0 12px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none} /* secours si la barre du bas (admin-nav.js) n'est pas chargée */
   .content{padding:max(22px,env(safe-area-inset-top)) 16px 40px}
   .topbar{flex-direction:column;gap:16px;margin-bottom:22px}
   .actions{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;width:calc(100% + 32px);-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -371,7 +372,7 @@ function renderTodayAppointments(now){
     const dur=(new Date(x.ends_at)-new Date(x.starts_at))/60000;
     const opts=optionsText(x);
     const nameHtml=x.clients?.id?`<a class="a-name" href="./clientes.html?client=${encodeURIComponent(x.clients.id)}">${escapeHtml(name)}</a>`:`<span class="a-name">${escapeHtml(name)}</span>`;
-    return `<div class="appointment ${info.state==="past"&&info.cls!=="warn"?"past":""} ${info.state==="now"?"now":""}">
+    return `<div class="appointment tap ${info.state==="past"&&info.cls!=="warn"?"past":""} ${info.state==="now"?"now":""}" data-open="${x.id}">
       <div><div class="a-start">${timeFormatter.format(new Date(x.starts_at))}</div><div class="a-end">→ ${timeFormatter.format(new Date(x.ends_at))}</div></div>
       <div>${nameHtml}<div class="a-service">${escapeHtml(x.service_name_snapshot)}</div>${opts?`<div class="a-opts">+ ${escapeHtml(opts)}</div>`:""}${href?`<a class="a-phone" href="${href}">📞 ${escapeHtml(x.clients.phone)}</a>`:""}</div>
       <div class="a-right"><span class="pill ${info.cls}">${info.label}</span><span class="a-price">${euro.format((x.expected_price_cents||0)/100)}</span><span class="a-dur">${durationText(dur)}</span></div>
@@ -401,7 +402,7 @@ function renderNext(now){
   const d=new Date(x.starts_at),diff=d.getTime()-now,name=clientName(x.clients),href=phoneHref(x.clients?.phone);
   const inTxt=diff<24*3600000?`<span class="next-in">${inText(diff)}</span>`:"";
   const nameHtml=x.clients?.id?`<a href="./clientes.html?client=${encodeURIComponent(x.clients.id)}">${escapeHtml(name)}</a>`:escapeHtml(name);
-  c.innerHTML=`<div class="next-top"><span class="next-label">Prochain rendez-vous</span>${inTxt}</div>
+  c.dataset.open=x.id;c.classList.add("tap");c.innerHTML=`<div class="next-top"><span class="next-label">Prochain rendez-vous</span>${inTxt}</div>
     <div class="next-time">${timeFormatter.format(d)}</div><div class="next-date">${escapeHtml(dayLabel(d))}</div>
     <div class="next-client">${nameHtml}</div><div class="next-service">${escapeHtml(x.service_name_snapshot)} · ${durationText((new Date(x.ends_at)-d)/60000)}</div>
     <div class="next-meta"><span>${euro.format((x.expected_price_cents||0)/100)}</span>${href?`<a href="${href}">📞 Appeler</a>`:""}</div>`;
@@ -413,7 +414,7 @@ function renderToClose(){
   cnt.textContent=`${list.length} rendez-vous`;
   c.innerHTML=list.slice(0,5).map(x=>{
     const d=new Date(x.starts_at);
-    return `<a class="close-row" href="./agenda.html"><div><div class="close-name">${escapeHtml(clientName(x.clients))}</div><div class="close-sub">${escapeHtml(x.service_name_snapshot)} · ${escapeHtml(capitalize(shortDateFormatter.format(d)))} · ${timeFormatter.format(d)}</div></div><span class="close-go">›</span></a>`;
+    return `<a class="close-row" href="./agenda.html?open=${x.id}"><div><div class="close-name">${escapeHtml(clientName(x.clients))}</div><div class="close-sub">${escapeHtml(x.service_name_snapshot)} · ${escapeHtml(capitalize(shortDateFormatter.format(d)))} · ${timeFormatter.format(d)}</div></div><span class="close-go">›</span></a>`;
   }).join("")+(list.length>5?`<div class="empty" style="padding:12px 22px;font-size:11px">+ ${list.length-5} autre${list.length-5>1?"s":""} dans l'agenda</div>`:"");
 }
 
@@ -515,6 +516,12 @@ setInterval(()=>{if(document.visibilityState!=="visible")return;if(Date.now()-da
 async function init(){if(await protectPage()){await safeReload();await refreshPushButton()}}
 init();
 </script>
-<script src="./admin-nav.js"></script>
+<script src="./admin-nav.js">
+document.addEventListener("click",e=>{
+  if(e.target.closest("a,button"))return;
+  const t=e.target.closest("[data-open]");
+  if(t&&t.dataset.open)location.href="./agenda.html?open="+encodeURIComponent(t.dataset.open);
+});
+</script>
 </body>
 </html>
