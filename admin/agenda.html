@@ -314,6 +314,28 @@
     }
   
 
+    /* Téléphone : semaine et mois tiennent dans l'écran (vue d'ensemble) */
+    @media(max-width:760px){
+      .content{padding:22px 10px 60px}
+      .timeline-week:not(.one-day){min-width:0}
+      .timeline-week:not(.one-day) .timeline-head,.timeline-week:not(.one-day) .timeline-body{grid-template-columns:30px repeat(7,minmax(0,1fr))}
+      .timeline-week:not(.one-day) .timeline-day-head{padding:8px 1px}
+      .timeline-week:not(.one-day) .timeline-day-head .day-name{font-size:8px;letter-spacing:0}
+      .timeline-week:not(.one-day) .timeline-day-head .day-number{font-size:15px;margin-top:2px}
+      .timeline-week:not(.one-day) .timeline-day-head.today .day-number{width:24px;height:24px;font-size:13px}
+      .timeline-week:not(.one-day) .time-label{right:3px;font-size:8px}
+      .timeline-week:not(.one-day) .timeline-appointment{left:1px;right:1px;padding:2px 3px;border-radius:5px}
+      .timeline-week:not(.one-day) .timeline-appointment .appointment-time{font-size:8px;line-height:1.1}
+      .timeline-week:not(.one-day) .timeline-appointment .appointment-client{font-size:8px;line-height:1.15}
+      .timeline-week:not(.one-day) .timeline-appointment .appointment-service,.timeline-week:not(.one-day) .timeline-appointment .appointment-price{display:none}
+      .month-grid{grid-template-columns:repeat(7,minmax(0,1fr));min-width:0}
+      .month-weekday{padding:8px 0;font-size:9px}
+      .month-cell{min-height:58px;padding:4px 3px}
+      .month-number{font-size:14px;margin-bottom:3px;text-align:center}
+      .month-event{font-size:0;height:5px;padding:0;margin:2px 3px;border-radius:3px;background:var(--sage)}
+      .month-more{font-size:8px;text-align:center;margin-top:1px}
+    }
+
     /* Consommation stock à la clôture */
     .stock-complete-box{margin-top:16px;padding:16px;border:1px solid #d9ddd2;border-radius:16px;background:#f8f8f4}
     .stock-section-label{margin:14px 0 7px;font-size:11px;font-weight:700;color:#6f7868;text-transform:uppercase;letter-spacing:.06em}
@@ -1732,7 +1754,14 @@
 
     async function init(){
       if(!await protectPage()) return;
+      let openId=null;try{openId=new URLSearchParams(location.search).get("open")}catch(e){}
+      if(openId){
+        const {data:o}=await supabaseClient.from("appointments").select("id,starts_at").eq("id",openId).maybeSingle();
+        if(o&&o.starts_at){currentDate=new Date(o.starts_at);setView("day")}
+        try{history.replaceState(null,"",location.pathname)}catch(e){}
+      }
       await loadAppointments();
+      if(openId){const a=appointments.find(x=>x.id===openId);if(a)openAppointment(a)}
     }
     init();
   
