@@ -314,6 +314,14 @@
     }
   
 
+    .timeline-appointment{background:var(--svc-bg,var(--sage-light));border-left:4px solid var(--svc-ac,var(--sage))}
+    .timeline-appointment.pending{background:var(--svc-bg,var(--rose-light));outline:1.5px dashed var(--svc-ac,#c48a92);outline-offset:-3px}
+    .month-event{background:var(--svc-bg,var(--sage-light));border-left:3px solid var(--svc-ac,var(--sage))}
+    .day-sum{margin-top:3px;font-size:10px;color:var(--muted);font-weight:600}.day-sum.empty{font-weight:400;color:#b3afa6}
+    .timeline-day-head.today .day-sum{color:var(--ink)}
+    .svc-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+    .svc-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
     /* Téléphone : semaine et mois tiennent dans l'écran (vue d'ensemble) */
     @media(max-width:760px){
       .content{padding:22px 10px 60px}
@@ -332,7 +340,10 @@
       .month-weekday{padding:8px 0;font-size:9px}
       .month-cell{min-height:58px;padding:4px 3px}
       .month-number{font-size:14px;margin-bottom:3px;text-align:center}
-      .month-event{font-size:0;height:5px;padding:0;margin:2px 3px;border-radius:3px;background:var(--sage)}
+      .month-event{font-size:0;height:5px;padding:0;margin:2px 3px;border-radius:3px;background:var(--svc-ac,var(--sage));border-left:0}
+      .timeline-week:not(.one-day) .day-sum{font-size:7px;line-height:1.1;margin-top:1px}
+      .timeline-week:not(.one-day) .timeline-appointment{border-left-width:3px}
+      .svc-legend{padding:8px 10px;font-size:10px;gap:4px 10px}
       .month-more{font-size:8px;text-align:center;margin-top:1px}
     }
 
@@ -555,6 +566,22 @@
       </div>`;
     }
 
+    /* Couleur par prestation (repère visuel dans l'agenda) */
+    const SVC_COLORS=[["#e3e9d8","#8a9a78"],["#f3dfe0","#c48a92"],["#dde6ee","#7f96ab"],["#efe6d6","#b49a6a"],["#e6dff0","#9a86b5"],["#e5d7e3","#7a4a72"]];
+    function svcColor(name){
+      const n=String(name||"").toLowerCase();
+      const rules=[[/gainage|renfort/,0],[/capsule|popit|pop-it/,1],[/retouche|remplissage/,2],[/d[ée]pose/,3],[/r[ée]par|cass[ée]/,4],[/nail ?art/,5]];
+      for(const [re,i] of rules) if(re.test(n)) return SVC_COLORS[i];
+      let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;
+      return SVC_COLORS[h%SVC_COLORS.length];
+    }
+    function svcStyle(name){const [bg,ac]=svcColor(name);return `--svc-bg:${bg};--svc-ac:${ac}`}
+    function legendHtml(list){
+      const seen=new Map();list.forEach(a=>{const k=a.service_name_snapshot||"";if(k&&!seen.has(k))seen.set(k,svcColor(k))});
+      if(!seen.size) return "";
+      return `<div class="svc-legend">${[...seen].map(([k,c])=>`<span><i style="background:${c[1]}"></i>${escapeHtml(k)}</span>`).join("")}</div>`;
+    }
+
     function renderWeek(){
       const oneDay=currentView==="day";
       const start=startOfWeek(currentDate), map=grouped(), todayKey=localKey(new Date());
@@ -569,8 +596,17 @@
         1 heure = 60 px : la hauteur d'un RDV est donc directement
         proportionnelle à sa vraie durée.
       */
-      const startHour=7;
-      const endHour=22;
+      let startHour=7;
+      let endHour=22;
+      {
+        /* Plage affichée : adaptée aux rendez-vous de la période (min. 9 h → 18 h) pour limiter le défilement */
+        let lo=9*60,hi=18*60;
+        days.forEach(d=>(map[localKey(d)]||[]).forEach(a=>{
+          const s0=minutesInBrussels(new Date(a.starts_at)),e0=s0+Math.max(15,Math.round((new Date(a.ends_at)-new Date(a.starts_at))/60000));
+          lo=Math.min(lo,s0);hi=Math.max(hi,e0);
+        }));
+        startHour=Math.max(7,Math.floor(lo/60)-1);endHour=Math.min(22,Math.ceil(hi/60)+1);
+      }
       const pixelsPerMinute=1;
       const totalHeight=(endHour-startHour)*60*pixelsPerMinute;
 
@@ -589,9 +625,13 @@
 
       const heads=days.map(d=>{
         const key=localKey(d);
+        const live=(map[key]||[]).filter(a=>!["cancelled_by_client","late_cancellation","cancelled"].includes(a.status));
+        const total=live.reduce((t,a)=>t+(a.expected_price_cents||0),0);
+        const sum=live.length?`<div class="day-sum">${live.length} rdv · ${euro.format(total/100).replace(/\u00a0/g," ").replace(",00","")}</div>`:`<div class="day-sum empty">libre</div>`;
         return `<div class="timeline-day-head ${key===todayKey?"today":""}" ${oneDay?"":`data-day="${key}"`}>
           <div class="day-name">${escapeHtml(dayName.format(d))}</div>
           <div class="day-number">${d.getDate()}</div>
+          ${sum}
         </div>`;
       }).join("");
 
@@ -616,7 +656,7 @@
 
           return `<div class="timeline-appointment ${escapeHtml(a.status)} ${sizeClass}"
                        data-id="${a.id}"
-                       style="top:${top}px;height:${height}px"
+                       style="top:${top}px;height:${height}px;${svcStyle(a.service_name_snapshot)}"
                        title="${escapeHtml(client)} — ${escapeHtml(a.service_name_snapshot)}">
             <div class="appointment-time">${timeFormat.format(startDate)} – ${timeFormat.format(endDate)}</div>
             <div class="appointment-client">${escapeHtml(client)}</div>
@@ -638,7 +678,7 @@
         </div>`;
       }).join("");
 
-      document.getElementById("calendar").innerHTML=`
+      document.getElementById("calendar").innerHTML=legendHtml(days.flatMap(d=>map[localKey(d)]||[]))+`
         <div class="timeline-week ${oneDay?"one-day":""}">
           <div class="timeline-head">
             <div class="timeline-head-spacer"></div>
@@ -657,7 +697,7 @@
       const currentMonth=monthStart.getMonth();
       document.getElementById("period-title").textContent=capitalize(monthTitle.format(monthStart));
       const weekdays=["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
-      document.getElementById("calendar").innerHTML=`<div class="month-grid">
+      document.getElementById("calendar").innerHTML=legendHtml(appointments)+`<div class="month-grid">
         ${weekdays.map(d=>`<div class="month-weekday">${d}</div>`).join("")}
         ${days.map(d=>{
           const key=localKey(d), list=map[key]||[], other=d.getMonth()!==currentMonth;
@@ -665,7 +705,7 @@
             <div class="month-number">${d.getDate()}</div>
             ${list.slice(0,3).map(a=>{
               const client=a.clients ? a.clients.first_name : "Cliente";
-              return `<div class="month-event" data-id="${a.id}">${timeFormat.format(new Date(a.starts_at))} · ${escapeHtml(client)}</div>`;
+              return `<div class="month-event" data-id="${a.id}" style="${svcStyle(a.service_name_snapshot)}">${timeFormat.format(new Date(a.starts_at))} · ${escapeHtml(client)}</div>`;
             }).join("")}
             ${list.length>3?`<div class="month-more">+ ${list.length-3} autre${list.length-3>1?"s":""}</div>`:""}
           </div>`;
