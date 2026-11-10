@@ -609,7 +609,8 @@
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePhoto();closePoseDossier()}});
   document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();window.location.replace("./")});
 
-  async function init(){if(!await protectPage())return;await loadClients();const requested=new URLSearchParams(location.search).get("client");if(requested&&clients.some(c=>c.id===requested))await openClient(requested)}
+  async function flushPurgeQueue(){try{const {data,error}=await supabaseClient.from("purge_storage_queue").select("id,storage_path").limit(100);if(error||!data||!data.length)return;const {error:rm}=await supabaseClient.storage.from(MEDIA_BUCKET).remove(data.map(x=>x.storage_path));if(rm){console.error(rm);return}await supabaseClient.from("purge_storage_queue").delete().in("id",data.map(x=>x.id))}catch(e){console.error(e)}}
+  async function init(){if(!await protectPage())return;await loadClients();flushPurgeQueue();const requested=new URLSearchParams(location.search).get("client");if(requested&&clients.some(c=>c.id===requested))await openClient(requested)}
   init();
 </script>
 <script src="./admin-nav.js"></script>
