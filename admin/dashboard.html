@@ -128,6 +128,9 @@ h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px
 .stat-detail{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.4}
 .delta{display:inline-block;margin-top:8px;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(255,255,255,.7)}
 .delta.up{color:#4f6a3f}.delta.down{color:var(--rose-dark)}
+.lost-note{margin-top:14px;padding:13px 18px;border-radius:14px;background:#f3ece8;border:1px solid #e6d5cc;font-size:12px;color:#6b4a3f}
+.lost-note[hidden]{display:none}
+.rank-row a{color:inherit;text-decoration:none;font-weight:600}.rank-row .muted{color:var(--muted);font-size:11px}
 .activity-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
 .mini{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--white)}
 .mini-value{font-family:"Playfair Display",serif;font-size:25px}
@@ -240,6 +243,11 @@ h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px
   <article class="mini"><div id="cancel-count" class="mini-value">—</div><div class="mini-label">Annulations clientes</div></article>
   <article class="mini"><div id="no-show-count" class="mini-value">—</div><div class="mini-label">No-show</div></article>
 </section>
+<div id="lost-note" class="lost-note" hidden></div>
+<section class="bottom-grid">
+  <article class="panel"><div class="panel-header"><h2 class="panel-title">À relancer</h2><span class="panel-subtitle">plus de 5 semaines sans rdv</span></div><div id="to-relaunch" class="ranking"><div class="empty">Chargement…</div></div></article>
+  <article class="panel"><div class="panel-header"><h2 class="panel-title">Anniversaires</h2><span class="panel-subtitle">ce mois-ci</span></div><div id="birthdays" class="ranking"><div class="empty">Chargement…</div></div></article>
+</section>
 <section class="bottom-grid">
   <article class="panel"><div class="panel-header"><h2 class="panel-title">Prestations du mois</h2><span class="panel-subtitle">les plus réalisées</span></div><div id="top-services" class="ranking"><div class="empty">Chargement…</div></div></article>
   <article class="panel"><div class="panel-header"><h2 class="panel-title">Clientes</h2><span class="panel-subtitle">vue rapide</span></div><div class="ranking"><div class="rank-row"><span>Total dans ton fichier</span><span id="client-count">—</span></div><div class="rank-row"><span>Nouvelles ce mois</span><span id="client-count-month">—</span></div><div class="rank-row"><span>Action rapide</span><span><button class="btn soft" id="new-client-secondary" type="button">+ Ajouter</button></span></div></div></article>
@@ -302,15 +310,17 @@ async function loadDashboard(){
   $("greeting").textContent=(hour>=18||hour<4?"Bonsoir":"Bonjour")+" Thabata";
 
   const apptCols="id,starts_at,ends_at,expected_price_cents,status,service_name_snapshot,client_id";
-  const [clientsRes,futureRes,todayRes,closeRes,payRes,prevPayRes,monthApptRes,newClientsRes]=await Promise.all([
+  const [clientsRes,futureRes,todayRes,closeRes,payRes,prevPayRes,monthApptRes,newClientsRes,histRes,birthRes]=await Promise.all([
     supabaseClient.from("clients").select("id",{count:"exact",head:true}),
     supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name,phone)`).gte("starts_at",now.toISOString()).in("status",["confirmed","pending"]).order("starts_at",{ascending:true}),
     supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name,phone),appointment_options(option_name_snapshot,quantity)`).gte("starts_at",new Date(now.getTime()-36*3600000).toISOString()).lte("starts_at",new Date(now.getTime()+36*3600000).toISOString()).in("status",["confirmed","completed","pending"]).order("starts_at",{ascending:true}),
     supabaseClient.from("appointments").select(`${apptCols},clients(id,first_name,last_name)`).lt("ends_at",now.toISOString()).gte("starts_at",new Date(now.getTime()-60*86400000).toISOString()).in("status",["confirmed","pending"]).order("starts_at",{ascending:false}).limit(30),
     supabaseClient.from("payments").select("appointment_id,amount_cents,payment_type,paid_at").gte("paid_at",cur.start).lt("paid_at",cur.end),
     supabaseClient.from("payments").select("amount_cents,payment_type,paid_at").gte("paid_at",prev.start).lt("paid_at",prev.end),
-    supabaseClient.from("appointments").select("id,status,service_name_snapshot,starts_at").gte("starts_at",cur.start).lt("starts_at",cur.end),
-    supabaseClient.from("clients").select("id",{count:"exact",head:true}).gte("client_since",cur.dateStart).lt("client_since",cur.dateEnd)
+    supabaseClient.from("appointments").select("id,status,service_name_snapshot,starts_at,expected_price_cents").gte("starts_at",cur.start).lt("starts_at",cur.end),
+    supabaseClient.from("clients").select("id",{count:"exact",head:true}).gte("client_since",cur.dateStart).lt("client_since",cur.dateEnd),
+    supabaseClient.from("appointments").select("client_id,starts_at,clients(id,first_name,last_name)").eq("status","completed").gte("starts_at",new Date(now.getTime()-400*86400000).toISOString()).order("starts_at",{ascending:false}).limit(1000),
+    supabaseClient.from("clients").select("id,first_name,last_name,birth_date").not("birth_date","is",null)
   ]);
 
   if(!clientsRes.error)$("client-count").textContent=clientsRes.count??0;
@@ -342,10 +352,33 @@ async function loadDashboard(){
     $("cancel-count").textContent=a.filter(x=>["cancelled_by_client","late_cancellation"].includes(x.status)).length;
     $("no-show-count").textContent=a.filter(x=>x.status==="no_show").length;
     renderTopServices(a.filter(x=>x.status==="completed"));
+    const lost=a.filter(x=>["no_show","late_cancellation"].includes(x.status)),lostCents=lost.reduce((t,x)=>t+(x.expected_price_cents||0),0),ln=$("lost-note");
+    if(lost.length){ln.hidden=false;ln.textContent=`Ce mois-ci : ${lost.length} rendez-vous manqué${lost.length>1?"s":""} (absence ou annulation tardive), soit environ ${euro.format(lostCents/100)} de manque à gagner.`}else ln.hidden=true;
   }
+  renderRelaunch(histRes,data.future);
+  renderBirthdays(birthRes,now);
   data.loadedAt=Date.now();
   $("last-update").textContent=`Mis à jour à ${timeFormatter.format(new Date())}`;
   renderLive();
+}
+
+/* ---------- clientes à relancer / anniversaires ---------- */
+function renderRelaunch(res,future){
+  const box=$("to-relaunch");
+  if(res.error){box.innerHTML='<div class="empty">Indisponible pour le moment.</div>';return}
+  const last=new Map(),upcoming=new Set((future||[]).map(x=>x.client_id)),limit=Date.now()-35*86400000;
+  (res.data||[]).forEach(x=>{if(x.client_id&&!last.has(x.client_id))last.set(x.client_id,x)});
+  const rows=[...last.values()].filter(x=>!upcoming.has(x.client_id)&&new Date(x.starts_at).getTime()<limit).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+  if(!rows.length){box.innerHTML='<div class="empty"><strong>Personne à relancer ✨</strong><br>Toutes tes habituées ont un rendez-vous ou sont passées récemment.</div>';return}
+  box.innerHTML=rows.slice(0,6).map(x=>{const w=Math.floor((Date.now()-new Date(x.starts_at))/(7*86400000));return `<div class="rank-row"><a href="./clientes.html?client=${encodeURIComponent(x.client_id)}">${escapeHtml(clientName(x.clients))}</a><span class="muted">dernier rdv il y a ${w} sem.</span></div>`}).join("")+(rows.length>6?`<div class="empty" style="padding:10px 0;font-size:11px">+ ${rows.length-6} autre${rows.length-6>1?"s":""}</div>`:"");
+}
+function renderBirthdays(res,now){
+  const box=$("birthdays");
+  if(res.error){box.innerHTML='<div class="empty">Indisponible pour le moment.</div>';return}
+  const m=Number(brusselsDateKey(now).slice(5,7)),today=Number(brusselsDateKey(now).slice(8,10));
+  const rows=(res.data||[]).filter(c=>c.birth_date&&Number(String(c.birth_date).slice(5,7))===m).map(c=>({...c,d:Number(String(c.birth_date).slice(8,10))})).sort((a,b)=>a.d-b.d);
+  if(!rows.length){box.innerHTML='<div class="empty">Aucun anniversaire ce mois-ci.</div>';return}
+  box.innerHTML=rows.map(c=>`<div class="rank-row"><a href="./clientes.html?client=${encodeURIComponent(c.id)}">${escapeHtml(clientName(c))}</a><span class="${c.d===today?"":"muted"}">${c.d===today?"🎂 aujourd'hui":c.d+" "+new Intl.DateTimeFormat("fr-BE",{month:"long"}).format(new Date(2000,m-1,1))}</span></div>`).join("");
 }
 
 /* ---------- affichages qui dépendent de l'heure (recalculés chaque minute) ---------- */
