@@ -322,6 +322,9 @@
     .svc-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
     .svc-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
+    .sched-block{position:absolute;left:0;right:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(135deg,rgba(41,40,36,.07) 0 6px,transparent 6px 12px);border-top:1px solid rgba(41,40,36,.08);border-bottom:1px solid rgba(41,40,36,.08)}
+    .sched-block span{position:absolute;left:6px;top:4px;font-size:10px;color:var(--muted);background:rgba(255,253,249,.85);padding:1px 6px;border-radius:6px}
+    .sched-block.off{background:repeating-linear-gradient(135deg,rgba(41,40,36,.04) 0 6px,transparent 6px 12px);border:0}
     /* Téléphone : semaine et mois tiennent dans l'écran (vue d'ensemble) */
     @media(max-width:760px){
       .content{padding:22px 10px 60px}
@@ -343,6 +346,7 @@
       .month-event{font-size:0;height:5px;padding:0;margin:2px 3px;border-radius:3px;background:var(--svc-ac,var(--sage));border-left:0}
       .timeline-week:not(.one-day) .day-sum{font-size:7px;line-height:1.1;margin-top:1px}
       .timeline-week:not(.one-day) .timeline-appointment{border-left-width:3px}
+      .sched-block span{font-size:7px;left:2px;padding:0 3px}
       .svc-legend{padding:8px 10px;font-size:10px;gap:4px 10px}
       .month-more{font-size:8px;text-align:center;margin-top:1px}
     }
@@ -463,6 +467,7 @@
     if(!["day","week","month"].includes(currentView)) currentView = isPhone() ? "day" : "week";
     function setView(v){ currentView=v; try{localStorage.setItem(viewKey(),v)}catch(e){} }
     let appointments = [];
+    let schedExceptions = [], weeklyRanges = [];
 
     function escapeHtml(value) {
       return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
@@ -544,6 +549,14 @@
         return;
       }
       appointments=data || [];
+      try{
+        const [ex,wk]=await Promise.all([
+          supabaseClient.from("schedule_exceptions").select("starts_at,ends_at,exception_type,label").lt("starts_at",end.toISOString()).gt("ends_at",start.toISOString()),
+          supabaseClient.from("weekly_schedules").select("day_of_week,is_active").eq("is_active",true)
+        ]);
+        schedExceptions=ex.error?[]:(ex.data||[]);
+        weeklyRanges=wk.error?[]:(wk.data||[]);
+      }catch(e){schedExceptions=[];weeklyRanges=[]}
       render();
     }
 
@@ -665,6 +678,25 @@
           </div>`;
         }).join("");
 
+        /* Fermetures / blocages (page Horaires) en hachuré */
+        let blocks="";
+        {
+          const dayStart=new Date(`${key}T00:00:00`),dayEnd=new Date(dayStart.getTime()+86400000);
+          const dayEx=schedExceptions.filter(x=>new Date(x.starts_at)<dayEnd&&new Date(x.ends_at)>dayStart);
+          dayEx.filter(x=>x.exception_type!=="available").forEach(x=>{
+            const a0=Math.max(new Date(x.starts_at),dayStart),b0=Math.min(new Date(x.ends_at),dayEnd);
+            const m0=Math.max((a0-dayStart)/60000,startHour*60),m1=Math.min((b0-dayStart)/60000,endHour*60);
+            if(m1<=m0) return;
+            blocks+=`<div class="sched-block" style="top:${(m0-startHour*60)*pixelsPerMinute}px;height:${(m1-m0)*pixelsPerMinute}px"><span>${escapeHtml(x.label||(x.exception_type==="closed"?"Fermé":"Bloqué"))}</span></div>`;
+          });
+          if(weeklyRanges.length){
+            const dow=dayStart.getDay()===0?7:dayStart.getDay();
+            const opened=weeklyRanges.some(w=>w.day_of_week===dow)||dayEx.some(x=>x.exception_type==="available");
+            const hasClosedAll=dayEx.some(x=>x.exception_type!=="available"&&new Date(x.starts_at)<=dayStart&&new Date(x.ends_at)>=dayEnd);
+            if(!opened&&!hasClosedAll) blocks+=`<div class="sched-block off" style="top:0;height:${totalHeight}px"><span>Fermé</span></div>`;
+          }
+        }
+
         let nowLine="";
         if(key===todayKey){
           const nowMinutes=minutesInBrussels(new Date());
@@ -674,7 +706,7 @@
         }
 
         return `<div class="timeline-day ${key===todayKey?"today":""}" style="height:${totalHeight}px">
-          ${cards}${nowLine}
+          ${blocks}${cards}${nowLine}
         </div>`;
       }).join("");
 
