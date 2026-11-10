@@ -58,6 +58,8 @@
     .loading-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cream);color:var(--muted);font-size:13px}
     @media(max-width:1000px){.layout{grid-template-columns:1fr}.client-list{max-height:400px}}
     @media(max-width:760px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.top-actions{justify-content:flex-start}.app{display:block}.sidebar{position:static;min-height:auto;height:auto;padding:22px}.brand{padding:0 0 20px}.nav{flex-direction:row;overflow-x:auto}.nav-item{width:auto;white-space:nowrap}.sidebar-bottom{display:none}.content{padding:30px 20px 60px}.topbar{flex-direction:column}.stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:80px minmax(0,1fr)}.history-price{grid-column:2}}
+    .tag-chip{display:inline-block;padding:3px 8px;border-radius:100px;background:var(--sage-light);color:var(--sage-dark);font-size:9px;font-weight:600;margin:5px 4px 0 0}.tag-chip.blocked{background:var(--rose-light);color:#8b554c}
+    .follow{margin:22px 0 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:white}.follow-title{margin:0 0 10px;color:var(--sage-dark);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.tag-toggle{padding:7px 11px;border:1px solid var(--line);border-radius:100px;background:white;color:var(--muted);font-size:10px;font-weight:600;margin:0 6px 6px 0}.tag-toggle.on{background:var(--sage-light);border-color:var(--sage);color:var(--ink)}.follow-stats{margin-top:10px;color:var(--muted);font-size:11px;line-height:1.6}.follow-block{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}.follow-block input{margin-top:3px}.follow-block small{display:block;color:var(--muted);font-size:10px}
   </style>
 </head>
 <body>
@@ -119,6 +121,7 @@
   const dateFmt=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,day:"2-digit",month:"2-digit",year:"numeric"});
   const longDateFmt=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const timeFmt=new Intl.DateTimeFormat("fr-BE",{timeZone:TZ,hour:"2-digit",minute:"2-digit"});
+  const TAG_CHOICES=["Fidèle","VIP","À surveiller","Retards fréquents","Annule souvent"];
   let clients=[], selectedClientId=null, pastServices=[];
 
   function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
@@ -251,7 +254,7 @@
 
   async function loadClients(){
     const {data,error}=await supabaseClient.from("clients")
-      .select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source")
+      .select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source,tags,booking_blocked")
       .order("first_name",{ascending:true}).order("last_name",{ascending:true});
     if(error){console.error(error);document.getElementById("client-list").innerHTML='<div class="empty">Impossible de charger les clientes.</div>';return}
     clients=data||[];
@@ -266,7 +269,7 @@
     if(!filtered.length){box.innerHTML='<div class="empty">Aucune cliente trouvée.</div>';return}
     box.innerHTML=filtered.map(c=>`<button class="client-row ${c.id===selectedClientId?"active":""}" data-client-id="${c.id}">
       <div class="client-name">${escapeHtml(clientName(c))}</div>
-      <div class="client-meta">${escapeHtml(c.phone||c.email||"Coordonnées non renseignées")}</div>
+      <div class="client-meta">${escapeHtml(c.phone||c.email||"Coordonnées non renseignées")}</div>${(c.booking_blocked||(c.tags||[]).length)?`<div>${c.booking_blocked?'<span class="tag-chip blocked">Bloquée en ligne</span>':""}${(c.tags||[]).map(t=>`<span class="tag-chip">${escapeHtml(t)}</span>`).join("")}</div>`:""}
     </button>`).join("");
     document.querySelectorAll("[data-client-id]").forEach(el=>el.addEventListener("click",()=>openClient(el.dataset.clientId)));
   }
@@ -376,6 +379,13 @@
         <div class="stat"><div class="stat-label">Total encaissé</div><div class="stat-value">${euro.format(total/100)}</div></div>
       </div>
 
+      <div class="follow">
+        <div class="follow-title">Suivi (visible uniquement par toi)</div>
+        <div>${TAG_CHOICES.map(t=>`<button type="button" class="tag-toggle ${(c.tags||[]).includes(t)?"on":""}" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("")}</div>
+        <div class="follow-stats">${(()=>{const n=k=>historyRows.filter(a=>a.status===k).length;const parts=[];if(n("no_show"))parts.push(`${n("no_show")} absence${n("no_show")>1?"s":""}`);if(n("late_cancellation"))parts.push(`${n("late_cancellation")} annulation${n("late_cancellation")>1?"s":""} tardive${n("late_cancellation")>1?"s":""}`);if(n("cancelled_by_client"))parts.push(`${n("cancelled_by_client")} annulation${n("cancelled_by_client")>1?"s":""} par la cliente`);return parts.length?parts.join(" · "):"Aucune absence ni annulation enregistrée."})()}</div>
+        <label class="follow-block"><input id="block-online" type="checkbox" ${c.booking_blocked?"checked":""}><span>Bloquer les réservations en ligne<small>Elle verra seulement « ce créneau n’est plus disponible ». Tu peux toujours lui poser un rdv toi-même dans l’agenda.</small></span></label>
+      </div>
+
       <div class="client-tabs"><button class="client-tab ${preferredTab==="overview"?"active":""}" data-tab="overview">Vue d’ensemble</button><button class="client-tab ${preferredTab==="preferences"?"active":""}" data-tab="preferences">Préférences</button><button class="client-tab ${preferredTab==="history"?"active":""}" data-tab="history">Historique</button><button class="client-tab ${preferredTab==="projects"?"active":""}" data-tab="projects">Projets nail art</button><button class="client-tab ${preferredTab==="memory"?"active":""}" data-tab="memory">Mémoire cliente</button></div>
       <div class="tab-panel ${preferredTab==="overview"?"active":""}" data-panel="overview">
       ${mem.next_time_note?`<div class="section"><h3 class="section-title">À penser pour la prochaine fois</h3><div class="memory-note">${escapeHtml(mem.next_time_note)}</div></div>`:""}
@@ -437,6 +447,8 @@
 
     profile.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{profile.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x.dataset.tab===b.dataset.tab));profile.querySelectorAll("[data-panel]").forEach(x=>x.classList.toggle("active",x.dataset.panel===b.dataset.tab))}));
     document.getElementById("edit-client").addEventListener("click",()=>openEditClientModal(c));
+    profile.querySelectorAll("[data-tag]").forEach(b=>b.addEventListener("click",async()=>{const t=b.dataset.tag,cur=c.tags||[],next=cur.includes(t)?cur.filter(x=>x!==t):[...cur,t];const {error}=await supabaseClient.from("clients").update({tags:next}).eq("id",c.id);if(error){console.error(error);alert("Impossible d’enregistrer l’étiquette.");return}c.tags=next;const active=profile.querySelector(".client-tab.active");openClient(c.id,active?active.dataset.tab:"overview")}));
+    document.getElementById("block-online").addEventListener("change",async e=>{const v=e.target.checked;if(v&&!confirm("Bloquer les réservations en ligne de cette cliente ?")){e.target.checked=false;return}const {error}=await supabaseClient.from("clients").update({booking_blocked:v}).eq("id",c.id);if(error){console.error(error);e.target.checked=!v;alert("Impossible d’enregistrer ce réglage.");return}c.booking_blocked=v;const active=profile.querySelector(".client-tab.active");openClient(c.id,active?active.dataset.tab:"overview")});
     document.getElementById("save-preferences").addEventListener("click",()=>saveClientPreferences(c.id));
     document.getElementById("save-memory").addEventListener("click",()=>saveClientMemory(c.id));
     document.getElementById("new-project").addEventListener("click",()=>openProjectModal());
@@ -532,7 +544,7 @@
       discovery_source:document.getElementById("edit-discovery-source").value.trim()||null
     };
     if(!changes.first_name||!changes.last_name||!changes.email||!changes.phone){btn.disabled=false;btn.textContent="Enregistrer";msg.className="message error";msg.textContent="Prénom, nom, e-mail et téléphone sont obligatoires.";return}
-    const {data,error}=await supabaseClient.from("clients").update(changes).eq("id",selectedClientId).select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source").single();
+    const {data,error}=await supabaseClient.from("clients").update(changes).eq("id",selectedClientId).select("id,first_name,last_name,email,phone,birth_date,instagram,private_notes,created_at,client_since,discovery_source,source,tags,booking_blocked").single();
     btn.disabled=false;btn.textContent="Enregistrer";
     if(error){console.error(error);msg.className="message error";msg.textContent="Impossible de modifier cette cliente.";return}
     const index=clients.findIndex(x=>x.id===selectedClientId);if(index>=0)clients[index]=data;
