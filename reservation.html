@@ -19,6 +19,7 @@
 .summary{position:sticky;bottom:14px;background:var(--ink);color:white;border-radius:18px;padding:15px 18px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 12px 35px rgba(0,0,0,.18)}.summary small{display:block;opacity:.72}.summary strong{font-family:Fraunces,serif;font-size:20px}.btn{border:0;border-radius:999px;background:var(--sage);color:white;padding:12px 19px;font:600 14px Jost;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.notice{background:var(--pale);border-radius:14px;padding:13px 15px;font-size:13px;color:var(--sage2);margin-top:18px}
 
 .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.formgrid label{font-size:13px;color:var(--soft)}.formgrid input{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:white;color:var(--ink);font:inherit}.consent{display:flex;gap:12px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px 15px;background:#fff;cursor:pointer}.consent:has(input:checked){border-color:var(--sage);background:var(--pale)}.consent input{margin-top:1px;flex:0 0 auto}.legal-explainer{margin-top:18px;padding:14px 15px;border-radius:14px;background:#f6f3ec;color:var(--ink);font-size:13px;line-height:1.55}.nail-help{margin:12px 0 2px;color:var(--soft);font-size:12px;line-height:1.5}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.secondary{border:1px solid var(--line);border-radius:999px;background:white;color:var(--ink);padding:12px 19px;font:500 14px Jost;cursor:pointer}.review{background:#f6f3ec;border-radius:16px;padding:18px}.reviewline{display:flex;justify-content:space-between;gap:20px;padding:7px 0}.reviewline span:first-child{color:var(--soft)}.reviewline.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-weight:600}.error{margin-top:15px;padding:12px 14px;border-radius:12px;background:#f8e8e8;color:#8a3030;font-size:13px}.success{text-align:center;padding-top:45px;padding-bottom:45px}.successmark{margin:0 auto 18px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:white;font-size:26px}.success h2{font-size:38px;margin-top:8px}.linkbtn{display:inline-block;text-decoration:none;margin-top:10px}.calendar-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}.calendar-actions .secondary{text-decoration:none;display:inline-block}
+.waitbox{margin-top:16px}.waitlink{display:block;width:100%;text-align:left;border:1px dashed var(--line);background:transparent;border-radius:14px;padding:13px 15px;font:500 13px Jost;color:var(--sage2);cursor:pointer}.waitbox form{margin-top:12px;border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card)}.waitconsent{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--soft);margin-top:12px;line-height:1.5}.waitconsent input{width:auto;margin-top:2px}.waitmsg{font-size:13px;margin-top:10px;min-height:1px}.waitmsg.ok{color:var(--sage2)}.waitmsg.err{color:var(--rose)}.waitbox form.hidden{display:none}
 @media(max-width:650px){.formgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}.summary{align-items:flex-start;flex-direction:column}.summary .btn{width:100%}.calendar-weekdays,.calendar-grid{gap:4px}.day{min-height:56px;border-radius:12px;padding:7px 2px 5px}.day .daynote{font-size:7px}.day .badge{font-size:8px;padding:2px 4px}.calendar-title{font-size:21px}.calendar-legend{justify-content:flex-start;gap:10px}}
 .hp{position:absolute!important;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 </style>
@@ -63,6 +64,21 @@
     <div id="slotsTitle" class="slots-title hidden">Choisis ton heure</div>
     <div id="slots" class="slots"></div>
     <div class="notice">Ton créneau reste disponible tant que la réservation n'est pas confirmée.</div>
+    <div id="waitBox" class="waitbox">
+      <button id="waitOpen" class="waitlink" type="button">🔔 Aucun créneau qui te convient ? Préviens-moi si une place se libère</button>
+      <form id="waitForm" class="hidden" novalidate>
+        <p class="sub" style="margin:0 0 12px">Je t'écris par e-mail si une place se libère pour cette prestation, sur la période de ton choix. Rien n'est réservé automatiquement : la première à cliquer prend la place.</p>
+        <div class="formgrid">
+          <label>Prénom *<input id="waitName" autocomplete="given-name" maxlength="60"></label>
+          <label>E-mail *<input id="waitEmail" type="email" autocomplete="email" maxlength="254"></label>
+          <label>À partir du<input id="waitFrom" type="date"></label>
+          <label>Jusqu'au<input id="waitTo" type="date"></label>
+        </div>
+        <label class="waitconsent"><input id="waitConsent" type="checkbox"><span> J'accepte de recevoir un e-mail si une place se libère. Mes données sont supprimées après la période choisie (<a href="./politique-confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>).</span></label>
+        <div id="waitMsg" class="waitmsg" role="status"></div>
+        <button id="waitSend" class="btn" type="submit" style="margin-top:12px">Me prévenir</button>
+      </form>
+    </div>
   </section>
 
 
@@ -458,6 +474,51 @@ p_early_performance_requested:
  document.querySelector("#successPanel").classList.remove("hidden");
  document.querySelector("#successPanel").scrollIntoView({behavior:"smooth",block:"center"});
 };
+
+/* ---------- liste d'attente ---------- */
+(function(){
+  const $=q=>document.querySelector(q);
+  const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+  $("#waitOpen").onclick=()=>{
+    const f=$("#waitForm");f.classList.toggle("hidden");
+    if(!f.classList.contains("hidden")){
+      const base=state.selectedDate?new Date(state.selectedDate+"T12:00:00"):addDays(new Date(),1);
+      const from=base>addDays(new Date(),1)?base:addDays(new Date(),1);
+      if(!$("#waitFrom").value)$("#waitFrom").value=localDate(from);
+      if(!$("#waitTo").value)$("#waitTo").value=localDate(addDays(from,state.selectedDate?0:30));
+      if(!$("#waitName").value&&$("#firstName"))$("#waitName").value=$("#firstName").value||"";
+      if(!$("#waitEmail").value&&$("#email"))$("#waitEmail").value=$("#email").value||"";
+    }
+  };
+  $("#waitForm").onsubmit=async e=>{
+    e.preventDefault();
+    const msg=$("#waitMsg"),btn=$("#waitSend");msg.className="waitmsg";msg.textContent="";
+    const name=$("#waitName").value.trim(),email=$("#waitEmail").value.trim(),from=$("#waitFrom").value,to=$("#waitTo").value;
+    if(!state.service){msg.className="waitmsg err";msg.textContent="Choisis d'abord ta prestation.";return}
+    if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className="waitmsg err";msg.textContent="Indique ton prénom et une adresse e-mail valide.";return}
+    if(!from||!to||to<from){msg.className="waitmsg err";msg.textContent="Choisis une période valide.";return}
+    if(!$("#waitConsent").checked){msg.className="waitmsg err";msg.textContent="Coche la case pour accepter de recevoir l'e-mail.";return}
+    btn.disabled=true;
+    try{
+      const {data,error}=await db.rpc("join_public_waitlist",{p_first_name:name,p_email:email,p_service_id:String(state.service.id),p_service_name:state.service.name,p_options:rpcOptions(),p_duration:total().duration,p_date_from:from,p_date_to:to,p_consent:true});
+      if(error)throw error;
+      if(data&&data.ok){msg.className="waitmsg ok";msg.textContent="C'est noté 🌿 Je te préviens par e-mail si une place se libère.";$("#waitConsent").checked=false}
+      else{const m={invalid:"Vérifie les informations et la période (dans les 3 prochains mois).",limit:"Tu es déjà inscrite sur plusieurs prestations. Merci de patienter un peu.",busy:"La liste est momentanément complète. Réessaie plus tard.",consent:"Coche la case pour accepter de recevoir l'e-mail."};msg.className="waitmsg err";msg.textContent=m[data&&data.error]||"Impossible de t'inscrire pour le moment."}
+    }catch(err){console.error(err);msg.className="waitmsg err";msg.textContent="Impossible de t'inscrire pour le moment. Réessaie dans un instant."}
+    finally{btn.disabled=false}
+  };
+  /* lien de désinscription (futurs e-mails) */
+  try{
+    const t=new URLSearchParams(location.search).get("attente-stop");
+    if(t&&/^[0-9a-f-]{36}$/i.test(t)){
+      db.rpc("leave_public_waitlist",{p_token:t}).then(({data})=>{
+        const n=document.createElement("div");n.className="notice";n.style.margin="0 0 18px";
+        n.textContent=data?"Tu ne recevras plus d'e-mail pour cette liste d'attente. Merci !":"Ce lien n'est plus valide ou tu es déjà désinscrite.";
+        const m=document.querySelector("main")||document.body;m.insertBefore(n,m.firstChild);
+      });
+    }
+  }catch(e){}
+})();
 
 loadServices();
 </script>
