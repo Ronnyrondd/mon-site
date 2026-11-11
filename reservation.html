@@ -205,7 +205,7 @@ function renderOptions(opts){
  }
  const nail=opts.filter(o=>o.category!=="réparation"), repairs=opts.filter(o=>o.category==="réparation");
  if(nail.length){
-   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Choisissez selon les exemples ci-dessous. Si vous avez une inspiration précise, vous pourrez me l’envoyer après la réservation.</small><div class=\"nail-help\"><strong>Pas sûre du niveau, projet très détaillé ou besoin d’un devis ?</strong> Contactez-moi ou déposez votre inspiration dans votre espace rendez-vous. Le niveau Avancé est un tarif de départ, ajusté selon votre projet et confirmé avec vous.</div></label>";el.appendChild(title);
+   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small><strong>Full set sur devis :</strong> contactez-moi avant de réserver.<br>Pour les autres niveaux, choisissez selon les exemples ci-dessous. Si vous avez une inspiration précise, vous pourrez me l’envoyer après la réservation.</small><div class=\"nail-help\"><strong>Pas sûre du niveau, projet très détaillé ou besoin d’un devis ?</strong> Contactez-moi ou déposez votre inspiration dans votre espace rendez-vous. Le niveau Avancé est un tarif de départ, ajusté selon votre projet et confirmé avec vous.</div></label>";el.appendChild(title);
    [{id:null,name:"Sans nail art",price_cents:0,duration_minutes:0},...nail].forEach((o,i)=>{
      const r=document.createElement("div");
      const nailName=String(o.name||"").toLowerCase();
