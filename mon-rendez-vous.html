@@ -245,7 +245,29 @@ async function removeMedia(id,button){
 $("#photoInput").addEventListener("change",e=>uploadFiles(e.target.files||[]));
 
 /* ---------- Boissons ---------- */
-function beverageEmoji(name){const n=String(name||"").toLowerCase();if(/caf[eé]/.test(n))return "☕";if(n.includes("chocolat"))return "🍫";if(/infusion|tisane|menthe|verveine/.test(n))return "🌿";if(/(^|[^a-zà-ÿ])th[eé]($|[^a-zà-ÿ])/.test(n))return "🍵";if(/\beau\b/.test(n))return "💧";if(n.includes("jus"))return "🧃";return "🥤"}
+function beverageEmoji(name){
+  const n=" "+String(name||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")+" ";
+  const has=re=>re.test(n);
+  if(has(/matcha/))return "🍵";
+  if(has(/chai/))return "🫖";
+  if(has(/(the|tea) glace|ice ?tea|iced tea/))return "🧊";
+  if(has(/infusion|tisane|menthe|verveine|camomille|rooibos|tilleul|gingembre/))return "🌿";
+  if(has(/[^a-z]the[^a-z]|[^a-z]tea[^a-z]/))return "🍵";
+  if(has(/chocolat|cacao/))return "🍫";
+  if(has(/cafe|espresso|expresso|cappuccino|latte|macchiato|moka|ristretto|lungo|americano/))return "☕";
+  if(has(/petillant|gazeuse|bulles|perrier|spa reine|badoit/))return "🫧";
+  if(has(/[^a-z]eau[^a-z]/))return "💧";
+  if(has(/orange|agrume|pamplemousse/))return "🍊";
+  if(has(/pomme/))return "🍎";
+  if(has(/fraise|framboise|fruits rouges|cerise/))return "🍓";
+  if(has(/citron|limonade/))return "🍋";
+  if(has(/ananas|mangue|tropical|exotique/))return "🍍";
+  if(has(/jus|smoothie/))return "🧃";
+  if(has(/lait|milkshake/))return "🥛";
+  if(has(/prosecco|champagne|cremant|bulle|vin|cocktail|spritz/))return "🥂";
+  if(has(/coca|cola|soda|limo|sprite|fanta|ice/))return "🥤";
+  return "✨";
+}
 function setBeverage(id,fromUser){selectedBeverageId=id||"";document.querySelectorAll("#beverageChoices .beverage-choice").forEach(b=>{const on=b.dataset.id===selectedBeverageId;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});$("#beverageDetailsField").classList.toggle("hidden",!selectedBeverageId);if(!selectedBeverageId)$("#beverageDetails").value="";if(fromUser)markDirty()}
 function renderBeverages(list,current){
   const box=$("#beverageChoices");box.innerHTML="";
