@@ -29,23 +29,23 @@
   <div class="top"><a class="back" href="./">← Retour au site</a></div>
   <section class="hero">
     <div class="eyebrow">Réservation en ligne</div>
-    <h1>Ton prochain rendez-vous</h1>
-    <p>Choisis ta prestation et tes envies. Je te montre ensuite uniquement les créneaux qui peuvent réellement accueillir ta pose.</p>
+    <h1>Votre prochain rendez-vous</h1>
+    <p>Choisissez votre prestation et vos envies. Je vous montre ensuite uniquement les créneaux qui peuvent réellement accueillir votre pose.</p>
     <div class="steps"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
   </section>
 
   <section class="panel">
-    <h2>1. Ta prestation</h2><p class="sub">Sélectionne ce que tu souhaites réserver.</p>
+    <h2>1. Votre prestation</h2><p class="sub">Sélectionnez ce que vous souhaitez réserver.</p>
     <div id="services" class="grid"><div class="empty">Chargement des prestations…</div></div>
   </section>
 
   <section id="optionsPanel" class="panel hidden">
-    <h2>2. Tes options</h2><p class="sub">Ajoute du nail art ou une réparation si la prestation le permet.</p>
+    <h2>2. Vos options</h2><p class="sub">Ajoutez du nail art ou une réparation si la prestation le permet.</p>
     <div id="options"></div>
   </section>
 
   <section id="datePanel" class="panel hidden">
-    <h2>3. Choisis ton créneau</h2><p class="sub">Les horaires proposés tiennent compte de la durée totale de ton rendez-vous.</p>
+    <h2>3. Choisissez votre créneau</h2><p class="sub">Les horaires proposés tiennent compte de la durée totale de votre rendez-vous.</p>
     <div class="calendar-shell">
       <div class="calendar-head">
         <button id="prevMonth" class="calendar-nav" type="button" aria-label="Mois précédent">‹</button>
@@ -61,13 +61,13 @@
       </div>
     </div>
     <div id="selectedDayInfo" class="selected-day-info hidden"></div>
-    <div id="slotsTitle" class="slots-title hidden">Choisis ton heure</div>
+    <div id="slotsTitle" class="slots-title hidden">Choisissez votre heure</div>
     <div id="slots" class="slots"></div>
-    <div class="notice">Ton créneau reste disponible tant que la réservation n'est pas confirmée.</div>
+    <div class="notice">Votre créneau reste disponible tant que la réservation n'est pas confirmée.</div>
     <div id="waitBox" class="waitbox">
-      <button id="waitOpen" class="waitlink" type="button">🔔 Aucun créneau ne te convient ? Sois prévenue dès qu'une place se libère</button>
+      <button id="waitOpen" class="waitlink" type="button">🔔 Aucun créneau ne vous convient ? Soyez prévenue dès qu'une place se libère</button>
       <form id="waitForm" class="hidden" novalidate>
-        <p class="sub" style="margin:0 0 12px">Je t'écris par e-mail si une place se libère pour cette prestation, sur la période de ton choix. Rien n'est réservé automatiquement : la première à cliquer prend la place.</p>
+        <p class="sub" style="margin:0 0 12px">Je vous écris par e-mail si une place se libère pour cette prestation, sur la période de votre choix. Rien n'est réservé automatiquement : la première à cliquer prend la place.</p>
         <div class="formgrid">
           <label>Prénom *<input id="waitName" autocomplete="given-name" maxlength="60"></label>
           <label>E-mail *<input id="waitEmail" type="email" autocomplete="email" maxlength="254"></label>
@@ -83,8 +83,8 @@
 
 
   <section id="contactPanel" class="panel hidden">
-    <h2>4. Tes coordonnées</h2>
-    <p class="sub">Ces informations me permettent de retrouver ton rendez-vous et de te contacter si nécessaire.</p>
+    <h2>4. Vos coordonnées</h2>
+    <p class="sub">Ces informations me permettent de retrouver votre rendez-vous et de vous contacter si nécessaire.</p>
     <div class="formgrid">
   <label>Prénom *<input id="firstName" autocomplete="given-name" required></label>
   <label>Nom *<input id="lastName" autocomplete="family-name" required></label>
@@ -108,7 +108,7 @@
     </a>. *
   </span>
 </label>
-    <div id="earlyPerformanceExplainer" class="legal-explainer hidden">Comme tu réserves un service en ligne, la loi prévoit un délai de rétractation de 14 jours. Si ton rendez-vous a lieu avant la fin de ce délai, j’ai simplement besoin de ton accord pour pouvoir réaliser la prestation à la date choisie.</div>
+    <div id="earlyPerformanceExplainer" class="legal-explainer hidden">Comme vous réservez un service en ligne, la loi prévoit un délai de rétractation de 14 jours. Si votre rendez-vous a lieu avant la fin de ce délai, j’ai simplement besoin de votre accord pour pouvoir réaliser la prestation à la date choisie.</div>
     <label id="earlyPerformanceBlock" class="consent hidden">
   <input id="earlyPerformance" type="checkbox">
   <span>
@@ -117,20 +117,20 @@
 </label>
 
 <p class="sub" style="margin-top:18px;margin-bottom:0;">
-  Les informations fournies sont utilisées pour gérer ton rendez-vous.
-  Tu peux consulter la
+  Les informations fournies sont utilisées pour gérer votre rendez-vous.
+  Vous pouvez consulter la
   <a href="./politique-confidentialite.html" target="_blank" rel="noopener">
     Politique de confidentialité
   </a>
-  pour savoir comment tes données sont traitées.
+  pour savoir comment vos données sont traitées.
 </p>
     <div id="formError" class="error hidden"></div>
     <div class="actions"><button id="reviewBtn" class="btn">Voir le récapitulatif</button></div>
   </section>
 
   <section id="reviewPanel" class="panel hidden">
-    <h2>5. Vérifie ton rendez-vous</h2>
-    <p class="sub">Une dernière vérification avant de confirmer.</p>
+    <h2>5. Vérifiez votre rendez-vous</h2>
+    <p class="sub">Une dernière vérification avant de confirmer. Vous pourrez modifier ou annuler votre rendez-vous jusqu'à 24 h avant, depuis votre espace rendez-vous.</p>
     <div id="reviewBox" class="review"></div>
     <div id="bookingError" class="error hidden"></div>
     <div class="actions">
@@ -144,7 +144,7 @@
     <div class="eyebrow">Rendez-vous confirmé</div>
     <h2>C'est réservé !</h2>
     <p id="successText"></p>
-    <p class="sub">Tu peux fermer cette page. Ton rendez-vous est maintenant enregistré chez Thab's Lab.</p>
+    <p class="sub">Vous pouvez fermer cette page. Votre rendez-vous est maintenant enregistré chez Thab's Lab. Un e-mail de confirmation vient de vous être envoyé : vous y trouverez le lien vers votre espace rendez-vous, où vous pouvez déposer votre inspiration si vous le souhaitez.</p>
     <div class="calendar-actions">
       <button id="addCalendarBtn" class="btn" type="button">📅 Ajouter à mon agenda</button>
       <a class="secondary" href="./">Retour au site</a>
@@ -152,7 +152,7 @@
   </section>
 
   <div id="summary" class="summary hidden">
-    <div><small id="summaryName">—</small><strong id="summaryTotal">—</strong><small id="summarySlot">Choisis une date et une heure</small></div>
+    <div><small id="summaryName">—</small><strong id="summaryTotal">—</strong><small id="summarySlot">Choisissez une date et une heure</small></div>
     <button id="continueBtn" class="btn" disabled>Continuer</button>
   </div>
 </div>
@@ -181,7 +181,7 @@ function renderSummary(){
  document.querySelector("#summary").classList.remove("hidden");
  document.querySelector("#summaryName").textContent=state.service.name;
  document.querySelector("#summaryTotal").textContent=`${euro(finalPrice)} · ${mins(t.duration)}`;
- document.querySelector("#summarySlot").textContent=state.slot?new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at)):"Choisis une date et une heure";
+ document.querySelector("#summarySlot").textContent=state.slot?new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Brussels"}).format(new Date(state.slot.starts_at)):"Choisissez une date et une heure";
  document.querySelector("#continueBtn").disabled=!state.slot;
 }
 async function loadServices(){
@@ -200,22 +200,22 @@ async function selectService(s,b){
 function renderOptions(opts){
  const el=document.querySelector("#options");el.innerHTML="";
  if(state.service.category==="réparation"){
-   el.innerHTML=`<div class="optionRow"><label><strong>Nombre d'ongles à réparer</strong><small>5 € et 15 min par ongle</small></label><div class="qty"><button type="button" id="qminus">−</button><span id="qval">1</span><button type="button" id="qplus">+</button></div></div>`;
+   el.innerHTML=`<div class="optionRow"><label><strong>Nombre d'ongles à réparer</strong><small>${euro(state.service.price_cents)} et ${state.service.duration_minutes} min par ongle</small></label><div class="qty"><button type="button" id="qminus">−</button><span id="qval">1</span><button type="button" id="qplus">+</button></div></div>`;
    document.querySelector("#qminus").onclick=()=>changeServiceQty(-1);document.querySelector("#qplus").onclick=()=>changeServiceQty(1);
  }
  const nail=opts.filter(o=>o.category!=="réparation"), repairs=opts.filter(o=>o.category==="réparation");
  if(nail.length){
-   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Choisis selon les exemples ci-dessous. Si tu as une inspiration précise, tu pourras me l’envoyer après la réservation.</small><div class=\"nail-help\"><strong>Full nail art / projet très détaillé :</strong> sur devis. Contacte-moi avec ton inspiration pour que je puisse prévoir le temps nécessaire.</div></label>";el.appendChild(title);
+   const title=document.createElement("div");title.className="optionRow";title.innerHTML="<label><strong>Nail art</strong><small>Choisissez selon les exemples ci-dessous. Si vous avez une inspiration précise, vous pourrez me l’envoyer après la réservation.</small><div class=\"nail-help\"><strong>Pas sûre du niveau, projet très détaillé ou besoin d’un devis ?</strong> Contactez-moi ou déposez votre inspiration dans votre espace rendez-vous. Le niveau Avancé est un tarif de départ, ajusté selon votre projet et confirmé avec vous.</div></label>";el.appendChild(title);
    [{id:null,name:"Sans nail art",price_cents:0,duration_minutes:0},...nail].forEach((o,i)=>{
      const r=document.createElement("div");
      const nailName=String(o.name||"").toLowerCase();
      let example="";
      if(o.id){
-       if(nailName.includes("simple")) example="Petits pois, blooming gel, chrome entier…";
-       else if(nailName.includes("interm") || nailName.includes("moyen")) example="Lignes, French, marbré, babyboomer…";
-       else if(nailName.includes("avanc")) example="Dessins chrome, lignes multiples, lignes de strass, détails travaillés…";
+       if(nailName.includes("simple")) example="French, baby boomer, cat eye, polka dot, chrome entier…";
+       else if(nailName.includes("interm") || nailName.includes("moyen")) example="Motifs animaliers, marbré, blooming gel, ou deux nail arts simples combinés…";
+       else if(nailName.includes("avanc")) example="Dessins chrome, lignes multiples, strass, reliefs, détails travaillés…";
      }
-     r.className="optionRow";r.innerHTML=`<label for="na${i}"><strong>${o.name}</strong><small>${o.id?`+ ${euro(o.price_cents)} · + ${mins(o.duration_minutes)}${example?`<br>${example}`:""}`:""}</small></label><input id="na${i}" type="radio" name="nailart" ${i===0?"checked":""}>`;
+     r.className="optionRow";r.innerHTML=`<label for="na${i}"><strong>${o.name}</strong><small>${o.id?`+ ${nailName.includes("avanc")?"à partir de ":""}${euro(o.price_cents)} · + ${mins(o.duration_minutes)}${example?`<br>${example}`:""}`:""}</small></label><input id="na${i}" type="radio" name="nailart" ${i===0?"checked":""}>`;
      r.querySelector("input").onchange=()=>{state.options=state.options.filter(x=>x.category==="réparation");if(o.id)state.options.push({...o,quantity:1});changed()};el.appendChild(r);
    });
  }
@@ -349,14 +349,14 @@ document.querySelector("#reviewBtn").onclick=()=>{
  const first=document.querySelector("#firstName").value.trim(),last=document.querySelector("#lastName").value.trim(),
  email=document.querySelector("#email").value.trim(),phone=document.querySelector("#phone").value.trim();
  if(!first||!last||!email||!phone){showError("#formError","Prénom, nom, e-mail et téléphone sont obligatoires.");return}
- if(!document.querySelector("#email").checkValidity()){showError("#formError","Vérifie l'adresse e-mail.");return}
+ if(!document.querySelector("#email").checkValidity()){showError("#formError","Vérifiez l'adresse e-mail.");return}
  if(!document.querySelector("#ageConfirm").checked){
-  showError("#formError","Tu dois confirmer avoir 18 ans ou plus pour réserver.");
+  showError("#formError","Vous devez confirmer avoir 18 ans ou plus pour réserver.");
   return;
 }
 
 if(!document.querySelector("#termsAccept").checked){
-  showError("#formError","Tu dois accepter les Conditions générales pour réserver.");
+  showError("#formError","Vous devez accepter les Conditions générales pour réserver.");
   return;
 }
   const earlyPerformanceBlock=document.querySelector("#earlyPerformanceBlock");
@@ -365,7 +365,7 @@ const earlyPerformance=document.querySelector("#earlyPerformance");
 if(!earlyPerformanceBlock.classList.contains("hidden") && !earlyPerformance.checked){
   showError(
     "#formError",
-    "Pour ce rendez-vous, tu dois demander expressément que la prestation puisse être réalisée avant la fin du délai légal de rétractation."
+    "Pour ce rendez-vous, vous devez demander expressément que la prestation puisse être réalisée avant la fin du délai légal de rétractation."
   );
   return;
 }
@@ -459,11 +459,11 @@ p_early_performance_requested:
    const unavailable=errMsg.includes("slot_unavailable");
    if(errMsg.includes("rate_limited")||errMsg.includes("too_many_active_bookings")){
      showError("#bookingError",errMsg.includes("rate_limited")
-       ?"Trop de demandes en peu de temps. Patiente quelques minutes avant de réessayer, ou contacte-moi directement."
-       :"Tu as déjà plusieurs rendez-vous à venir. Contacte-moi directement pour en ajouter un.");
+       ?"Trop de demandes en peu de temps. Patientez quelques minutes avant de réessayer, ou contactez-moi directement."
+       :"Vous avez déjà plusieurs rendez-vous à venir. Contactez-moi directement pour en ajouter un.");
      btn.disabled=false;btn.textContent="Confirmer avec obligation de paiement";return;
    }
-   showError("#bookingError",unavailable?"Oups, ce créneau vient d'être pris ou n'est plus disponible. Retourne au choix du créneau pour en sélectionner un autre.":"La réservation n'a pas pu être enregistrée. Vérifie tes informations ou réessaie dans un instant.");
+   showError("#bookingError",unavailable?"Oups, ce créneau vient d'être pris ou n'est plus disponible. Retournez au choix du créneau pour en sélectionner un autre.":"La réservation n'a pas pu être enregistrée. Vérifiez vos informations ou réessayez dans un instant.");
    btn.disabled=false;btn.textContent="Confirmer avec obligation de paiement";return;
  }
  const row=data?.[0];
@@ -494,17 +494,17 @@ p_early_performance_requested:
     e.preventDefault();
     const msg=$("#waitMsg"),btn=$("#waitSend");msg.className="waitmsg";msg.textContent="";
     const name=$("#waitName").value.trim(),email=$("#waitEmail").value.trim(),from=$("#waitFrom").value,to=$("#waitTo").value;
-    if(!state.service){msg.className="waitmsg err";msg.textContent="Choisis d'abord ta prestation.";return}
-    if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className="waitmsg err";msg.textContent="Indique ton prénom et une adresse e-mail valide.";return}
-    if(!from||!to||to<from){msg.className="waitmsg err";msg.textContent="Choisis une période valide.";return}
-    if(!$("#waitConsent").checked){msg.className="waitmsg err";msg.textContent="Coche la case pour accepter de recevoir l'e-mail.";return}
+    if(!state.service){msg.className="waitmsg err";msg.textContent="Choisissez d'abord votre prestation.";return}
+    if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.className="waitmsg err";msg.textContent="Indiquez votre prénom et une adresse e-mail valide.";return}
+    if(!from||!to||to<from){msg.className="waitmsg err";msg.textContent="Choisissez une période valide.";return}
+    if(!$("#waitConsent").checked){msg.className="waitmsg err";msg.textContent="Cochez la case pour accepter de recevoir l'e-mail.";return}
     btn.disabled=true;
     try{
       const {data,error}=await db.rpc("join_public_waitlist",{p_first_name:name,p_email:email,p_service_id:String(state.service.id),p_service_name:state.service.name,p_options:rpcOptions(),p_duration:total().duration,p_date_from:from,p_date_to:to,p_consent:true});
       if(error)throw error;
-      if(data&&data.ok){msg.className="waitmsg ok";msg.textContent="C'est noté 🌿 Je te préviens par e-mail si une place se libère.";$("#waitConsent").checked=false}
-      else{const m={invalid:"Vérifie les informations et la période (dans les 3 prochains mois).",limit:"Tu es déjà inscrite sur plusieurs prestations. Merci de patienter un peu.",busy:"La liste est momentanément complète. Réessaie plus tard.",consent:"Coche la case pour accepter de recevoir l'e-mail."};msg.className="waitmsg err";msg.textContent=m[data&&data.error]||"Impossible de t'inscrire pour le moment."}
-    }catch(err){console.error(err);msg.className="waitmsg err";msg.textContent="Impossible de t'inscrire pour le moment. Réessaie dans un instant."}
+      if(data&&data.ok){msg.className="waitmsg ok";msg.textContent="C'est noté 🌿 Je vous préviens par e-mail si une place se libère.";$("#waitConsent").checked=false}
+      else{const m={invalid:"Vérifiez les informations et la période (dans les 3 prochains mois).",limit:"Vous êtes déjà inscrite sur plusieurs prestations. Merci de patienter un peu.",busy:"La liste est momentanément complète. Réessayez plus tard.",consent:"Cochez la case pour accepter de recevoir l'e-mail."};msg.className="waitmsg err";msg.textContent=m[data&&data.error]||"Impossible de vous inscrire pour le moment."}
+    }catch(err){console.error(err);msg.className="waitmsg err";msg.textContent="Impossible de vous inscrire pour le moment. Réessayez dans un instant."}
     finally{btn.disabled=false}
   };
   /* lien de désinscription (futurs e-mails) */
@@ -513,7 +513,7 @@ p_early_performance_requested:
     if(t&&/^[0-9a-f-]{36}$/i.test(t)){
       db.rpc("leave_public_waitlist",{p_token:t}).then(({data})=>{
         const n=document.createElement("div");n.className="notice";n.style.margin="0 0 18px";
-        n.textContent=data?"Tu ne recevras plus d'e-mail pour cette liste d'attente. Merci !":"Ce lien n'est plus valide ou tu es déjà désinscrite.";
+        n.textContent=data?"Vous ne recevrez plus d'e-mail pour cette liste d'attente. Merci !":"Ce lien n'est plus valide ou vous êtes déjà désinscrite.";
         const m=document.querySelector("main")||document.body;m.insertBefore(n,m.firstChild);
       });
     }
