@@ -232,8 +232,11 @@ function changed(){state.slot=null;state.selectedDate=null;state.dayInfo={};rend
 
 const today=new Date();
 const minDate=localDate(today);
-const maxDateObj=new Date(today);maxDateObj.setDate(maxDateObj.getDate()+31);
-const maxDate=localDate(maxDateObj);
+let maxDate=minDate;
+function setBookingWindow(n){const d=new Date(today);d.setDate(d.getDate()+n);maxDate=localDate(d)}
+setBookingWindow(31);
+/* La fenêtre de réservation se règle dans Supabase (booking_window_days) : la page la suit automatiquement. */
+db.rpc("get_public_booking_window_days").then(({data,error})=>{const n=Number(data);if(!error&&Number.isFinite(n)&&n>0&&n<=365){setBookingWindow(n);if(state.service)refreshCalendar()}});
 state.calendarMonth=new Date(today.getFullYear(),today.getMonth(),1);
 
 function dateFromKey(key){const [y,m,d]=key.split("-").map(Number);return new Date(y,m-1,d,12)}
