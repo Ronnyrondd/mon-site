@@ -234,7 +234,7 @@ h1{margin:0;font-family:"Playfair Display",serif;font-size:clamp(34px,3.6vw,48px
 <p class="section-label">Vue du mois</p>
 <section class="stats">
   <article class="stat"><div class="stat-label">CA encaissé</div><div id="month-revenue" class="stat-value">—</div><div id="revenue-delta"></div><div class="stat-detail">paiements réellement enregistrés</div></article>
-  <article class="stat"><div class="stat-label">CA à venir</div><div id="future-revenue" class="stat-value">—</div><div class="stat-detail">rendez-vous confirmés à venir</div></article>
+  <article class="stat"><div class="stat-label">CA à venir</div><div id="future-revenue" class="stat-value">—</div><div id="future-revenue-detail" class="stat-detail">reste du mois</div></article>
   <article class="stat"><div class="stat-label">Panier moyen</div><div id="average-basket" class="stat-value">—</div><div class="stat-detail">sur les rendez-vous encaissés ce mois</div></article>
   <article class="stat"><div class="stat-label">Rendez-vous à venir</div><div id="future-count" class="stat-value">—</div><div class="stat-detail">confirmés ou en attente</div></article>
 </section>
@@ -334,7 +334,11 @@ async function loadDashboard(){
   if(!futureRes.error){
     data.future=futureRes.data||[];
     $("future-count").textContent=data.future.length;
-    $("future-revenue").textContent=euro.format(data.future.reduce((s,x)=>s+(x.expected_price_cents||0),0)/100);
+    const monthKey=brusselsDateKey().slice(0,7);
+     let restCents=0,laterCents=0;
+     data.future.forEach(x=>{const c=x.expected_price_cents||0;if(brusselsDateKey(new Date(x.starts_at)).slice(0,7)<=monthKey)restCents+=c;else laterCents+=c});
+     $("future-revenue").textContent=euro.format(restCents/100);
+     $("future-revenue-detail").textContent=laterCents>0?`reste du mois · + ${euro.format(laterCents/100)} les mois suivants`:"reste du mois";
   }
   if(!todayRes.error)data.today=(todayRes.data||[]).filter(x=>brusselsDateKey(new Date(x.starts_at))===data.todayKey);
   if(!closeRes.error)data.toClose=closeRes.data||[];
