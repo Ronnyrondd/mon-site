@@ -340,6 +340,7 @@ const fmtRDV=v=>new Intl.DateTimeFormat("fr-BE",{weekday:"long",day:"numeric",mo
 const fmtHour=v=>new Intl.DateTimeFormat("fr-BE",{hour:"2-digit",minute:"2-digit",timeZone:TZ}).format(new Date(v));
 function localISODate(d){const a=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),g=t=>a.find(x=>x.type===t).value;return `${g("year")}-${g("month")}-${g("day")}`}
 function addDays(iso,n){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+let winDays=31;db.rpc("get_public_booking_window_days").then(({data,error})=>{const n=Number(data);if(!error&&Number.isFinite(n)&&n>0&&n<=365)winDays=n});
 let dayCache={},availDays=[],dayCursor="",dayMax="",dayInit=false,selectedDay="",selectedSlot=null,selectedQuote=null;
 function resetSelection(){selectedSlot=null;selectedQuote=null;$("#confirmReschedule").disabled=true;$("#rescheduleSummary").classList.add("hidden");$("#rescheduleMsg").classList.add("hidden")}
 async function fetchDay(iso){
@@ -396,7 +397,7 @@ async function loadMoreDays(){
 }
 function initDays(){
   dayCache={};availDays=[];selectedDay="";$("#slotGrid").innerHTML="";$("#dayChips").innerHTML="";resetSelection();
-  const now=Date.now();dayCursor=localISODate(new Date(now+24*3600*1000));dayMax=localISODate(new Date(now+31*24*3600*1000));
+  const now=Date.now();dayCursor=localISODate(new Date(now+24*3600*1000));dayMax=localISODate(new Date(now+winDays*24*3600*1000));
   dayInit=true;loadMoreDays();
 }
 $("#openReschedule").onclick=()=>{const p=$("#reschedulePanel");p.classList.toggle("hidden");if(!p.classList.contains("hidden")&&!dayInit)initDays()};
