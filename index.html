@@ -602,6 +602,20 @@
   }
 
   /* ---------- reveal on scroll ---------- */
+
+  /* ---- Avis ---- */
+  #avis{padding:96px 0;}
+  .avis-score{display:flex; flex-wrap:wrap; justify-content:center; gap:10px 28px; margin:0 auto 40px; max-width:720px; text-align:center;}
+  .avis-score .big{font-family:'Fraunces', serif; font-size:2.2rem; color:var(--ink); width:100%;}
+  .avis-score .big small{font-size:1rem; color:var(--ink-soft); font-family:'Jost', sans-serif;}
+  .avis-score .crit{font-size:.95rem; color:var(--ink-soft);}
+  .avis-score .crit b{color:var(--sage-deep); font-weight:500;}
+  .avis-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:960px; margin:0 auto;}
+  .avis-card{background:#fff; border:1px solid var(--sage-pale); border-radius:18px; padding:26px 24px;}
+  .avis-card .hearts{color:var(--sage-deep); letter-spacing:3px; font-size:.95rem; margin-bottom:10px;}
+  .avis-card p{margin:0 0 14px; color:var(--ink); line-height:1.65;}
+  .avis-card .who{font-size:.9rem; color:var(--ink-soft);}
+  .avis-note{text-align:center; font-size:.85rem; color:var(--ink-soft); margin:28px auto 0; max-width:560px;}
   .reveal{
     opacity:0;
     transform:translateY(22px);
@@ -685,6 +699,7 @@
         <li><a href="#prestations">Prestations</a></li>
         <li><a href="#galerie">Galerie</a></li>
         <li><a href="#ambiance">L'ambiance</a></li>
+        <li><a href="#avis">Avis</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -835,6 +850,41 @@
         <img class="short" src="images/ambiance-automne.jpg" alt="Décoration automnale, bougie et citrouilles au studio" width="700" height="1244" loading="lazy">
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ AVIS ============ -->
+<section id="avis">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Avis</span>
+      <h2>Ce qu'en disent mes clientes</h2>
+      <div class="divider-bloom"><span class="stem-line"></span></div>
+    </div>
+    <div class="avis-score reveal">
+      <div class="big">5 / 5 <small>· 6 avis</small></div>
+      <span class="crit">Propreté <b>5/5</b></span>
+      <span class="crit">Qualité du travail <b>5/5</b></span>
+      <span class="crit">Savoir-être <b>5/5</b></span>
+    </div>
+    <div class="avis-grid reveal">
+      <figure class="avis-card" style="margin:0;">
+        <div class="hearts" aria-label="5 sur 5">♥ ♥ ♥ ♥ ♥</div>
+        <p>« Poses propres et soignées, Thab a le souci du détail pour faire la pose parfaite à chaque rendez-vous, le tout avec un accueil chaleureux. Je recommande à 100 % ! »</p>
+        <figcaption class="who">Sara</figcaption>
+      </figure>
+      <figure class="avis-card" style="margin:0;">
+        <div class="hearts" aria-label="5 sur 5">♥ ♥ ♥ ♥ ♥</div>
+        <p>« Professionnelle, chaleureuse. J'ai passé un agréable moment. Je recommande. ✨ »</p>
+        <figcaption class="who">Maéva</figcaption>
+      </figure>
+      <figure class="avis-card" style="margin:0;">
+        <div class="hearts" aria-label="5 sur 5">♥ ♥ ♥ ♥ ♥</div>
+        <p>« J'ai passé un agréable moment 😊 »</p>
+        <figcaption class="who">Alisson</figcaption>
+      </figure>
+    </div>
+    <p class="avis-note">Avis laissés par des clientes sur Iara.</p>
   </div>
 </section>
 
