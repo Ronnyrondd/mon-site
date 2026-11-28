@@ -533,15 +533,29 @@
 
     async function loadAppointments(){
       const {start,end}=rangeForView();
-      const {data,error}=await supabaseClient.from("appointments").select(`
+      const apptSelect=`
         id, client_id, service_id, starts_at, ends_at, expected_price_cents, status,
         service_name_snapshot, service_price_cents_snapshot, service_duration_minutes_snapshot,
         service_quantity, private_notes,
         clients(first_name,last_name,phone,email),
-        payments(id,amount_cents,payment_method,payment_type,created_at)
-      `).gte("starts_at",start.toISOString()).lt("starts_at",end.toISOString())
+        payments(id,amount_cents,payment_method,payment_type,created_at)`;
+      const runAppointments=sel=>supabaseClient.from("appointments").select(sel)
+        .gte("starts_at",start.toISOString()).lt("starts_at",end.toISOString())
         .in("status",["pending","confirmed","completed","no_show"])
         .order("starts_at",{ascending:true});
+      /* On joint les options (nail art…) ; si cette lecture échoue, l'agenda se charge quand même sans elles. */
+      let {data,error}=await runAppointments(apptSelect+`,
+        actual_started_at, actual_ended_at,
+        appointment_options(option_name_snapshot,quantity)`);
+      if(error){
+        console.warn("Chronomètre non chargé (colonnes manquantes ?)",error);
+        ({data,error}=await runAppointments(apptSelect+`,
+        appointment_options(option_name_snapshot,quantity)`));
+      }
+      if(error){
+        console.warn("Options du rendez-vous non chargées",error);
+        ({data,error}=await runAppointments(apptSelect));
+      }
 
       if(error){
         console.error(error);
@@ -845,10 +859,57 @@
       return list[0]||null;
     }
 
+    /* ---- Chronomètre « Je commence / J’ai fini » ---- */
+    function fmtDuration(ms){
+      const total=Math.max(0,Math.round(ms/60000));
+      const h=Math.floor(total/60),m=total%60;
+      return h?`${h} h ${String(m).padStart(2,"0")}`:`${m} min`;
+    }
+    function timerLine(a){
+      if(!a.actual_started_at)return "";
+      const planned=new Date(a.ends_at)-new Date(a.starts_at);
+      if(a.actual_ended_at){
+        const real=new Date(a.actual_ended_at)-new Date(a.actual_started_at);
+        return `<div class="detail"><span>Durée réelle</span><strong>${fmtDuration(real)} <span style="font-weight:400;opacity:.7">(prévu ${fmtDuration(planned)})</span></strong></div>`;
+      }
+      return `<div class="detail"><span>En cours</span><strong><span id="timer-live"></span> <span style="font-weight:400;opacity:.7">(prévu ${fmtDuration(planned)})</span></strong></div>`;
+    }
+    let timerInterval=null;
+    function startTimerTicker(a){
+      clearInterval(timerInterval);
+      if(!a.actual_started_at||a.actual_ended_at)return;
+      const tick=()=>{
+        const el=document.getElementById("timer-live");
+        if(!el){clearInterval(timerInterval);return}
+        const sec=Math.max(0,Math.floor((Date.now()-new Date(a.actual_started_at))/1000));
+        const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),r=sec%60;
+        el.textContent=`${h?h+" h ":""}${String(m).padStart(2,"0")} min ${String(r).padStart(2,"0")} s`;
+      };
+      tick();timerInterval=setInterval(tick,1000);
+    }
+    async function startTimer(a){
+      const now=new Date().toISOString();
+      const {error}=await supabaseClient.from("appointments").update({actual_started_at:now,actual_ended_at:null}).eq("id",a.id);
+      if(error){console.error(error);alert("Impossible de lancer le chronomètre. Le SQL « chrono-rdv.sql » a-t-il été exécuté ?");return}
+      a.actual_started_at=now;a.actual_ended_at=null;
+      openAppointment(a);
+      loadAppointments();
+    }
+    async function stopTimer(a){
+      const now=new Date().toISOString();
+      const {error}=await supabaseClient.from("appointments").update({actual_ended_at:now}).eq("id",a.id);
+      if(error){console.error(error);alert("Impossible d’arrêter le chronomètre.");return}
+      a.actual_ended_at=now;
+      clearInterval(timerInterval);
+      openAppointment(a);
+      showCompleteForm(a);
+    }
+
     function openAppointment(a){
       const client=a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Cliente";
       const quantity=(a.service_quantity||1)>1 ? ` × ${a.service_quantity}` : "";
       const statusLabel=statusLabels[a.status] || a.status;
+      const optionsHtml=(a.appointment_options||[]).map(o=>`<br>+ ${escapeHtml(o.option_name_snapshot)}${Number(o.quantity||1)>1?` × ${Number(o.quantity)}`:""}`).join("");
       const isCompleted=a.status==="completed";
       const isNoShow=a.status==="no_show";
       const payment=finalPaymentFor(a);
@@ -865,9 +926,13 @@
       }else if(isNoShow){
         actions=`<button class="action-button primary" type="button" data-action="restore">Rétablir le rendez-vous</button>`;
       }else{
+        const timerBtn=a.actual_started_at
+          ? `<button class="action-button primary" type="button" data-action="timer-stop">■ J’ai fini</button>`
+          : `<button class="action-button primary" type="button" data-action="timer-start">▶ Je commence</button>`;
         actions=`
+          ${timerBtn}
           <button class="action-button" type="button" data-action="edit">Modifier</button>
-          <button class="action-button primary" type="button" data-action="complete">Terminer</button>
+          <button class="action-button" type="button" data-action="complete">Terminer</button>
           <button class="action-button danger" type="button" data-action="cancel">Annuler</button>`;
       }
 
@@ -875,16 +940,20 @@
         <div class="detail"><span>Cliente</span><strong>${escapeHtml(client)}</strong></div>
         <div class="detail"><span>Date</span><strong>${capitalize(fullDate.format(new Date(a.starts_at)))}</strong></div>
         <div class="detail"><span>Heure</span><strong>${timeFormat.format(new Date(a.starts_at))} – ${timeFormat.format(new Date(a.ends_at))}</strong></div>
-        <div class="detail"><span>Prestation</span><strong>${escapeHtml(a.service_name_snapshot)}${quantity}</strong></div>
+        <div class="detail"><span>Prestation</span><strong>${escapeHtml(a.service_name_snapshot)}${quantity}${optionsHtml}</strong></div>
         <div class="detail"><span>Montant prévu</span><strong>${euro.format((a.expected_price_cents||0)/100)}</strong></div>
         ${paymentLine}
         <div class="detail"><span>Statut</span><strong><span class="status-pill ${escapeHtml(a.status)}">${escapeHtml(statusLabel)}</span></strong></div>
+        ${timerLine(a)}
         ${a.private_notes?`<div class="detail"><span>Note privée</span><strong>${escapeHtml(a.private_notes)}</strong></div>`:""}
         <div id="appointment-preparation" class="prep-box"><h3 class="prep-title">Préparation du rendez-vous</h3><div class="prep-loading">Chargement des préférences…</div></div>
         <div id="appointment-action-area"></div>
         <div class="modal-actions">${actions}<button class="action-button danger" type="button" data-action="delete-error">Supprimer définitivement</button></div>
       `;
 
+      document.querySelector('[data-action="timer-start"]')?.addEventListener("click",()=>startTimer(a));
+      document.querySelector('[data-action="timer-stop"]')?.addEventListener("click",()=>stopTimer(a));
+      startTimerTicker(a);
       document.querySelector('[data-action="edit"]')?.addEventListener("click",()=>showEditForm(a));
       document.querySelector('[data-action="complete"]')?.addEventListener("click",()=>showCompleteForm(a));
       document.querySelector('[data-action="cancel"]')?.addEventListener("click",()=>showCancelForm(a));
