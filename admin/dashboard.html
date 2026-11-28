@@ -574,7 +574,8 @@ setInterval(()=>{if(document.visibilityState!=="visible")return;if(Date.now()-da
 async function init(){if(await protectPage()){await safeReload();await refreshPushButton()}}
 init();
 </script>
-<script src="./admin-nav.js">
+<script src="./admin-nav.js"></script>
+<script>
 document.addEventListener("click",e=>{
   if(e.target.closest("a,button"))return;
   const t=e.target.closest("[data-open]");
